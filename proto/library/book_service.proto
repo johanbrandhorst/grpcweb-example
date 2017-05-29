@@ -4,6 +4,8 @@ syntax = "proto3";
 // over a gRPC API.
 package library;
 
+import "google/protobuf/timestamp.proto";
+
 // BookType describes the different types
 // a book in the library can be.
 enum BookType {
@@ -41,6 +43,8 @@ message Book {
     // through a Publisher.
     Publisher publisher = 6;
   }
+  // PublicationDate is the time of publication of the book.
+  google.protobuf.Timestamp publication_date = 7;
 }
 
 // GetBookRequest is the input to the GetBook method.

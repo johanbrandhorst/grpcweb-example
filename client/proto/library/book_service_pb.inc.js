@@ -9,6 +9,7 @@ var jspb = $global;
 var goog = jspb;
 var global = Function('return this')();
 
+var google_protobuf_timestamp_pb = $global.proto.google.protobuf;
 goog.exportSymbol('proto.library.Book', null, global);
 goog.exportSymbol('proto.library.BookType', null, global);
 goog.exportSymbol('proto.library.GetBookRequest', null, global);
@@ -231,7 +232,8 @@ proto.library.Book.toObject = function(includeInstance, msg) {
     author: jspb.Message.getFieldWithDefault(msg, 3, ""),
     bookType: jspb.Message.getFieldWithDefault(msg, 4, 0),
     selfPublished: jspb.Message.getFieldWithDefault(msg, 5, false),
-    publisher: (f = msg.getPublisher()) && proto.library.Publisher.toObject(includeInstance, f)
+    publisher: (f = msg.getPublisher()) && proto.library.Publisher.toObject(includeInstance, f),
+    publicationDate: (f = msg.getPublicationDate()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -292,6 +294,11 @@ proto.library.Book.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.library.Publisher;
       reader.readMessage(value,proto.library.Publisher.deserializeBinaryFromReader);
       msg.setPublisher(value);
+      break;
+    case 7:
+      var value = new google_protobuf_timestamp_pb.Timestamp;
+      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
+      msg.setPublicationDate(value);
       break;
     default:
       reader.skipField();
@@ -362,6 +369,14 @@ proto.library.Book.serializeBinaryToWriter = function(message, writer) {
       6,
       f,
       proto.library.Publisher.serializeBinaryToWriter
+    );
+  }
+  f = message.getPublicationDate();
+  if (f != null) {
+    writer.writeMessage(
+      7,
+      f,
+      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
     );
   }
 };
@@ -485,6 +500,36 @@ proto.library.Book.prototype.clearPublisher = function() {
  */
 proto.library.Book.prototype.hasPublisher = function() {
   return jspb.Message.getField(this, 6) != null;
+};
+
+
+/**
+ * optional google.protobuf.Timestamp publication_date = 7;
+ * @return {?proto.google.protobuf.Timestamp}
+ */
+proto.library.Book.prototype.getPublicationDate = function() {
+  return /** @type{?proto.google.protobuf.Timestamp} */ (
+    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 7));
+};
+
+
+/** @param {?proto.google.protobuf.Timestamp|undefined} value */
+proto.library.Book.prototype.setPublicationDate = function(value) {
+  jspb.Message.setWrapperField(this, 7, value);
+};
+
+
+proto.library.Book.prototype.clearPublicationDate = function() {
+  this.setPublicationDate(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.library.Book.prototype.hasPublicationDate = function() {
+  return jspb.Message.getField(this, 7) != null;
 };
 
 

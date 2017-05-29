@@ -20,6 +20,7 @@ package library
 
 import js "github.com/gopherjs/gopherjs/js"
 import grpcweb "github.com/johanbrandhorst/gopherjs-improbable-grpc-web"
+import google_protobuf "github.com/johanbrandhorst/protoc-gen-gopherjs/ptypes/timestamp"
 
 import (
 	context "context"
@@ -109,7 +110,8 @@ type Book struct {
 // Title is the title of the book.
 // Author is the author of the book.
 // BookType is the type of the book.
-func NewBook(isbn int64, title string, author string, bookType BookType) *Book {
+// PublicationDate is the time of publication of the book.
+func NewBook(isbn int64, title string, author string, bookType BookType, publicationDate *google_protobuf.Timestamp) *Book {
 	m := &Book{
 		Object: js.Global.Get("proto").Get("library").Get("Book").New([]interface{}{
 			isbn,
@@ -118,6 +120,7 @@ func NewBook(isbn int64, title string, author string, bookType BookType) *Book {
 			bookType,
 			js.Undefined,
 			js.Undefined,
+			publicationDate,
 		}),
 	}
 
@@ -236,6 +239,18 @@ func (m *Book) GetPublisher() *Publisher {
 // through a Publisher.
 func (m *Book) SetPublisher(v *Publisher) {
 	m.Call("setPublisher", v)
+}
+
+// GetPublicationDate gets the PublicationDate of the Book.
+// PublicationDate is the time of publication of the book.
+func (m *Book) GetPublicationDate() *google_protobuf.Timestamp {
+	return &google_protobuf.Timestamp{Object: m.Call("getPublicationDate")}
+}
+
+// SetPublicationDate sets the PublicationDate of the Book.
+// PublicationDate is the time of publication of the book.
+func (m *Book) SetPublicationDate(v *google_protobuf.Timestamp) {
+	m.Call("setPublicationDate", v)
 }
 
 func (m *Book) serialize() (rawBytes []byte, err error) {

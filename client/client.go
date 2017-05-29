@@ -11,6 +11,7 @@ import (
 	"context"
 	"io"
 	"strings"
+	"time"
 
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/johanbrandhorst/gopherjs-improbable-grpc-web-example/client/proto/library"
@@ -30,7 +31,11 @@ func printBook(b *library.Book) {
 		println(b.GetPublishingMethod())
 	}
 
-	println(b.GetAuthor(), b.GetIsbn(), b.GetTitle(), b.GetBookType().String(), publisher)
+	publishDate := time.Unix(b.GetPublicationDate().GetSeconds(),
+		int64(b.GetPublicationDate().GetNanos()))
+
+	println(b.GetAuthor(), b.GetIsbn(), b.GetTitle(),
+		b.GetBookType().String(), publisher, publishDate.Format(time.RFC1123))
 }
 
 func main() {

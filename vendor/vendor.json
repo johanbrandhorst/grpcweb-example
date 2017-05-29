@@ -39,6 +39,12 @@
 			"revisionTime": "2017-04-27T21:32:20Z"
 		},
 		{
+			"checksumSHA1": "+nsb2jDuP/5l2DO78dtU/jYB3G8=",
+			"path": "github.com/golang/protobuf/ptypes/timestamp",
+			"revision": "9f174c986221c608fb5143bd623b6076a71feae3",
+			"revisionTime": "2017-05-26T16:57:56Z"
+		},
+		{
 			"checksumSHA1": "P355HH35JD7+G1F06ZsOunuME3o=",
 			"path": "github.com/improbable-eng/grpc-web/go/grpcweb",
 			"revision": "15f1b75806168e92f5698fbf2c7e841682a26ad0",
@@ -79,6 +85,12 @@
 			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs/grpc",
 			"revision": "c7fa67645b25ff5957d3d82a325b58d82e2d3f79",
 			"revisionTime": "2017-05-29T17:35:12Z"
+		},
+		{
+			"checksumSHA1": "fXM/mubbTYx7ugQ3TcI1xKzCXs4=",
+			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs/ptypes/timestamp",
+			"revision": "224b3d9c0e5e39199ae0eaa11df666db11393883",
+			"revisionTime": "2017-05-29T19:21:14Z"
 		},
 		{
 			"checksumSHA1": "naf+sai8rdVYJ9ozLllNMMwE9aY=",
