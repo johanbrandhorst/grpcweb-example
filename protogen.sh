@@ -5,9 +5,10 @@
 # Generate protofiles
 protoc proto/library/book_service.proto \
     --js_out=import_style=commonjs,binary:./client/ \
+    --gopherjs_out=plugins=grpc:./client/ \
     --go_out=plugins=grpc:./server/
 
-# Replace imports and exports
+# Replace imports and exports in ProtobufJS file
 python3 -c "with open('./client/proto/library/book_service_pb.js') as f:
     c = f.read()
     c = c.replace('require(\'google-protobuf\')', '\$global')
