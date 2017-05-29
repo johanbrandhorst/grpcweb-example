@@ -39,11 +39,17 @@ type Client struct {
 }
 
 // NewClient creates a new Client.
-func NewClient(host, service string) *Client {
-	return &Client{
+func NewClient(host, service string, opts ...DialOption) *Client {
+	c := &Client{
 		host:    host,
 		service: service,
 	}
+
+	for _, opt := range opts {
+		opt(c)
+	}
+
+	return c
 }
 
 // RPCCall performs a unary call to an endpoint, blocking until a

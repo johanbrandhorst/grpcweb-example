@@ -21,6 +21,18 @@
 			"revisionTime": "2017-04-27T21:32:20Z"
 		},
 		{
+			"checksumSHA1": "Z1gJ3PKzwBpOoPnTSEM5yd0zHYA=",
+			"path": "github.com/golang/protobuf/protoc-gen-go/descriptor",
+			"revision": "9f174c986221c608fb5143bd623b6076a71feae3",
+			"revisionTime": "2017-05-26T16:57:56Z"
+		},
+		{
+			"checksumSHA1": "8RePrdBuPdr7dY5w45FSQkTA2+0=",
+			"path": "github.com/golang/protobuf/protoc-gen-go/plugin",
+			"revision": "9f174c986221c608fb5143bd623b6076a71feae3",
+			"revisionTime": "2017-05-26T16:57:56Z"
+		},
+		{
 			"checksumSHA1": "lZFWy27Qo6+m/keDjNFYTxSmvZw=",
 			"path": "github.com/golang/protobuf/ptypes/any",
 			"revision": "18c9bb3261723cd5401db4d0c9fbc5c3b6c70fe8",
@@ -33,10 +45,10 @@
 			"revisionTime": "2017-04-27T15:07:31Z"
 		},
 		{
-			"checksumSHA1": "tgq6ZfZ9r110BwYk49YIjbiOeG8=",
+			"checksumSHA1": "G6JhzF6JUqnUl3H3t4f4VNWDJ84=",
 			"path": "github.com/johanbrandhorst/gopherjs-improbable-grpc-web",
-			"revision": "b925a26281a72296eb85c6221ae524a67142a978",
-			"revisionTime": "2017-05-27T23:08:34Z"
+			"revision": "29d251a7010053421acd500c95f8e605d880ab13",
+			"revisionTime": "2017-05-29T16:38:38Z"
 		},
 		{
 			"checksumSHA1": "ovsPk4fLfWsCO5KBFYxrI23zMZc=",
@@ -49,6 +61,24 @@
 			"path": "github.com/johanbrandhorst/gopherjs-improbable-grpc-web/status",
 			"revision": "b925a26281a72296eb85c6221ae524a67142a978",
 			"revisionTime": "2017-05-27T23:08:34Z"
+		},
+		{
+			"checksumSHA1": "TA5Bd1G+PoOoPfKfu1d7jMlrjKk=",
+			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs",
+			"revision": "c7fa67645b25ff5957d3d82a325b58d82e2d3f79",
+			"revisionTime": "2017-05-29T17:35:12Z"
+		},
+		{
+			"checksumSHA1": "i/XVnw8G1wv9Cpd77yfKBk2YhIg=",
+			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs/generator",
+			"revision": "c7fa67645b25ff5957d3d82a325b58d82e2d3f79",
+			"revisionTime": "2017-05-29T17:35:12Z"
+		},
+		{
+			"checksumSHA1": "XpFhV9nd3YIgPxXemlqzbmX5gCY=",
+			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs/grpc",
+			"revision": "c7fa67645b25ff5957d3d82a325b58d82e2d3f79",
+			"revisionTime": "2017-05-29T17:35:12Z"
 		},
 		{
 			"checksumSHA1": "naf+sai8rdVYJ9ozLllNMMwE9aY=",

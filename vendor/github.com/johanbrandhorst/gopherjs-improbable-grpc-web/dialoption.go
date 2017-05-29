@@ -18,16 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// Package grpcweb defines a couple of convenience wrappers
-// around the Improbable TS gRPC-web implementation. It should
-// be used in conjunction with the protoc-gen-gopherjs tool.
 package grpcweb
 
-import (
-	// Include JS file
-	_ "github.com/johanbrandhorst/gopherjs-improbable-grpc-web/grpcwebjs"
-)
-
-// GrpcWebPackageIsVersion1 is referenced from generated protocol buffer files
-// to assert that that code is compatible with this version of the proto package.
-const GrpcWebPackageIsVersion1 = true
+// DialOption is a stub for any dial options that may be implemented
+type DialOption func(*Client)
