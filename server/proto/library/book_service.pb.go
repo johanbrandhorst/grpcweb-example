@@ -5,10 +5,14 @@
 /*
 Package library is a generated protocol buffer package.
 
+Package library exposes a list of books
+over a gRPC API.
+
 It is generated from these files:
 	proto/library/book_service.proto
 
 It has these top-level messages:
+	Publisher
 	Book
 	GetBookRequest
 	QueryBooksRequest
@@ -35,16 +39,97 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
+// BookType describes the different types
+// a book in the library can be.
+type BookType int32
+
+const (
+	// Hardcover is a book with a hard back.
+	BookType_HARDCOVER BookType = 0
+	// Paperback is a book with a soft back.
+	BookType_PAPERBACK BookType = 1
+	// Audiobook is an audio recording of the book.
+	BookType_AUDIOBOOK BookType = 2
+)
+
+var BookType_name = map[int32]string{
+	0: "HARDCOVER",
+	1: "PAPERBACK",
+	2: "AUDIOBOOK",
+}
+var BookType_value = map[string]int32{
+	"HARDCOVER": 0,
+	"PAPERBACK": 1,
+	"AUDIOBOOK": 2,
+}
+
+func (x BookType) String() string {
+	return proto.EnumName(BookType_name, int32(x))
+}
+func (BookType) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+
+// Publisher describes a Book Publisher.
+type Publisher struct {
+	// Name is the name of the Publisher.
+	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+}
+
+func (m *Publisher) Reset()                    { *m = Publisher{} }
+func (m *Publisher) String() string            { return proto.CompactTextString(m) }
+func (*Publisher) ProtoMessage()               {}
+func (*Publisher) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+
+func (m *Publisher) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+// Book represents a book in the library.
 type Book struct {
-	Isbn   int64  `protobuf:"varint,1,opt,name=isbn" json:"isbn,omitempty"`
-	Title  string `protobuf:"bytes,2,opt,name=title" json:"title,omitempty"`
+	// Isbn is the ISBN number of the book.
+	Isbn int64 `protobuf:"varint,1,opt,name=isbn" json:"isbn,omitempty"`
+	// Title is the title of the book.
+	Title string `protobuf:"bytes,2,opt,name=title" json:"title,omitempty"`
+	// Author is the author of the book.
 	Author string `protobuf:"bytes,3,opt,name=author" json:"author,omitempty"`
+	// BookType is the type of the book.
+	BookType BookType `protobuf:"varint,4,opt,name=book_type,json=bookType,enum=library.BookType" json:"book_type,omitempty"`
+	// PublishingMethod is the publishing method
+	// used for this Book.
+	//
+	// Types that are valid to be assigned to PublishingMethod:
+	//	*Book_SelfPublished
+	//	*Book_Publisher
+	PublishingMethod isBook_PublishingMethod `protobuf_oneof:"publishing_method"`
 }
 
 func (m *Book) Reset()                    { *m = Book{} }
 func (m *Book) String() string            { return proto.CompactTextString(m) }
 func (*Book) ProtoMessage()               {}
-func (*Book) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+func (*Book) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
+
+type isBook_PublishingMethod interface {
+	isBook_PublishingMethod()
+}
+
+type Book_SelfPublished struct {
+	SelfPublished bool `protobuf:"varint,5,opt,name=self_published,json=selfPublished,oneof"`
+}
+type Book_Publisher struct {
+	Publisher *Publisher `protobuf:"bytes,6,opt,name=publisher,oneof"`
+}
+
+func (*Book_SelfPublished) isBook_PublishingMethod() {}
+func (*Book_Publisher) isBook_PublishingMethod()     {}
+
+func (m *Book) GetPublishingMethod() isBook_PublishingMethod {
+	if m != nil {
+		return m.PublishingMethod
+	}
+	return nil
+}
 
 func (m *Book) GetIsbn() int64 {
 	if m != nil {
@@ -67,14 +152,111 @@ func (m *Book) GetAuthor() string {
 	return ""
 }
 
+func (m *Book) GetBookType() BookType {
+	if m != nil {
+		return m.BookType
+	}
+	return BookType_HARDCOVER
+}
+
+func (m *Book) GetSelfPublished() bool {
+	if x, ok := m.GetPublishingMethod().(*Book_SelfPublished); ok {
+		return x.SelfPublished
+	}
+	return false
+}
+
+func (m *Book) GetPublisher() *Publisher {
+	if x, ok := m.GetPublishingMethod().(*Book_Publisher); ok {
+		return x.Publisher
+	}
+	return nil
+}
+
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*Book) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _Book_OneofMarshaler, _Book_OneofUnmarshaler, _Book_OneofSizer, []interface{}{
+		(*Book_SelfPublished)(nil),
+		(*Book_Publisher)(nil),
+	}
+}
+
+func _Book_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*Book)
+	// publishing_method
+	switch x := m.PublishingMethod.(type) {
+	case *Book_SelfPublished:
+		t := uint64(0)
+		if x.SelfPublished {
+			t = 1
+		}
+		b.EncodeVarint(5<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case *Book_Publisher:
+		b.EncodeVarint(6<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Publisher); err != nil {
+			return err
+		}
+	case nil:
+	default:
+		return fmt.Errorf("Book.PublishingMethod has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _Book_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*Book)
+	switch tag {
+	case 5: // publishing_method.self_published
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.PublishingMethod = &Book_SelfPublished{x != 0}
+		return true, err
+	case 6: // publishing_method.publisher
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(Publisher)
+		err := b.DecodeMessage(msg)
+		m.PublishingMethod = &Book_Publisher{msg}
+		return true, err
+	default:
+		return false, nil
+	}
+}
+
+func _Book_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*Book)
+	// publishing_method
+	switch x := m.PublishingMethod.(type) {
+	case *Book_SelfPublished:
+		n += proto.SizeVarint(5<<3 | proto.WireVarint)
+		n += 1
+	case *Book_Publisher:
+		s := proto.Size(x.Publisher)
+		n += proto.SizeVarint(6<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
+}
+
+// GetBookRequest is the input to the GetBook method.
 type GetBookRequest struct {
+	// Isbn is the ISBN with which
+	// to match against the ISBN of a book in the library.
 	Isbn int64 `protobuf:"varint,1,opt,name=isbn" json:"isbn,omitempty"`
 }
 
 func (m *GetBookRequest) Reset()                    { *m = GetBookRequest{} }
 func (m *GetBookRequest) String() string            { return proto.CompactTextString(m) }
 func (*GetBookRequest) ProtoMessage()               {}
-func (*GetBookRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
+func (*GetBookRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
 
 func (m *GetBookRequest) GetIsbn() int64 {
 	if m != nil {
@@ -83,14 +265,17 @@ func (m *GetBookRequest) GetIsbn() int64 {
 	return 0
 }
 
+// QueryBooksRequest is the input to the QueryBooks method.
 type QueryBooksRequest struct {
+	// AuthorPrefix is the prefix with which
+	// to match against the author of a book in the library.
 	AuthorPrefix string `protobuf:"bytes,1,opt,name=author_prefix,json=authorPrefix" json:"author_prefix,omitempty"`
 }
 
 func (m *QueryBooksRequest) Reset()                    { *m = QueryBooksRequest{} }
 func (m *QueryBooksRequest) String() string            { return proto.CompactTextString(m) }
 func (*QueryBooksRequest) ProtoMessage()               {}
-func (*QueryBooksRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
+func (*QueryBooksRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
 
 func (m *QueryBooksRequest) GetAuthorPrefix() string {
 	if m != nil {
@@ -100,9 +285,11 @@ func (m *QueryBooksRequest) GetAuthorPrefix() string {
 }
 
 func init() {
+	proto.RegisterType((*Publisher)(nil), "library.Publisher")
 	proto.RegisterType((*Book)(nil), "library.Book")
 	proto.RegisterType((*GetBookRequest)(nil), "library.GetBookRequest")
 	proto.RegisterType((*QueryBooksRequest)(nil), "library.QueryBooksRequest")
+	proto.RegisterEnum("library.BookType", BookType_name, BookType_value)
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -116,7 +303,13 @@ const _ = grpc.SupportPackageIsVersion4
 // Client API for BookService service
 
 type BookServiceClient interface {
+	// GetBook returns a Book from the library
+	// that matches the ISBN provided, if found.
+	// Otherwise it returns a NotFound error.
 	GetBook(ctx context.Context, in *GetBookRequest, opts ...grpc.CallOption) (*Book, error)
+	// QueryBooks returns all Books whos author
+	// matches the author prefix provided, as a stream
+	// of Books.
 	QueryBooks(ctx context.Context, in *QueryBooksRequest, opts ...grpc.CallOption) (BookService_QueryBooksClient, error)
 }
 
@@ -172,7 +365,13 @@ func (x *bookServiceQueryBooksClient) Recv() (*Book, error) {
 // Server API for BookService service
 
 type BookServiceServer interface {
+	// GetBook returns a Book from the library
+	// that matches the ISBN provided, if found.
+	// Otherwise it returns a NotFound error.
 	GetBook(context.Context, *GetBookRequest) (*Book, error)
+	// QueryBooks returns all Books whos author
+	// matches the author prefix provided, as a stream
+	// of Books.
 	QueryBooks(*QueryBooksRequest, BookService_QueryBooksServer) error
 }
 
@@ -241,20 +440,29 @@ var _BookService_serviceDesc = grpc.ServiceDesc{
 func init() { proto.RegisterFile("proto/library/book_service.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 225 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x28, 0x28, 0xca, 0x2f,
-	0xc9, 0xd7, 0xcf, 0xc9, 0x4c, 0x2a, 0x4a, 0x2c, 0xaa, 0xd4, 0x4f, 0xca, 0xcf, 0xcf, 0x8e, 0x2f,
-	0x4e, 0x2d, 0x2a, 0xcb, 0x4c, 0x4e, 0xd5, 0x03, 0x4b, 0x09, 0xb1, 0x43, 0xe5, 0x94, 0x3c, 0xb8,
-	0x58, 0x9c, 0xf2, 0xf3, 0xb3, 0x85, 0x84, 0xb8, 0x58, 0x32, 0x8b, 0x93, 0xf2, 0x24, 0x18, 0x15,
-	0x18, 0x35, 0x98, 0x83, 0xc0, 0x6c, 0x21, 0x11, 0x2e, 0xd6, 0x92, 0xcc, 0x92, 0x9c, 0x54, 0x09,
-	0x26, 0x05, 0x46, 0x0d, 0xce, 0x20, 0x08, 0x47, 0x48, 0x8c, 0x8b, 0x2d, 0xb1, 0xb4, 0x24, 0x23,
-	0xbf, 0x48, 0x82, 0x19, 0x2c, 0x0c, 0xe5, 0x29, 0xa9, 0x70, 0xf1, 0xb9, 0xa7, 0x96, 0x80, 0x0c,
-	0x0b, 0x4a, 0x2d, 0x2c, 0x4d, 0x2d, 0x2e, 0xc1, 0x66, 0xa6, 0x92, 0x05, 0x97, 0x60, 0x60, 0x69,
-	0x6a, 0x51, 0x25, 0x48, 0x5d, 0x31, 0x4c, 0xa1, 0x32, 0x17, 0x2f, 0xc4, 0x90, 0xf8, 0x82, 0xa2,
-	0xd4, 0xb4, 0xcc, 0x0a, 0xb0, 0x0e, 0xce, 0x20, 0x1e, 0x88, 0x60, 0x00, 0x58, 0xcc, 0xa8, 0x9e,
-	0x8b, 0x1b, 0xa4, 0x29, 0x18, 0xe2, 0x0f, 0x21, 0x63, 0x2e, 0x76, 0xa8, 0x75, 0x42, 0xe2, 0x7a,
-	0x50, 0xdf, 0xe8, 0xa1, 0x3a, 0x40, 0x8a, 0x17, 0x2e, 0x01, 0x12, 0x55, 0x62, 0x10, 0xb2, 0xe6,
-	0xe2, 0x42, 0xd8, 0x2e, 0x24, 0x05, 0x97, 0xc6, 0x70, 0x12, 0x86, 0x56, 0x03, 0xc6, 0x24, 0x36,
-	0x70, 0xd0, 0x19, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0x03, 0xa4, 0x18, 0x03, 0x5e, 0x01, 0x00,
-	0x00,
+	// 378 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x92, 0xcf, 0x8f, 0x93, 0x40,
+	0x14, 0xc7, 0x99, 0xdd, 0x6e, 0xb7, 0xbc, 0x95, 0xa6, 0x1d, 0x8d, 0x92, 0xbd, 0x48, 0xd0, 0x44,
+	0xe2, 0x81, 0x35, 0xec, 0x41, 0x13, 0x4f, 0xb0, 0x6d, 0xac, 0xe9, 0x01, 0x1c, 0x7f, 0x5c, 0x49,
+	0xb1, 0x53, 0x4b, 0x4a, 0x3b, 0x38, 0x0c, 0x46, 0x4e, 0xfe, 0xbf, 0xfe, 0x15, 0x66, 0x86, 0x81,
+	0xa6, 0xa9, 0xb7, 0xf7, 0x7d, 0xdf, 0xf7, 0xe0, 0xf3, 0x7d, 0x00, 0x4e, 0xc9, 0x99, 0x60, 0x77,
+	0x45, 0x9e, 0xf1, 0x15, 0x6f, 0xee, 0x32, 0xc6, 0x76, 0x69, 0x45, 0xf9, 0xaf, 0xfc, 0x3b, 0xf5,
+	0x95, 0x85, 0xaf, 0xb5, 0xe7, 0x3e, 0x07, 0x33, 0xa9, 0xb3, 0x22, 0xaf, 0xb6, 0x94, 0x63, 0x0c,
+	0x83, 0xc3, 0x6a, 0x4f, 0x6d, 0xe4, 0x20, 0xcf, 0x24, 0xaa, 0x76, 0xff, 0x22, 0x18, 0x44, 0x8c,
+	0xed, 0xa4, 0x99, 0x57, 0xd9, 0x41, 0x99, 0x97, 0x44, 0xd5, 0xf8, 0x09, 0x5c, 0x89, 0x5c, 0x14,
+	0xd4, 0xbe, 0x50, 0x1b, 0xad, 0xc0, 0x4f, 0x61, 0xb8, 0xaa, 0xc5, 0x96, 0x71, 0xfb, 0x52, 0xb5,
+	0xb5, 0xc2, 0x3e, 0x98, 0x0a, 0x45, 0x34, 0x25, 0xb5, 0x07, 0x0e, 0xf2, 0xc6, 0xc1, 0xd4, 0xd7,
+	0x20, 0xbe, 0x7c, 0xc7, 0x97, 0xa6, 0xa4, 0x64, 0x94, 0xe9, 0x0a, 0xbf, 0x82, 0x71, 0x45, 0x8b,
+	0x4d, 0x5a, 0x6a, 0xc0, 0xb5, 0x7d, 0xe5, 0x20, 0x6f, 0xb4, 0x30, 0x88, 0x25, 0xfb, 0x1d, 0xf7,
+	0x1a, 0x07, 0x60, 0x76, 0x33, 0xdc, 0x1e, 0x3a, 0xc8, 0xbb, 0x09, 0x70, 0xff, 0xe0, 0x3e, 0xde,
+	0xc2, 0x20, 0xc7, 0xb1, 0xe8, 0x31, 0x4c, 0xb5, 0xc8, 0x0f, 0x3f, 0xd2, 0x3d, 0x15, 0x5b, 0xb6,
+	0x76, 0x5f, 0xc2, 0xf8, 0x03, 0x15, 0x12, 0x85, 0xd0, 0x9f, 0x35, 0xad, 0xc4, 0xff, 0x52, 0xbb,
+	0xef, 0x60, 0xfa, 0xa9, 0xa6, 0xbc, 0x91, 0x73, 0x55, 0x37, 0xf8, 0x02, 0xac, 0x36, 0x66, 0x5a,
+	0x72, 0xba, 0xc9, 0x7f, 0xeb, 0x23, 0x3e, 0x6a, 0x9b, 0x89, 0xea, 0xbd, 0x7e, 0x0b, 0xa3, 0x2e,
+	0x27, 0xb6, 0xc0, 0x5c, 0x84, 0x64, 0xf6, 0x10, 0x7f, 0x9b, 0x93, 0x89, 0x21, 0x65, 0x12, 0x26,
+	0x73, 0x12, 0x85, 0x0f, 0xcb, 0x09, 0x92, 0x32, 0xfc, 0x3a, 0xfb, 0x18, 0x47, 0x71, 0xbc, 0x9c,
+	0x5c, 0x04, 0x7f, 0xe0, 0x46, 0x2e, 0x7e, 0x6e, 0x3f, 0x22, 0xbe, 0x87, 0x6b, 0xcd, 0x89, 0x9f,
+	0xf5, 0x41, 0x4f, 0xc9, 0x6f, 0xad, 0x93, 0xd3, 0xba, 0x06, 0x7e, 0x0f, 0x70, 0xc4, 0xc6, 0xb7,
+	0xbd, 0x7d, 0x96, 0xe5, 0x6c, 0xf5, 0x0d, 0xca, 0x86, 0xea, 0xbf, 0xb9, 0xff, 0x17, 0x00, 0x00,
+	0xff, 0xff, 0x8a, 0xdf, 0xf0, 0x15, 0x5b, 0x02, 0x00, 0x00,
 }

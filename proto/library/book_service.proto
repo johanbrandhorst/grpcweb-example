@@ -1,22 +1,71 @@
 syntax = "proto3";
 
+// Package library exposes a list of books
+// over a gRPC API.
 package library;
 
+// BookType describes the different types
+// a book in the library can be.
+enum BookType {
+  // Hardcover is a book with a hard back.
+  HARDCOVER = 0;
+  // Paperback is a book with a soft back.
+  PAPERBACK = 1;
+  // Audiobook is an audio recording of the book.
+  AUDIOBOOK = 2;
+}
+
+// Publisher describes a Book Publisher.
+message Publisher {
+  // Name is the name of the Publisher.
+  string name = 1;
+}
+
+// Book represents a book in the library.
 message Book {
+  // Isbn is the ISBN number of the book.
   int64 isbn = 1;
+  // Title is the title of the book.
   string title = 2;
+  // Author is the author of the book.
   string author = 3;
+  // BookType is the type of the book.
+  BookType book_type = 4;
+  // PublishingMethod is the publishing method
+  // used for this Book.
+  oneof publishing_method {
+    // SelfPublished means this book was
+    // self published.
+    bool self_published = 5;
+    // Publisher means this book was published
+    // through a Publisher.
+    Publisher publisher = 6;
+  }
 }
 
+// GetBookRequest is the input to the GetBook method.
 message GetBookRequest {
+  // Isbn is the ISBN with which
+  // to match against the ISBN of a book in the library.
   int64 isbn = 1;
 }
 
+// QueryBooksRequest is the input to the QueryBooks method.
 message QueryBooksRequest {
+  // AuthorPrefix is the prefix with which
+  // to match against the author of a book in the library.
   string author_prefix = 1;
 }
 
+// BookService exposes GetBook and QueryBooks,
+// which allow querying of the library.
 service BookService {
+  // GetBook returns a Book from the library
+  // that matches the ISBN provided, if found.
+  // Otherwise it returns a NotFound error.
   rpc GetBook(GetBookRequest) returns (Book) {}
+  // QueryBooks returns all Books whos author
+  // matches the author prefix provided, as a stream
+  // of Books.
   rpc QueryBooks(QueryBooksRequest) returns (stream Book) {}
 }

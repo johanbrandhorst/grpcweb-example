@@ -19,6 +19,20 @@ import (
 var document = js.Global.Get("document")
 var baseURI = strings.TrimSuffix(document.Get("baseURI").String(), "/")
 
+func printBook(b *library.Book) {
+	var publisher string
+	switch b.GetPublishingMethod().(type) {
+	case *library.Book_Publisher:
+		publisher = b.GetPublisher().GetName()
+	case *library.Book_SelfPublished:
+		publisher = "Self Published"
+	default:
+		println(b.GetPublishingMethod())
+	}
+
+	println(b.GetAuthor(), b.GetIsbn(), b.GetTitle(), b.GetBookType().String(), publisher)
+}
+
 func main() {
 	ctx := context.Background()
 	client := library.NewBookServiceClient(baseURI)
@@ -28,7 +42,7 @@ func main() {
 		return
 	}
 
-	println(book.GetAuthor(), book.GetIsbn(), book.GetTitle())
+	printBook(book)
 
 	srv, err := client.QueryBooks(ctx, library.NewQueryBooksRequest("George"))
 	if err != nil {
@@ -41,13 +55,34 @@ func main() {
 		if err != nil {
 			if err == io.EOF {
 				// Success!
-				return
+				break
 			}
 
 			println("Got request error:", err.Error())
-			return
+			break
 		}
 
-		println(book.GetAuthor(), book.GetIsbn(), book.GetTitle())
+		printBook(book)
+	}
+
+	srv, err = client.QueryBooks(ctx, library.NewQueryBooksRequest("Lisa"))
+	if err != nil {
+		println("Got request error:", err)
+		return
+	}
+
+	for {
+		book, err := srv.Recv()
+		if err != nil {
+			if err == io.EOF {
+				// Success!
+				break
+			}
+
+			println("Got request error:", err.Error())
+			break
+		}
+
+		printBook(book)
 	}
 }

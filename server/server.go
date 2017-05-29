@@ -18,24 +18,57 @@ type BookService struct{}
 
 var books = []*library.Book{
 	&library.Book{
-		Isbn:   60929871,
-		Title:  "Brave New World",
-		Author: "Aldous Huxley",
+		Isbn:     60929871,
+		Title:    "Brave New World",
+		Author:   "Aldous Huxley",
+		BookType: library.BookType_HARDCOVER,
+		PublishingMethod: &library.Book_Publisher{
+			Publisher: &library.Publisher{
+				Name: "Chatto & Windus",
+			},
+		},
 	},
 	&library.Book{
-		Isbn:   140009728,
-		Title:  "Nineteen Eighty-Four",
-		Author: "George Orwell",
+		Isbn:     140009728,
+		Title:    "Nineteen Eighty-Four",
+		Author:   "George Orwell",
+		BookType: library.BookType_PAPERBACK,
+		PublishingMethod: &library.Book_Publisher{
+			Publisher: &library.Publisher{
+				Name: "Secker & Warburg",
+			},
+		},
 	},
 	&library.Book{
-		Isbn:   9780140301694,
-		Title:  "Alice's Adventures in Wonderland",
-		Author: "Lewis Carroll",
+		Isbn:     9780140301694,
+		Title:    "Alice's Adventures in Wonderland",
+		Author:   "Lewis Carroll",
+		BookType: library.BookType_AUDIOBOOK,
+		PublishingMethod: &library.Book_Publisher{
+			Publisher: &library.Publisher{
+				Name: "Macmillan",
+			},
+		},
 	},
 	&library.Book{
-		Isbn:   140008381,
-		Title:  "Animal Farm",
-		Author: "George Orwell",
+		Isbn:     140008381,
+		Title:    "Animal Farm",
+		Author:   "George Orwell",
+		BookType: library.BookType_HARDCOVER,
+		PublishingMethod: &library.Book_Publisher{
+			Publisher: &library.Publisher{
+				Name: "Secker & Warburg",
+			},
+		},
+	},
+	&library.Book{
+		Isbn:     1501107739,
+		Title:    "Still Alice",
+		Author:   "Lisa Genova",
+		BookType: library.BookType_PAPERBACK,
+		PublishingMethod: &library.Book_SelfPublished{
+			SelfPublished: true,
+		},
 	},
 }
 
