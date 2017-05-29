@@ -19,13 +19,13 @@
 package library
 
 import js "github.com/gopherjs/gopherjs/js"
-import grpcweb "github.com/johanbrandhorst/gopherjs-improbable-grpc-web"
+import jspb "github.com/johanbrandhorst/jspb"
 import google_protobuf "github.com/johanbrandhorst/protoc-gen-gopherjs/ptypes/timestamp"
 
 import (
 	context "context"
 
-	grpcweb1 "github.com/johanbrandhorst/gopherjs-improbable-grpc-web"
+	grpcweb "github.com/johanbrandhorst/gopherjs-improbable-grpc-web"
 )
 
 // BookType describes the different types
@@ -86,11 +86,11 @@ func (m *Publisher) SetName(v string) {
 }
 
 func (m *Publisher) serialize() (rawBytes []byte, err error) {
-	return grpcweb.Serialize(m)
+	return jspb.Serialize(m)
 }
 
 func deserializePublisher(rawBytes []byte) (*Publisher, error) {
-	obj, err := grpcweb.Deserialize(js.Global.Get("proto").Get("library").Get("Publisher"), rawBytes)
+	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("library").Get("Publisher"), rawBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -254,11 +254,11 @@ func (m *Book) SetPublicationDate(v *google_protobuf.Timestamp) {
 }
 
 func (m *Book) serialize() (rawBytes []byte, err error) {
-	return grpcweb.Serialize(m)
+	return jspb.Serialize(m)
 }
 
 func deserializeBook(rawBytes []byte) (*Book, error) {
-	obj, err := grpcweb.Deserialize(js.Global.Get("proto").Get("library").Get("Book"), rawBytes)
+	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("library").Get("Book"), rawBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -301,11 +301,11 @@ func (m *GetBookRequest) SetIsbn(v int64) {
 }
 
 func (m *GetBookRequest) serialize() (rawBytes []byte, err error) {
-	return grpcweb.Serialize(m)
+	return jspb.Serialize(m)
 }
 
 func deserializeGetBookRequest(rawBytes []byte) (*GetBookRequest, error) {
-	obj, err := grpcweb.Deserialize(js.Global.Get("proto").Get("library").Get("GetBookRequest"), rawBytes)
+	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("library").Get("GetBookRequest"), rawBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -348,11 +348,11 @@ func (m *QueryBooksRequest) SetAuthorPrefix(v string) {
 }
 
 func (m *QueryBooksRequest) serialize() (rawBytes []byte, err error) {
-	return grpcweb.Serialize(m)
+	return jspb.Serialize(m)
 }
 
 func deserializeQueryBooksRequest(rawBytes []byte) (*QueryBooksRequest, error) {
-	obj, err := grpcweb.Deserialize(js.Global.Get("proto").Get("library").Get("QueryBooksRequest"), rawBytes)
+	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("library").Get("QueryBooksRequest"), rawBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -364,11 +364,11 @@ func deserializeQueryBooksRequest(rawBytes []byte) (*QueryBooksRequest, error) {
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
-var _ grpcweb1.Client
+var _ grpcweb.Client
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpcweb package it is being compiled against.
-const _ = grpcweb1.GrpcWebPackageIsVersion1
+const _ = grpcweb.GrpcWebPackageIsVersion1
 
 // Client API for BookService service
 
@@ -376,24 +376,24 @@ type BookServiceClient interface {
 	// GetBook returns a Book from the library
 	// that matches the ISBN provided, if found.
 	// Otherwise it returns a NotFound error.
-	GetBook(ctx context.Context, in *GetBookRequest, opts ...grpcweb1.CallOption) (*Book, error)
+	GetBook(ctx context.Context, in *GetBookRequest, opts ...grpcweb.CallOption) (*Book, error)
 	// QueryBooks returns all Books whos author
 	// matches the author prefix provided, as a stream
 	// of Books.
-	QueryBooks(ctx context.Context, in *QueryBooksRequest, opts ...grpcweb1.CallOption) (BookService_QueryBooksClient, error)
+	QueryBooks(ctx context.Context, in *QueryBooksRequest, opts ...grpcweb.CallOption) (BookService_QueryBooksClient, error)
 }
 
 type bookServiceClient struct {
-	client *grpcweb1.Client
+	client *grpcweb.Client
 }
 
 func NewBookServiceClient(hostname string, opts ...grpcweb.DialOption) BookServiceClient {
 	return &bookServiceClient{
-		client: grpcweb1.NewClient(hostname, "library.BookService", opts...),
+		client: grpcweb.NewClient(hostname, "library.BookService", opts...),
 	}
 }
 
-func (c *bookServiceClient) GetBook(ctx context.Context, in *GetBookRequest, opts ...grpcweb1.CallOption) (*Book, error) {
+func (c *bookServiceClient) GetBook(ctx context.Context, in *GetBookRequest, opts ...grpcweb.CallOption) (*Book, error) {
 	req, err := in.serialize()
 	if err != nil {
 		return nil, err
@@ -405,7 +405,7 @@ func (c *bookServiceClient) GetBook(ctx context.Context, in *GetBookRequest, opt
 	return deserializeBook(resp)
 }
 
-func (c *bookServiceClient) QueryBooks(ctx context.Context, in *QueryBooksRequest, opts ...grpcweb1.CallOption) (BookService_QueryBooksClient, error) {
+func (c *bookServiceClient) QueryBooks(ctx context.Context, in *QueryBooksRequest, opts ...grpcweb.CallOption) (BookService_QueryBooksClient, error) {
 	req, err := in.serialize()
 	if err != nil {
 		return nil, err
@@ -424,7 +424,7 @@ type BookService_QueryBooksClient interface {
 }
 
 type bookServiceQueryBooksClient struct {
-	stream *grpcweb1.StreamClient
+	stream *grpcweb.StreamClient
 }
 
 func (x *bookServiceQueryBooksClient) Recv() (*Book, error) {
