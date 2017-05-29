@@ -13,7 +13,7 @@ It has these top-level messages:
 package timestamp
 
 import js "github.com/gopherjs/gopherjs/js"
-import grpcweb "github.com/johanbrandhorst/gopherjs-improbable-grpc-web"
+import jspb "github.com/johanbrandhorst/jspb"
 
 // A Timestamp represents a point in time independent of any time zone
 // or calendar, represented as seconds and fractions of seconds at
@@ -151,11 +151,11 @@ func (m *Timestamp) SetNanos(v int32) {
 }
 
 func (m *Timestamp) serialize() (rawBytes []byte, err error) {
-	return grpcweb.Serialize(m)
+	return jspb.Serialize(m)
 }
 
 func deserializeTimestamp(rawBytes []byte) (*Timestamp, error) {
-	obj, err := grpcweb.Deserialize(js.Global.Get("proto").Get("google").Get("protobuf").Get("Timestamp"), rawBytes)
+	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("google").Get("protobuf").Get("Timestamp"), rawBytes)
 	if err != nil {
 		return nil, err
 	}

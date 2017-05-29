@@ -51,10 +51,10 @@
 			"revisionTime": "2017-04-27T15:07:31Z"
 		},
 		{
-			"checksumSHA1": "G6JhzF6JUqnUl3H3t4f4VNWDJ84=",
+			"checksumSHA1": "+3y1PXbJx7XbY2aZd55P1ZMnFnA=",
 			"path": "github.com/johanbrandhorst/gopherjs-improbable-grpc-web",
-			"revision": "29d251a7010053421acd500c95f8e605d880ab13",
-			"revisionTime": "2017-05-29T16:38:38Z"
+			"revision": "7bc141419848e947d9af8af7c197de1a22524678",
+			"revisionTime": "2017-05-29T22:37:39Z"
 		},
 		{
 			"checksumSHA1": "ovsPk4fLfWsCO5KBFYxrI23zMZc=",
@@ -69,28 +69,34 @@
 			"revisionTime": "2017-05-27T23:08:34Z"
 		},
 		{
-			"checksumSHA1": "TA5Bd1G+PoOoPfKfu1d7jMlrjKk=",
-			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs",
-			"revision": "c7fa67645b25ff5957d3d82a325b58d82e2d3f79",
-			"revisionTime": "2017-05-29T17:35:12Z"
+			"checksumSHA1": "paAg+4cI0XTq1D553EH6+Pzs5PQ=",
+			"path": "github.com/johanbrandhorst/jspb",
+			"revision": "ab8931a07a83e6fcef08420f10faa9b959eb647b",
+			"revisionTime": "2017-05-29T22:21:58Z"
 		},
 		{
-			"checksumSHA1": "i/XVnw8G1wv9Cpd77yfKBk2YhIg=",
+			"checksumSHA1": "TA5Bd1G+PoOoPfKfu1d7jMlrjKk=",
+			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs",
+			"revision": "cc6397f69d31a46cab46eb6c12595442a755bbd8",
+			"revisionTime": "2017-05-29T22:35:08Z"
+		},
+		{
+			"checksumSHA1": "nh68ofoA4sQz3EtegzaFITdNHB4=",
 			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs/generator",
-			"revision": "c7fa67645b25ff5957d3d82a325b58d82e2d3f79",
-			"revisionTime": "2017-05-29T17:35:12Z"
+			"revision": "cc6397f69d31a46cab46eb6c12595442a755bbd8",
+			"revisionTime": "2017-05-29T22:35:08Z"
 		},
 		{
 			"checksumSHA1": "XpFhV9nd3YIgPxXemlqzbmX5gCY=",
 			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs/grpc",
-			"revision": "c7fa67645b25ff5957d3d82a325b58d82e2d3f79",
-			"revisionTime": "2017-05-29T17:35:12Z"
+			"revision": "cc6397f69d31a46cab46eb6c12595442a755bbd8",
+			"revisionTime": "2017-05-29T22:35:08Z"
 		},
 		{
-			"checksumSHA1": "fXM/mubbTYx7ugQ3TcI1xKzCXs4=",
+			"checksumSHA1": "tqI4L3rL957ArK9iAvWKscx18uI=",
 			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs/ptypes/timestamp",
-			"revision": "224b3d9c0e5e39199ae0eaa11df666db11393883",
-			"revisionTime": "2017-05-29T19:21:14Z"
+			"revision": "cc6397f69d31a46cab46eb6c12595442a755bbd8",
+			"revisionTime": "2017-05-29T22:35:08Z"
 		},
 		{
 			"checksumSHA1": "naf+sai8rdVYJ9ozLllNMMwE9aY=",

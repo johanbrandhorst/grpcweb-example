@@ -24,8 +24,9 @@
 package grpcweb
 
 import (
-	// Include JS file
+	// Include JS files
 	_ "github.com/johanbrandhorst/gopherjs-improbable-grpc-web/grpcwebjs"
+	_ "github.com/johanbrandhorst/jspb"
 )
 
 // GrpcWebPackageIsVersion1 is referenced from generated protocol buffer files
