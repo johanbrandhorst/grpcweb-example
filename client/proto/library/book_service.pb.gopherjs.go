@@ -25,7 +25,7 @@ import google_protobuf "github.com/johanbrandhorst/protoc-gen-gopherjs/ptypes/ti
 import (
 	context "context"
 
-	grpcweb "github.com/johanbrandhorst/gopherjs-improbable-grpc-web"
+	grpcweb "github.com/johanbrandhorst/grpcweb"
 )
 
 // BookType describes the different types

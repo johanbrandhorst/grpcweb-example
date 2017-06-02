@@ -51,12 +51,6 @@
 			"revisionTime": "2017-04-27T15:07:31Z"
 		},
 		{
-			"checksumSHA1": "+3y1PXbJx7XbY2aZd55P1ZMnFnA=",
-			"path": "github.com/johanbrandhorst/gopherjs-improbable-grpc-web",
-			"revision": "7bc141419848e947d9af8af7c197de1a22524678",
-			"revisionTime": "2017-05-29T22:37:39Z"
-		},
-		{
 			"checksumSHA1": "ovsPk4fLfWsCO5KBFYxrI23zMZc=",
 			"path": "github.com/johanbrandhorst/gopherjs-improbable-grpc-web/grpcwebjs",
 			"revision": "b925a26281a72296eb85c6221ae524a67142a978",
@@ -69,6 +63,12 @@
 			"revisionTime": "2017-05-27T23:08:34Z"
 		},
 		{
+			"checksumSHA1": "w8UiGqAXdHcGzxReHjzTUyWZuXI=",
+			"path": "github.com/johanbrandhorst/grpcweb",
+			"revision": "645b3538c47931b2eacb4b26b37d23e809e1a98a",
+			"revisionTime": "2017-06-02T19:19:01Z"
+		},
+		{
 			"checksumSHA1": "paAg+4cI0XTq1D553EH6+Pzs5PQ=",
 			"path": "github.com/johanbrandhorst/jspb",
 			"revision": "ab8931a07a83e6fcef08420f10faa9b959eb647b",
@@ -77,8 +77,8 @@
 		{
 			"checksumSHA1": "TA5Bd1G+PoOoPfKfu1d7jMlrjKk=",
 			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs",
-			"revision": "cc6397f69d31a46cab46eb6c12595442a755bbd8",
-			"revisionTime": "2017-05-29T22:35:08Z"
+			"revision": "52da95d2bbdb9146daf2f61589eb1716647d8f37",
+			"revisionTime": "2017-06-02T19:22:09Z"
 		},
 		{
 			"checksumSHA1": "nh68ofoA4sQz3EtegzaFITdNHB4=",
@@ -273,5 +273,5 @@
 			"revisionTime": "2017-04-28T21:28:53Z"
 		}
 	],
-	"rootPath": "github.com/johanbrandhorst/gopherjs-improbable-grpc-web-example"
+	"rootPath": "github.com/johanbrandhorst/grpcweb-example"
 }
