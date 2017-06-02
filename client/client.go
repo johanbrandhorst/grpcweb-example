@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/gopherjs/gopherjs/js"
-	"github.com/johanbrandhorst/gopherjs-improbable-grpc-web-example/client/proto/library"
+	"github.com/johanbrandhorst/grpcweb-example/client/proto/library"
 )
 
 var document = js.Global.Get("document")

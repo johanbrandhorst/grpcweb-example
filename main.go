@@ -13,9 +13,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 
-	"github.com/johanbrandhorst/gopherjs-improbable-grpc-web-example/client/compiled"
-	"github.com/johanbrandhorst/gopherjs-improbable-grpc-web-example/server"
-	"github.com/johanbrandhorst/gopherjs-improbable-grpc-web-example/server/proto/library"
+	"github.com/johanbrandhorst/grpcweb-example/client/compiled"
+	"github.com/johanbrandhorst/grpcweb-example/server"
+	"github.com/johanbrandhorst/grpcweb-example/server/proto/library"
 )
 
 var logger *logrus.Logger

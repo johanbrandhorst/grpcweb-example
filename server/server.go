@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/johanbrandhorst/gopherjs-improbable-grpc-web-example/server/proto/library"
+	"github.com/johanbrandhorst/grpcweb-example/server/proto/library"
 )
 
 type BookService struct{}
