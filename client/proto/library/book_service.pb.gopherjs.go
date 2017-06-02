@@ -85,11 +85,13 @@ func (m *Publisher) SetName(v string) {
 	m.Call("setName", v)
 }
 
-func (m *Publisher) serialize() (rawBytes []byte, err error) {
+// Serialize marshals Publisher to a slice of bytes.
+func (m *Publisher) Serialize() (rawBytes []byte, err error) {
 	return jspb.Serialize(m)
 }
 
-func deserializePublisher(rawBytes []byte) (*Publisher, error) {
+// DeserializePublisher unmarshals a Publisher from a slice of bytes.
+func DeserializePublisher(rawBytes []byte) (*Publisher, error) {
 	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("library").Get("Publisher"), rawBytes)
 	if err != nil {
 		return nil, err
@@ -253,11 +255,13 @@ func (m *Book) SetPublicationDate(v *google_protobuf.Timestamp) {
 	m.Call("setPublicationDate", v)
 }
 
-func (m *Book) serialize() (rawBytes []byte, err error) {
+// Serialize marshals Book to a slice of bytes.
+func (m *Book) Serialize() (rawBytes []byte, err error) {
 	return jspb.Serialize(m)
 }
 
-func deserializeBook(rawBytes []byte) (*Book, error) {
+// DeserializeBook unmarshals a Book from a slice of bytes.
+func DeserializeBook(rawBytes []byte) (*Book, error) {
 	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("library").Get("Book"), rawBytes)
 	if err != nil {
 		return nil, err
@@ -300,11 +304,13 @@ func (m *GetBookRequest) SetIsbn(v int64) {
 	m.Call("setIsbn", v)
 }
 
-func (m *GetBookRequest) serialize() (rawBytes []byte, err error) {
+// Serialize marshals GetBookRequest to a slice of bytes.
+func (m *GetBookRequest) Serialize() (rawBytes []byte, err error) {
 	return jspb.Serialize(m)
 }
 
-func deserializeGetBookRequest(rawBytes []byte) (*GetBookRequest, error) {
+// DeserializeGetBookRequest unmarshals a GetBookRequest from a slice of bytes.
+func DeserializeGetBookRequest(rawBytes []byte) (*GetBookRequest, error) {
 	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("library").Get("GetBookRequest"), rawBytes)
 	if err != nil {
 		return nil, err
@@ -347,11 +353,13 @@ func (m *QueryBooksRequest) SetAuthorPrefix(v string) {
 	m.Call("setAuthorPrefix", v)
 }
 
-func (m *QueryBooksRequest) serialize() (rawBytes []byte, err error) {
+// Serialize marshals QueryBooksRequest to a slice of bytes.
+func (m *QueryBooksRequest) Serialize() (rawBytes []byte, err error) {
 	return jspb.Serialize(m)
 }
 
-func deserializeQueryBooksRequest(rawBytes []byte) (*QueryBooksRequest, error) {
+// DeserializeQueryBooksRequest unmarshals a QueryBooksRequest from a slice of bytes.
+func DeserializeQueryBooksRequest(rawBytes []byte) (*QueryBooksRequest, error) {
 	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("library").Get("QueryBooksRequest"), rawBytes)
 	if err != nil {
 		return nil, err
@@ -394,7 +402,7 @@ func NewBookServiceClient(hostname string, opts ...grpcweb.DialOption) BookServi
 }
 
 func (c *bookServiceClient) GetBook(ctx context.Context, in *GetBookRequest, opts ...grpcweb.CallOption) (*Book, error) {
-	req, err := in.serialize()
+	req, err := in.Serialize()
 	if err != nil {
 		return nil, err
 	}
@@ -402,11 +410,11 @@ func (c *bookServiceClient) GetBook(ctx context.Context, in *GetBookRequest, opt
 	if err != nil {
 		return nil, err
 	}
-	return deserializeBook(resp)
+	return DeserializeBook(resp)
 }
 
 func (c *bookServiceClient) QueryBooks(ctx context.Context, in *QueryBooksRequest, opts ...grpcweb.CallOption) (BookService_QueryBooksClient, error) {
-	req, err := in.serialize()
+	req, err := in.Serialize()
 	if err != nil {
 		return nil, err
 	}
@@ -432,5 +440,5 @@ func (x *bookServiceQueryBooksClient) Recv() (*Book, error) {
 	if err != nil {
 		return nil, err
 	}
-	return deserializeBook(resp)
+	return DeserializeBook(resp)
 }
