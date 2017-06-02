@@ -63,10 +63,22 @@
 			"revisionTime": "2017-05-27T23:08:34Z"
 		},
 		{
-			"checksumSHA1": "w8UiGqAXdHcGzxReHjzTUyWZuXI=",
+			"checksumSHA1": "Wj5CHQuFwtzvJYDCSMDHO25RaR8=",
 			"path": "github.com/johanbrandhorst/grpcweb",
-			"revision": "645b3538c47931b2eacb4b26b37d23e809e1a98a",
-			"revisionTime": "2017-06-02T19:19:01Z"
+			"revision": "98b9ef21dbe36eb6b675f355122a0a4cf76f5874",
+			"revisionTime": "2017-06-02T19:39:41Z"
+		},
+		{
+			"checksumSHA1": "/8uzUuvKA0NjQ4uN2ImJ7RcC6JM=",
+			"path": "github.com/johanbrandhorst/grpcweb/grpcwebjs",
+			"revision": "98b9ef21dbe36eb6b675f355122a0a4cf76f5874",
+			"revisionTime": "2017-06-02T19:39:41Z"
+		},
+		{
+			"checksumSHA1": "W+p6G+ZJnV5A5Dcp/q/nV8I7ZuM=",
+			"path": "github.com/johanbrandhorst/grpcweb/status",
+			"revision": "98b9ef21dbe36eb6b675f355122a0a4cf76f5874",
+			"revisionTime": "2017-06-02T19:39:41Z"
 		},
 		{
 			"checksumSHA1": "paAg+4cI0XTq1D553EH6+Pzs5PQ=",
