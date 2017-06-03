@@ -9,4 +9,4 @@ RUN cd /go/src/github.com/johanbrandhorst/grpcweb-example && go build -o /app
 FROM broady/cacerts
 COPY --from=build-env /app /
 EXPOSE 443
-ENTRYPOINT ["/app", "--host", "demo.jbrandhorst.com"]
+ENTRYPOINT ["/app"]
