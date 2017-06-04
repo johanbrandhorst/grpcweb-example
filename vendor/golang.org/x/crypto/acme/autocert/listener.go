@@ -69,6 +69,7 @@ func (m *Manager) Listener() net.Listener {
 		m: m,
 		conf: &tls.Config{
 			GetCertificate: m.GetCertificate, // bonus: panic on nil m
+			NextProtos:     []string{"h2"},
 		},
 	}
 	ln.tcpListener, ln.tcpListenErr = net.Listen("tcp", ":443")
