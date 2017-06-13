@@ -41,7 +41,7 @@ func printBook(b *library.Book) {
 func main() {
 	ctx := context.Background()
 	client := library.NewBookServiceClient(baseURI)
-	book, err := client.GetBook(ctx, library.NewGetBookRequest(140008381))
+	book, err := client.GetBook(ctx, new(library.GetBookRequest).New(140008381))
 	if err != nil {
 		println("Got request error:", err.Error())
 		return
@@ -49,7 +49,7 @@ func main() {
 
 	printBook(book)
 
-	srv, err := client.QueryBooks(ctx, library.NewQueryBooksRequest("George"))
+	srv, err := client.QueryBooks(ctx, new(library.QueryBooksRequest).New("George"))
 	if err != nil {
 		println("Got request error:", err)
 		return
@@ -70,7 +70,7 @@ func main() {
 		printBook(book)
 	}
 
-	srv, err = client.QueryBooks(ctx, library.NewQueryBooksRequest("Lisa"))
+	srv, err = client.QueryBooks(ctx, new(library.QueryBooksRequest).New("Lisa"))
 	if err != nil {
 		println("Got request error:", err)
 		return

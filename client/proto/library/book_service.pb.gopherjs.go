@@ -61,10 +61,10 @@ type Publisher struct {
 	*js.Object
 }
 
-// NewPublisher creates a new Publisher.
+// New creates a new Publisher.
 // Name is the name of the Publisher.
-func NewPublisher(name string) *Publisher {
-	m := &Publisher{
+func (m *Publisher) New(name string) *Publisher {
+	m = &Publisher{
 		Object: js.Global.Get("proto").Get("library").Get("Publisher").New([]interface{}{
 			name,
 		}),
@@ -86,12 +86,12 @@ func (m *Publisher) SetName(v string) {
 }
 
 // Serialize marshals Publisher to a slice of bytes.
-func (m *Publisher) Serialize() (rawBytes []byte, err error) {
+func (m *Publisher) Serialize() ([]byte, error) {
 	return jspb.Serialize(m)
 }
 
-// DeserializePublisher unmarshals a Publisher from a slice of bytes.
-func DeserializePublisher(rawBytes []byte) (*Publisher, error) {
+// Deserialize unmarshals a Publisher from a slice of bytes.
+func (m *Publisher) Deserialize(rawBytes []byte) (*Publisher, error) {
 	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("library").Get("Publisher"), rawBytes)
 	if err != nil {
 		return nil, err
@@ -107,14 +107,14 @@ type Book struct {
 	*js.Object
 }
 
-// NewBook creates a new Book.
+// New creates a new Book.
 // Isbn is the ISBN number of the book.
 // Title is the title of the book.
 // Author is the author of the book.
 // BookType is the type of the book.
 // PublicationDate is the time of publication of the book.
-func NewBook(isbn int64, title string, author string, bookType BookType, publicationDate *google_protobuf.Timestamp) *Book {
-	m := &Book{
+func (m *Book) New(isbn int64, title string, author string, bookType BookType, publicationDate *google_protobuf.Timestamp) *Book {
+	m = &Book{
 		Object: js.Global.Get("proto").Get("library").Get("Book").New([]interface{}{
 			isbn,
 			title,
@@ -256,12 +256,12 @@ func (m *Book) SetPublicationDate(v *google_protobuf.Timestamp) {
 }
 
 // Serialize marshals Book to a slice of bytes.
-func (m *Book) Serialize() (rawBytes []byte, err error) {
+func (m *Book) Serialize() ([]byte, error) {
 	return jspb.Serialize(m)
 }
 
-// DeserializeBook unmarshals a Book from a slice of bytes.
-func DeserializeBook(rawBytes []byte) (*Book, error) {
+// Deserialize unmarshals a Book from a slice of bytes.
+func (m *Book) Deserialize(rawBytes []byte) (*Book, error) {
 	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("library").Get("Book"), rawBytes)
 	if err != nil {
 		return nil, err
@@ -277,11 +277,11 @@ type GetBookRequest struct {
 	*js.Object
 }
 
-// NewGetBookRequest creates a new GetBookRequest.
+// New creates a new GetBookRequest.
 // Isbn is the ISBN with which
 // to match against the ISBN of a book in the library.
-func NewGetBookRequest(isbn int64) *GetBookRequest {
-	m := &GetBookRequest{
+func (m *GetBookRequest) New(isbn int64) *GetBookRequest {
+	m = &GetBookRequest{
 		Object: js.Global.Get("proto").Get("library").Get("GetBookRequest").New([]interface{}{
 			isbn,
 		}),
@@ -305,12 +305,12 @@ func (m *GetBookRequest) SetIsbn(v int64) {
 }
 
 // Serialize marshals GetBookRequest to a slice of bytes.
-func (m *GetBookRequest) Serialize() (rawBytes []byte, err error) {
+func (m *GetBookRequest) Serialize() ([]byte, error) {
 	return jspb.Serialize(m)
 }
 
-// DeserializeGetBookRequest unmarshals a GetBookRequest from a slice of bytes.
-func DeserializeGetBookRequest(rawBytes []byte) (*GetBookRequest, error) {
+// Deserialize unmarshals a GetBookRequest from a slice of bytes.
+func (m *GetBookRequest) Deserialize(rawBytes []byte) (*GetBookRequest, error) {
 	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("library").Get("GetBookRequest"), rawBytes)
 	if err != nil {
 		return nil, err
@@ -326,11 +326,11 @@ type QueryBooksRequest struct {
 	*js.Object
 }
 
-// NewQueryBooksRequest creates a new QueryBooksRequest.
+// New creates a new QueryBooksRequest.
 // AuthorPrefix is the prefix with which
 // to match against the author of a book in the library.
-func NewQueryBooksRequest(authorPrefix string) *QueryBooksRequest {
-	m := &QueryBooksRequest{
+func (m *QueryBooksRequest) New(authorPrefix string) *QueryBooksRequest {
+	m = &QueryBooksRequest{
 		Object: js.Global.Get("proto").Get("library").Get("QueryBooksRequest").New([]interface{}{
 			authorPrefix,
 		}),
@@ -354,12 +354,12 @@ func (m *QueryBooksRequest) SetAuthorPrefix(v string) {
 }
 
 // Serialize marshals QueryBooksRequest to a slice of bytes.
-func (m *QueryBooksRequest) Serialize() (rawBytes []byte, err error) {
+func (m *QueryBooksRequest) Serialize() ([]byte, error) {
 	return jspb.Serialize(m)
 }
 
-// DeserializeQueryBooksRequest unmarshals a QueryBooksRequest from a slice of bytes.
-func DeserializeQueryBooksRequest(rawBytes []byte) (*QueryBooksRequest, error) {
+// Deserialize unmarshals a QueryBooksRequest from a slice of bytes.
+func (m *QueryBooksRequest) Deserialize(rawBytes []byte) (*QueryBooksRequest, error) {
 	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("library").Get("QueryBooksRequest"), rawBytes)
 	if err != nil {
 		return nil, err
@@ -380,6 +380,8 @@ const _ = grpcweb.GrpcWebPackageIsVersion1
 
 // Client API for BookService service
 
+// BookService exposes GetBook and QueryBooks,
+// which allow querying of the library.
 type BookServiceClient interface {
 	// GetBook returns a Book from the library
 	// that matches the ISBN provided, if found.
@@ -395,6 +397,7 @@ type bookServiceClient struct {
 	client *grpcweb.Client
 }
 
+// NewBookServiceClient creates a new gRPC-Web client.
 func NewBookServiceClient(hostname string, opts ...grpcweb.DialOption) BookServiceClient {
 	return &bookServiceClient{
 		client: grpcweb.NewClient(hostname, "library.BookService", opts...),
@@ -406,11 +409,13 @@ func (c *bookServiceClient) GetBook(ctx context.Context, in *GetBookRequest, opt
 	if err != nil {
 		return nil, err
 	}
+
 	resp, err := c.client.RPCCall(ctx, "GetBook", req, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return DeserializeBook(resp)
+
+	return new(Book).Deserialize(resp)
 }
 
 func (c *bookServiceClient) QueryBooks(ctx context.Context, in *QueryBooksRequest, opts ...grpcweb.CallOption) (BookService_QueryBooksClient, error) {
@@ -418,10 +423,12 @@ func (c *bookServiceClient) QueryBooks(ctx context.Context, in *QueryBooksReques
 	if err != nil {
 		return nil, err
 	}
+
 	srv, err := c.client.Stream(ctx, "QueryBooks", req, opts...)
 	if err != nil {
 		return nil, err
 	}
+
 	return &bookServiceQueryBooksClient{
 		stream: srv,
 	}, nil
@@ -440,5 +447,6 @@ func (x *bookServiceQueryBooksClient) Recv() (*Book, error) {
 	if err != nil {
 		return nil, err
 	}
-	return DeserializeBook(resp)
+
+	return new(Book).Deserialize(resp)
 }
