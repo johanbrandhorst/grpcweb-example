@@ -51,18 +51,6 @@
 			"revisionTime": "2017-04-27T15:07:31Z"
 		},
 		{
-			"checksumSHA1": "ovsPk4fLfWsCO5KBFYxrI23zMZc=",
-			"path": "github.com/johanbrandhorst/gopherjs-improbable-grpc-web/grpcwebjs",
-			"revision": "b925a26281a72296eb85c6221ae524a67142a978",
-			"revisionTime": "2017-05-27T23:08:34Z"
-		},
-		{
-			"checksumSHA1": "78G3pRIP/jWYC0mw/pkv+Fhoqi8=",
-			"path": "github.com/johanbrandhorst/gopherjs-improbable-grpc-web/status",
-			"revision": "b925a26281a72296eb85c6221ae524a67142a978",
-			"revisionTime": "2017-05-27T23:08:34Z"
-		},
-		{
 			"checksumSHA1": "Wj5CHQuFwtzvJYDCSMDHO25RaR8=",
 			"path": "github.com/johanbrandhorst/grpcweb",
 			"revision": "98b9ef21dbe36eb6b675f355122a0a4cf76f5874",
@@ -295,6 +283,54 @@
 			"path": "google.golang.org/grpc/transport",
 			"revision": "84cd50a2f394888f98188c49558f7806cde76725",
 			"revisionTime": "2017-04-28T21:28:53Z"
+		},
+		{
+			"checksumSHA1": "7l500RHm5kJL9BQehETOIXlSwMU=",
+			"path": "honnef.co/go/js/dom",
+			"revision": "0a64a2db1425c1881d4ec762370250c65f44b85b",
+			"revisionTime": "2017-03-25T14:35:19Z"
+		},
+		{
+			"checksumSHA1": "P4x5kGC21tTsxMleQ6I/wpP5KKs=",
+			"path": "myitcv.io/gogenerate",
+			"revision": "bd69a94c96953d20e106734856b69d71c8fa122b",
+			"revisionTime": "2017-04-15T17:56:04Z"
+		},
+		{
+			"checksumSHA1": "ul+ucXAG8MbRJBDSqoeTcKfnVV8=",
+			"path": "myitcv.io/react",
+			"revision": "690722100e194841d503227e61de50055f3e30d6",
+			"revisionTime": "2017-06-11T14:19:28Z"
+		},
+		{
+			"checksumSHA1": "oAE59m0bskyEpGZ/V6XEH0Vs2vA=",
+			"path": "myitcv.io/react/cmd/reactGen",
+			"revision": "690722100e194841d503227e61de50055f3e30d6",
+			"revisionTime": "2017-06-11T14:19:28Z"
+		},
+		{
+			"checksumSHA1": "/4I28b+WHhyQZFf1d08ELLcV+7Q=",
+			"path": "myitcv.io/react/internal/bundle",
+			"revision": "690722100e194841d503227e61de50055f3e30d6",
+			"revisionTime": "2017-06-11T14:19:28Z"
+		},
+		{
+			"checksumSHA1": "xWyyCjncx0lDO+AKOYy8ZbSIims=",
+			"path": "myitcv.io/react/internal/dev",
+			"revision": "690722100e194841d503227e61de50055f3e30d6",
+			"revisionTime": "2017-06-11T14:19:28Z"
+		},
+		{
+			"checksumSHA1": "DyFKaVwqvP0NMRQ7XkyY6zbjIok=",
+			"path": "myitcv.io/react/internal/preact",
+			"revision": "690722100e194841d503227e61de50055f3e30d6",
+			"revisionTime": "2017-06-11T14:19:28Z"
+		},
+		{
+			"checksumSHA1": "uGvIFRXIys2zGv9E2h6GiapVGpI=",
+			"path": "myitcv.io/react/internal/prod",
+			"revision": "690722100e194841d503227e61de50055f3e30d6",
+			"revisionTime": "2017-06-11T14:19:28Z"
 		}
 	],
 	"rootPath": "github.com/johanbrandhorst/grpcweb-example"
