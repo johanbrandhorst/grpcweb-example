@@ -4,6 +4,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"net/http"
 	"time"
@@ -68,6 +69,59 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler)
+
+	// Create server for redirecting HTTP to HTTPS
+	httpSrv := &http.Server{
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
+		IdleTimeout:  120 * time.Second,
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			w.Header().Set("Connection", "close")
+			url := "https://" + req.Host + req.URL.String()
+			http.Redirect(w, req, url, http.StatusMovedPermanently)
+		}),
+	}
+	go func() {
+		logger.Fatal(httpSrv.ListenAndServe())
+	}()
+
+	// Create auto-certificate https server
+	m := autocert.Manager{
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist(*host),
+	}
+	httpsSrv := &http.Server{
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  120 * time.Second,
+		Addr:         ":https",
+		TLSConfig: &tls.Config{
+			GetCertificate:           m.GetCertificate,
+			PreferServerCipherSuites: true,
+			CurvePreferences: []tls.CurveID{
+				tls.CurveP256,
+				tls.X25519,
+			},
+			MinVersion: tls.VersionTLS12,
+			CipherSuites: []uint16{
+				tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
+				tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
+				tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+				tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+			},
+		},
+		Handler: hstsHandler(mux.ServeHTTP),
+	}
 	logger.Info("Serving on https://0.0.0.0:443, authenticating for https://", *host)
-	logger.Fatal(http.Serve(autocert.NewListener(*host), mux))
+	logger.Fatal(httpsSrv.ListenAndServeTLS("", ""))
+}
+
+// hstsHandler wraps an http.HandlerFunc such that it sets the HSTS header.
+func hstsHandler(fn http.HandlerFunc) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload")
+		fn(w, r)
+	})
 }
