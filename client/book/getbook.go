@@ -20,12 +20,14 @@ type GetBookDef struct {
 	client library.BookServiceClient
 }
 
+// GetBookState holds the state for the GetBook component
 type GetBookState struct {
 	isbnInput string
 	book      *library.Book
 	err       string
 }
 
+// GetBook returns a new GetBookDef
 func GetBook(client library.BookServiceClient) *GetBookDef {
 	res := &GetBookDef{
 		client: client,
@@ -35,6 +37,7 @@ func GetBook(client library.BookServiceClient) *GetBookDef {
 	return res
 }
 
+// Render renders the GetBook component
 func (g *GetBookDef) Render() r.Element {
 	st := g.State()
 	content := []r.Element{

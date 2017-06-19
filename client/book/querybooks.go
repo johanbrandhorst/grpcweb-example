@@ -25,18 +25,22 @@ type QueryBooksDef struct {
 // type *books which we use in the state
 type _Imm_books []*library.Book
 
+// QueryBooksState holds the state for the QueryBooks component
 type QueryBooksState struct {
 	authorInput string
 	books       *books
 	err         string
 }
 
+// GetInitialState ensures QueryBooksState is initialized with a valid
+// books value.
 func (q *QueryBooksDef) GetInitialState() QueryBooksState {
 	return QueryBooksState{
 		books: newBooks(),
 	}
 }
 
+// QueryBooks returns the QueryBooks component.
 func QueryBooks(client library.BookServiceClient) *QueryBooksDef {
 	res := &QueryBooksDef{
 		client: client,
@@ -46,6 +50,7 @@ func QueryBooks(client library.BookServiceClient) *QueryBooksDef {
 	return res
 }
 
+// Render renders the QueryBooks component.
 func (q *QueryBooksDef) Render() r.Element {
 	st := q.State()
 	content := []r.Element{
