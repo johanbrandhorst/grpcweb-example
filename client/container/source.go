@@ -23,8 +23,8 @@ type _Imm_exampleSource map[exampleKey]*source
 // sources is a package scope variable of the immutable
 // example source map type.
 var sources = newExampleSource(func(es *exampleSource) {
-	es.Set(exampleGetBook, new(source).setFile("getbook/getbook.go"))
-	es.Set(exampleQueryBooks, new(source).setFile("querybooks/querybooks.go"))
+	es.Set(exampleGetBook, new(source).setFile("book/getbook.go"))
+	es.Set(exampleQueryBooks, new(source).setFile("book/querybooks.go"))
 })
 
 // fetchStarted tracks whether the downloading of the source files has
