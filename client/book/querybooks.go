@@ -5,11 +5,11 @@ import (
 	"io"
 	"time"
 
+	"github.com/johanbrandhorst/grpcweb/status"
 	"honnef.co/go/js/dom"
 	r "myitcv.io/react"
 
 	"github.com/johanbrandhorst/grpcweb-example/client/proto/library"
-	"github.com/johanbrandhorst/grpcweb/status"
 )
 
 //go:generate reactGen
