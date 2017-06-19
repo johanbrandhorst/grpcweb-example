@@ -125,6 +125,11 @@ func (t triggerQuery) OnClick(se *r.SyntheticMouseEvent) {
 			if err != nil {
 				if err == io.EOF {
 					// Success!
+					if newSt.books.Len() == 0 {
+						newSt.err = "No books found for that author"
+						t.q.SetState(newSt)
+					}
+
 					return
 				}
 				sts := status.FromError(err)
