@@ -7,7 +7,6 @@ import (
 	"honnef.co/go/js/xhr"
 	"myitcv.io/highlightjs"
 	r "myitcv.io/react"
-	"myitcv.io/react/jsx"
 
 	"github.com/johanbrandhorst/grpcweb-example/client/book"
 	"github.com/johanbrandhorst/grpcweb-example/client/proto/library"
@@ -116,29 +115,41 @@ func (p *ContainerDef) Render() r.Element {
 		),
 	)
 
-	content := jsx.HTML(`
-		<h3>GopherJS gRPC-Web Client Examples</h3>
-		<p>
-			This page shows a couple of examples of using the
-			<a href=https://github.com/johanbrandhorst/protoc-gen-gopherjs>
-				<code>protoc-gen-gopherjs</code>
-			</a>
-			gRPC-Web client together with a
-			<a href=https://myitcv.io/react">GopherJS React frontend</a>.
-		</p>
-		<p>
-			This page is heavily inspired by the
-			<a href="http://blog.myitcv.io/gopherjs_examples_sites/examplesshowcase">
-				GopherJS React Examples Showcase
-			</a>.
-		</p>
-		<p>For the source code, raising issues, questions etc, please see
-			<a href="https://github.com/johanbrandhorst/grpcweb-example" target="_blank">
-				the Github repo
-			</a>.
-		</p>
-		<p>Note the examples below show the Go source code from <code>master</code>.</p>
-		`)
+	content := []r.Element{
+		r.H3(nil, r.S("GopherJS gRPC-Web Client Examples")),
+		r.P(nil,
+			r.S("This page shows a couple of examples of using the "),
+			r.A(&r.AProps{Href: "https://github.com/johanbrandhorst/protoc-gen-gopherjs", Target: "_blank"},
+				r.Code(nil,
+					r.S("protoc-gen-gopherjs"),
+				),
+			),
+			r.S("gRPC-Web client together with a "),
+			r.A(&r.AProps{Href: "https://myitcv.io/react", Target: "_blank"},
+				r.S("GopherJS React frontend"),
+			),
+			r.S("."),
+		),
+		r.P(nil,
+			r.S("This page is heavily inspired by the "),
+			r.A(&r.AProps{Href: "http://blog.myitcv.io/gopherjs_examples_sites/examplesshowcase", Target: "_blank"},
+				r.S("GopherJS React Examples Showcase"),
+			),
+			r.S("."),
+		),
+		r.P(nil,
+			r.S("For the source code, raising issues, questions etc, please see "),
+			r.A(&r.AProps{Href: "https://github.com/johanbrandhorst/grpcweb-example", Target: "_blank"},
+				r.S("the Github repo"),
+			),
+			r.S("."),
+		),
+		r.P(nil,
+			r.S("Note the examples below show the Go source code from "),
+			r.Code(nil, r.S("master")),
+			r.S("."),
+		),
+	}
 
 	content = append(content,
 		p.renderExample(

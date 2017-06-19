@@ -111,12 +111,6 @@
 			"revisionTime": "2016-06-18T19:32:21Z"
 		},
 		{
-			"checksumSHA1": "jgYnx5m5SrWrh9GE5kNZlpMWyCY=",
-			"path": "github.com/russross/blackfriday",
-			"revision": "067529f716f4c3f5e37c8c95ddd59df1007290ae",
-			"revisionTime": "2017-06-10T17:02:32Z"
-		},
-		{
 			"checksumSHA1": "W0j4I7QpxXlChjyhAojZmFjU6Bg=",
 			"path": "golang.org/x/crypto/acme",
 			"revision": "e1a4589e7d3ea14a3352255d04b6f1a418845e5e",
@@ -133,18 +127,6 @@
 			"path": "golang.org/x/net/context",
 			"revision": "da118f7b8e5954f39d0d2130ab35d4bf0e3cb344",
 			"revisionTime": "2017-04-23T14:02:46Z"
-		},
-		{
-			"checksumSHA1": "vqc3a+oTUGX8PmD0TS+qQ7gmN8I=",
-			"path": "golang.org/x/net/html",
-			"revision": "973f3f3bbd50e92b13faa6c53ec16f49b45e851c",
-			"revisionTime": "2017-06-16T05:16:31Z"
-		},
-		{
-			"checksumSHA1": "z79z5msRzgU48FCZxSuxfU8b4rs=",
-			"path": "golang.org/x/net/html/atom",
-			"revision": "973f3f3bbd50e92b13faa6c53ec16f49b45e851c",
-			"revisionTime": "2017-06-16T05:16:31Z"
 		},
 		{
 			"checksumSHA1": "Zh++JEDfXo0DKQtoKVfScwVdvww=",
@@ -377,12 +359,6 @@
 		{
 			"checksumSHA1": "uGvIFRXIys2zGv9E2h6GiapVGpI=",
 			"path": "myitcv.io/react/internal/prod",
-			"revision": "690722100e194841d503227e61de50055f3e30d6",
-			"revisionTime": "2017-06-11T14:19:28Z"
-		},
-		{
-			"checksumSHA1": "CrlqyPzRpzA2VvqxA+yDMahoJyA=",
-			"path": "myitcv.io/react/jsx",
 			"revision": "690722100e194841d503227e61de50055f3e30d6",
 			"revisionTime": "2017-06-11T14:19:28Z"
 		}
