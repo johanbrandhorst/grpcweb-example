@@ -97,7 +97,7 @@ type Timestamp struct {
 	*js.Object
 }
 
-// NewTimestamp creates a new Timestamp.
+// New creates a new Timestamp.
 // Represents seconds of UTC time since Unix epoch
 // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
 // 9999-12-31T23:59:59Z inclusive.
@@ -105,8 +105,8 @@ type Timestamp struct {
 // second values with fractions must still have non-negative nanos values
 // that count forward in time. Must be from 0 to 999,999,999
 // inclusive.
-func NewTimestamp(seconds int64, nanos int32) *Timestamp {
-	m := &Timestamp{
+func (m *Timestamp) New(seconds int64, nanos int32) *Timestamp {
+	m = &Timestamp{
 		Object: js.Global.Get("proto").Get("google").Get("protobuf").Get("Timestamp").New([]interface{}{
 			seconds,
 			nanos,
@@ -150,11 +150,13 @@ func (m *Timestamp) SetNanos(v int32) {
 	m.Call("setNanos", v)
 }
 
-func (m *Timestamp) serialize() (rawBytes []byte, err error) {
+// Serialize marshals Timestamp to a slice of bytes.
+func (m *Timestamp) Serialize() ([]byte, error) {
 	return jspb.Serialize(m)
 }
 
-func deserializeTimestamp(rawBytes []byte) (*Timestamp, error) {
+// Deserialize unmarshals a Timestamp from a slice of bytes.
+func (m *Timestamp) Deserialize(rawBytes []byte) (*Timestamp, error) {
 	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("google").Get("protobuf").Get("Timestamp"), rawBytes)
 	if err != nil {
 		return nil, err

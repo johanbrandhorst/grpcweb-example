@@ -75,10 +75,10 @@
 			"revisionTime": "2017-05-29T22:21:58Z"
 		},
 		{
-			"checksumSHA1": "TA5Bd1G+PoOoPfKfu1d7jMlrjKk=",
+			"checksumSHA1": "PtrWu33rQT2tpJIbP855JQ3NYkE=",
 			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs",
-			"revision": "52da95d2bbdb9146daf2f61589eb1716647d8f37",
-			"revisionTime": "2017-06-02T19:22:09Z"
+			"revision": "4099d6acb2b7523023ddcc3b361fadd10901e821",
+			"revisionTime": "2017-06-18T22:04:58Z"
 		},
 		{
 			"checksumSHA1": "nh68ofoA4sQz3EtegzaFITdNHB4=",
@@ -93,10 +93,10 @@
 			"revisionTime": "2017-05-29T22:35:08Z"
 		},
 		{
-			"checksumSHA1": "tqI4L3rL957ArK9iAvWKscx18uI=",
+			"checksumSHA1": "/hGRNdzgo+80l059+lbKMQR3+aY=",
 			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs/ptypes/timestamp",
-			"revision": "cc6397f69d31a46cab46eb6c12595442a755bbd8",
-			"revisionTime": "2017-05-29T22:35:08Z"
+			"revision": "b5bc9b3c23478080393043de0775f401f8d4ab31",
+			"revisionTime": "2017-06-13T20:28:41Z"
 		},
 		{
 			"checksumSHA1": "naf+sai8rdVYJ9ozLllNMMwE9aY=",
@@ -109,6 +109,12 @@
 			"path": "github.com/rs/xhandler",
 			"revision": "ed27b6fd65218132ee50cd95f38474a3d8a2cd12",
 			"revisionTime": "2016-06-18T19:32:21Z"
+		},
+		{
+			"checksumSHA1": "jgYnx5m5SrWrh9GE5kNZlpMWyCY=",
+			"path": "github.com/russross/blackfriday",
+			"revision": "067529f716f4c3f5e37c8c95ddd59df1007290ae",
+			"revisionTime": "2017-06-10T17:02:32Z"
 		},
 		{
 			"checksumSHA1": "W0j4I7QpxXlChjyhAojZmFjU6Bg=",
@@ -127,6 +133,18 @@
 			"path": "golang.org/x/net/context",
 			"revision": "da118f7b8e5954f39d0d2130ab35d4bf0e3cb344",
 			"revisionTime": "2017-04-23T14:02:46Z"
+		},
+		{
+			"checksumSHA1": "vqc3a+oTUGX8PmD0TS+qQ7gmN8I=",
+			"path": "golang.org/x/net/html",
+			"revision": "973f3f3bbd50e92b13faa6c53ec16f49b45e851c",
+			"revisionTime": "2017-06-16T05:16:31Z"
+		},
+		{
+			"checksumSHA1": "z79z5msRzgU48FCZxSuxfU8b4rs=",
+			"path": "golang.org/x/net/html/atom",
+			"revision": "973f3f3bbd50e92b13faa6c53ec16f49b45e851c",
+			"revisionTime": "2017-06-16T05:16:31Z"
 		},
 		{
 			"checksumSHA1": "Zh++JEDfXo0DKQtoKVfScwVdvww=",
@@ -193,6 +211,12 @@
 			"path": "golang.org/x/text/unicode/norm",
 			"revision": "470f45bf29f4147d6fbd7dfd0a02a848e49f5bf4",
 			"revisionTime": "2017-04-25T18:31:26Z"
+		},
+		{
+			"checksumSHA1": "QKvPv3TJ+ZnOLkUeUkT8Wm8eCV0=",
+			"path": "golang.org/x/tools/go/types/typeutil",
+			"revision": "34f7837286c0bd1ea0d50c06fbf585a7090dbd4e",
+			"revisionTime": "2017-06-15T21:24:39Z"
 		},
 		{
 			"checksumSHA1": "61oRC/n7DFqHNu6Z+4fAKY1FVCY=",
@@ -297,6 +321,30 @@
 			"revisionTime": "2017-04-15T17:56:04Z"
 		},
 		{
+			"checksumSHA1": "jlIlrR5T3adaTFy/LeX24GMg5mw=",
+			"path": "myitcv.io/highlightjs",
+			"revision": "e0ea663591fbdbce10ca2658c680ba7be2391ff8",
+			"revisionTime": "2017-04-19T16:13:10Z"
+		},
+		{
+			"checksumSHA1": "NYQb9g25G6SYbhdk+KYGamLvO7c=",
+			"path": "myitcv.io/immutable",
+			"revision": "74c4e0dc47c184000811bee5bb1bb293c5b2b674",
+			"revisionTime": "2017-04-20T16:19:54Z"
+		},
+		{
+			"checksumSHA1": "EzGOlRh9cV3LCBYS65jG30BqzrU=",
+			"path": "myitcv.io/immutable/cmd/immutableGen",
+			"revision": "74c4e0dc47c184000811bee5bb1bb293c5b2b674",
+			"revisionTime": "2017-04-20T16:19:54Z"
+		},
+		{
+			"checksumSHA1": "ADwSdDkMWcL1p9xJ+yV698CgC5M=",
+			"path": "myitcv.io/immutable/util",
+			"revision": "74c4e0dc47c184000811bee5bb1bb293c5b2b674",
+			"revisionTime": "2017-04-20T16:19:54Z"
+		},
+		{
 			"checksumSHA1": "ul+ucXAG8MbRJBDSqoeTcKfnVV8=",
 			"path": "myitcv.io/react",
 			"revision": "690722100e194841d503227e61de50055f3e30d6",
@@ -329,6 +377,12 @@
 		{
 			"checksumSHA1": "uGvIFRXIys2zGv9E2h6GiapVGpI=",
 			"path": "myitcv.io/react/internal/prod",
+			"revision": "690722100e194841d503227e61de50055f3e30d6",
+			"revisionTime": "2017-06-11T14:19:28Z"
+		},
+		{
+			"checksumSHA1": "CrlqyPzRpzA2VvqxA+yDMahoJyA=",
+			"path": "myitcv.io/react/jsx",
 			"revision": "690722100e194841d503227e61de50055f3e30d6",
 			"revisionTime": "2017-06-11T14:19:28Z"
 		}

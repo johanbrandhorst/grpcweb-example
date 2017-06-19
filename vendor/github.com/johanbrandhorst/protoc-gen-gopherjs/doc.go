@@ -11,5 +11,8 @@
 	With that input, the output will be written to
 		output_directory/file.pb.gopherjs.go
 
+	See the README and documentation for protocol buffers to learn more:
+		https://developers.google.com/protocol-buffers/
+
 */
-package documentation
+package main

@@ -29,19 +29,6 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// protoc-gen-gopherjs is a plugin for the Google protocol buffer compiler to generate
-// GopherJS code.  Run it by building this program and putting it in your path with
-// the name
-// 	protoc-gen-gopherjs
-// That word 'gopherjs' at the end becomes part of the option string set for the
-// protocol compiler, so once the protocol compiler (protoc) is installed
-// you can run
-// 	protoc --gopherjs_out=output_directory input_directory/file.proto
-// to generate GopherJS bindings for the protocol defined by file.proto.
-//
-// The generated code is documented in the package comment for
-// the library.
-
 package main
 
 import (
