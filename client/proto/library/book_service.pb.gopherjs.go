@@ -122,7 +122,7 @@ func (m *Book) New(isbn int64, title string, author string, bookType BookType, p
 			bookType,
 			js.Undefined,
 			js.Undefined,
-			publicationDate,
+			publicationDate.Call("toArray"),
 		}),
 	}
 
