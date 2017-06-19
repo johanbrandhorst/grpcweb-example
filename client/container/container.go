@@ -124,7 +124,7 @@ func (p *ContainerDef) Render() r.Element {
 					r.S("protoc-gen-gopherjs"),
 				),
 			),
-			r.S("gRPC-Web client together with a "),
+			r.S(" gRPC-Web client together with a "),
 			r.A(&r.AProps{Href: "https://myitcv.io/react", Target: "_blank"},
 				r.S("GopherJS React frontend"),
 			),
