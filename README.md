@@ -7,4 +7,4 @@ through the
 bindings generator.
 
 A demo of this application can be found on
-[https://demo.jbrandhorst.com](https://demo.jbrandhorst.com).
+[https://grpcweb.jbrandhorst.com](https://grpcweb.jbrandhorst.com).
