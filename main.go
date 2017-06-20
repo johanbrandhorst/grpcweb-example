@@ -89,6 +89,7 @@ func main() {
 	m := autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
 		HostPolicy: autocert.HostWhitelist(*host),
+		Cache:      autocert.DirCache("/certs"),
 	}
 	httpsSrv := &http.Server{
 		ReadTimeout:  5 * time.Second,
