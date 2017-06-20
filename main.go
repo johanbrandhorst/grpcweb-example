@@ -57,18 +57,27 @@ func main() {
 		}
 	}
 
-	// Serve on localhost with localhost certs if no host provided
-	if *host == "" {
-		httpServer := http.Server{
-			Handler: http.HandlerFunc(handler),
-			Addr:    "localhost:10000",
-		}
-		logger.Info("Serving on https://localhost:10000")
-		logger.Fatal(httpServer.ListenAndServeTLS("./insecure/localhost.crt", "./insecure/localhost.key"))
+	httpsSrv := &http.Server{
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  120 * time.Second,
+		Addr:         ":https",
+		TLSConfig: &tls.Config{
+			PreferServerCipherSuites: true,
+			CurvePreferences: []tls.CurveID{
+				tls.CurveP256,
+				tls.X25519,
+			},
+		},
+		Handler: hstsHandler(handler),
 	}
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", handler)
+	// Serve on localhost with localhost certs if no host provided
+	if *host == "" {
+		httpsSrv.Addr = "localhost:10000"
+		logger.Info("Serving on https://localhost:10000")
+		logger.Fatal(httpsSrv.ListenAndServeTLS("./insecure/localhost.crt", "./insecure/localhost.key"))
+	}
 
 	// Create server for redirecting HTTP to HTTPS
 	httpSrv := &http.Server{
@@ -91,21 +100,7 @@ func main() {
 		HostPolicy: autocert.HostWhitelist(*host),
 		Cache:      autocert.DirCache("/certs"),
 	}
-	httpsSrv := &http.Server{
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		IdleTimeout:  120 * time.Second,
-		Addr:         ":https",
-		TLSConfig: &tls.Config{
-			GetCertificate:           m.GetCertificate,
-			PreferServerCipherSuites: true,
-			CurvePreferences: []tls.CurveID{
-				tls.CurveP256,
-				tls.X25519,
-			},
-		},
-		Handler: hstsHandler(mux.ServeHTTP),
-	}
+	httpsSrv.TLSConfig.GetCertificate = m.GetCertificate
 	logger.Info("Serving on https://0.0.0.0:443, authenticating for https://", *host)
 	logger.Fatal(httpsSrv.ListenAndServeTLS("", ""))
 }
