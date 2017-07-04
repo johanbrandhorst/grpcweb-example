@@ -5,7 +5,7 @@
 # Generate protofiles
 protoc proto/library/book_service.proto \
     --js_out=import_style=commonjs,binary:./client/ \
-    --gopherjs_out=plugins=grpc,Mgoogle/protobuf/timestamp.proto=github.com/johanbrandhorst/protoc-gen-gopherjs/ptypes/timestamp:./client/ \
+    --gopherjs_out=plugins=grpc,Mgoogle/protobuf/timestamp.proto=github.com/johanbrandhorst/protobuf/ptypes/timestamp:./client/ \
     --go_out=plugins=grpc:./server/
 
 # Replace top level import with global reference

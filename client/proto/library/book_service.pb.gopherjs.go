@@ -19,13 +19,13 @@
 package library
 
 import js "github.com/gopherjs/gopherjs/js"
-import jspb "github.com/johanbrandhorst/jspb"
-import google_protobuf "github.com/johanbrandhorst/protoc-gen-gopherjs/ptypes/timestamp"
+import jspb "github.com/johanbrandhorst/protobuf/jspb"
+import google_protobuf "github.com/johanbrandhorst/protobuf/ptypes/timestamp"
 
 import (
 	context "context"
 
-	grpcweb "github.com/johanbrandhorst/grpcweb"
+	grpcweb "github.com/johanbrandhorst/protobuf/grpcweb"
 )
 
 // BookType describes the different types
@@ -240,7 +240,7 @@ func (m *Book) GetPublisher() *Publisher {
 // Publisher means this book was published
 // through a Publisher.
 func (m *Book) SetPublisher(v *Publisher) {
-	m.Call("setPublisher", v)
+	m.Call("setPublisher", v.Call("toArray"))
 }
 
 // GetPublicationDate gets the PublicationDate of the Book.
@@ -252,7 +252,7 @@ func (m *Book) GetPublicationDate() *google_protobuf.Timestamp {
 // SetPublicationDate sets the PublicationDate of the Book.
 // PublicationDate is the time of publication of the book.
 func (m *Book) SetPublicationDate(v *google_protobuf.Timestamp) {
-	m.Call("setPublicationDate", v)
+	m.Call("setPublicationDate", v.Call("toArray"))
 }
 
 // Serialize marshals Book to a slice of bytes.

@@ -5,7 +5,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/johanbrandhorst/grpcweb/status"
+	"github.com/johanbrandhorst/protobuf/grpcweb/status"
 	"honnef.co/go/js/dom"
 	r "myitcv.io/react"
 
