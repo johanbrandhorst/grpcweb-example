@@ -34,7 +34,7 @@ package google.protobuf;
 
 option csharp_namespace = "Google.Protobuf.WellKnownTypes";
 option cc_enable_arenas = true;
-option go_package = "github.com/johanbrandhorst/protoc-gen-gopherjs/ptypes/timestamp";
+option go_package = "github.com/johanbrandhorst/protobuf/ptypes/timestamp";
 option java_package = "com.google.protobuf";
 option java_outer_classname = "TimestampProto";
 option java_multiple_files = true;

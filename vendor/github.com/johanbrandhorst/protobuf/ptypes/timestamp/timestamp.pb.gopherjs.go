@@ -13,7 +13,7 @@ It has these top-level messages:
 package timestamp
 
 import js "github.com/gopherjs/gopherjs/js"
-import jspb "github.com/johanbrandhorst/jspb"
+import jspb "github.com/johanbrandhorst/protobuf/jspb"
 
 // A Timestamp represents a point in time independent of any time zone
 // or calendar, represented as seconds and fractions of seconds at

@@ -28,7 +28,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/johanbrandhorst/grpcweb/status"
+	"github.com/johanbrandhorst/protobuf/grpcweb/status"
 )
 
 // Client encapsulates all gRPC calls to a

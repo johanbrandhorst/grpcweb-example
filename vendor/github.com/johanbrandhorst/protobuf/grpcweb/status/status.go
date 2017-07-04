@@ -18,17 +18,53 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// Package grpcweb defines a couple of convenience wrappers
-// around the Improbable TS gRPC-web implementation. It should
-// be used in conjunction with the protoc-gen-gopherjs tool.
-package grpcweb
+// Package status provides a gRPC Status struct compatible
+// with the Improbable gRPC-web trailers and errors.
+package status
 
 import (
-	// Include JS files
-	_ "github.com/johanbrandhorst/grpcweb/grpcwebjs"
-	_ "github.com/johanbrandhorst/jspb"
+	"github.com/gopherjs/gopherjs/js"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+
+	// Include gRPC-web JS objects
+	_ "github.com/johanbrandhorst/protobuf/grpcweb/grpcwebjs"
 )
 
-// GrpcWebPackageIsVersion1 is referenced from generated protocol buffer files
-// to assert that that code is compatible with this version of the proto package.
-const GrpcWebPackageIsVersion1 = true
+// Status is a gRPC-web Status.
+type Status struct {
+	*js.Object
+	Code     codes.Code  `js:"code"`
+	Message  string      `js:"message"`
+	Trailers metadata.MD `js:"trailers"`
+}
+
+// New creates a new, initialized, Status.
+func New(code codes.Code, msg string, trailers metadata.MD) *Status {
+	s := &Status{
+		Object: js.Global.Get("Object").New(),
+	}
+	s.Code = code
+	s.Message = msg
+	s.Trailers = trailers
+
+	return s
+}
+
+// Error returns a string representation of the status
+func (s Status) Error() string {
+	return "rpc error: code = " + s.Code.String() + " desc = " + s.Message
+}
+
+// FromError constructs a Status from an error.
+func FromError(err error) *Status {
+	s, ok := err.(*Status)
+	if !ok {
+		s = &Status{
+			Code:    codes.Unknown,
+			Message: err.Error(),
+		}
+	}
+
+	return s
+}

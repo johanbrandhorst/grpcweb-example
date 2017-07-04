@@ -51,52 +51,34 @@
 			"revisionTime": "2017-04-27T15:07:31Z"
 		},
 		{
-			"checksumSHA1": "Wj5CHQuFwtzvJYDCSMDHO25RaR8=",
-			"path": "github.com/johanbrandhorst/grpcweb",
-			"revision": "98b9ef21dbe36eb6b675f355122a0a4cf76f5874",
-			"revisionTime": "2017-06-02T19:39:41Z"
+			"checksumSHA1": "HHBfG5mZj42S+0nBI2VEqmzC2NE=",
+			"path": "github.com/johanbrandhorst/protobuf/grpcweb",
+			"revision": "6104c9d119b679fed9072a8246311dad7d37ba17",
+			"revisionTime": "2017-07-04T19:56:03Z"
 		},
 		{
-			"checksumSHA1": "/8uzUuvKA0NjQ4uN2ImJ7RcC6JM=",
-			"path": "github.com/johanbrandhorst/grpcweb/grpcwebjs",
-			"revision": "98b9ef21dbe36eb6b675f355122a0a4cf76f5874",
-			"revisionTime": "2017-06-02T19:39:41Z"
+			"checksumSHA1": "nM8Uz7iwjUiF37AL3cA7DxSI03I=",
+			"path": "github.com/johanbrandhorst/protobuf/grpcweb/grpcwebjs",
+			"revision": "6104c9d119b679fed9072a8246311dad7d37ba17",
+			"revisionTime": "2017-07-04T19:56:03Z"
 		},
 		{
-			"checksumSHA1": "W+p6G+ZJnV5A5Dcp/q/nV8I7ZuM=",
-			"path": "github.com/johanbrandhorst/grpcweb/status",
-			"revision": "98b9ef21dbe36eb6b675f355122a0a4cf76f5874",
-			"revisionTime": "2017-06-02T19:39:41Z"
+			"checksumSHA1": "4gA6FY6RHYya03UmubSVjDvjDKI=",
+			"path": "github.com/johanbrandhorst/protobuf/grpcweb/status",
+			"revision": "6104c9d119b679fed9072a8246311dad7d37ba17",
+			"revisionTime": "2017-07-04T19:56:03Z"
 		},
 		{
-			"checksumSHA1": "paAg+4cI0XTq1D553EH6+Pzs5PQ=",
-			"path": "github.com/johanbrandhorst/jspb",
-			"revision": "ab8931a07a83e6fcef08420f10faa9b959eb647b",
-			"revisionTime": "2017-05-29T22:21:58Z"
+			"checksumSHA1": "4igmH+Y6vSjpaUEaDOt9/yk1i9M=",
+			"path": "github.com/johanbrandhorst/protobuf/jspb",
+			"revision": "6104c9d119b679fed9072a8246311dad7d37ba17",
+			"revisionTime": "2017-07-04T19:56:03Z"
 		},
 		{
-			"checksumSHA1": "PtrWu33rQT2tpJIbP855JQ3NYkE=",
-			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs",
-			"revision": "4099d6acb2b7523023ddcc3b361fadd10901e821",
-			"revisionTime": "2017-06-18T22:04:58Z"
-		},
-		{
-			"checksumSHA1": "nh68ofoA4sQz3EtegzaFITdNHB4=",
-			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs/generator",
-			"revision": "cc6397f69d31a46cab46eb6c12595442a755bbd8",
-			"revisionTime": "2017-05-29T22:35:08Z"
-		},
-		{
-			"checksumSHA1": "XpFhV9nd3YIgPxXemlqzbmX5gCY=",
-			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs/grpc",
-			"revision": "cc6397f69d31a46cab46eb6c12595442a755bbd8",
-			"revisionTime": "2017-05-29T22:35:08Z"
-		},
-		{
-			"checksumSHA1": "/hGRNdzgo+80l059+lbKMQR3+aY=",
-			"path": "github.com/johanbrandhorst/protoc-gen-gopherjs/ptypes/timestamp",
-			"revision": "b5bc9b3c23478080393043de0775f401f8d4ab31",
-			"revisionTime": "2017-06-13T20:28:41Z"
+			"checksumSHA1": "397f2Ys7A/0MEldRG621KWPc7oI=",
+			"path": "github.com/johanbrandhorst/protobuf/ptypes/timestamp",
+			"revision": "6104c9d119b679fed9072a8246311dad7d37ba17",
+			"revisionTime": "2017-07-04T19:56:03Z"
 		},
 		{
 			"checksumSHA1": "naf+sai8rdVYJ9ozLllNMMwE9aY=",
@@ -125,8 +107,8 @@
 		{
 			"checksumSHA1": "Y+HGqEkYM15ir+J93MEaHdyFy0c=",
 			"path": "golang.org/x/net/context",
-			"revision": "da118f7b8e5954f39d0d2130ab35d4bf0e3cb344",
-			"revisionTime": "2017-04-23T14:02:46Z"
+			"revision": "570fa1c91359c1869590e9cedf3b53162a51a167",
+			"revisionTime": "2017-07-01T00:59:03Z"
 		},
 		{
 			"checksumSHA1": "Zh++JEDfXo0DKQtoKVfScwVdvww=",
@@ -213,10 +195,10 @@
 			"revisionTime": "2017-04-28T21:28:53Z"
 		},
 		{
-			"checksumSHA1": "08icuA15HRkdYCt6H+Cs90RPQsY=",
+			"checksumSHA1": "/eTpFgjvMq5Bc9hYnw5fzKG4B6I=",
 			"path": "google.golang.org/grpc/codes",
-			"revision": "84cd50a2f394888f98188c49558f7806cde76725",
-			"revisionTime": "2017-04-28T21:28:53Z"
+			"revision": "3c33c26290b747350f8650c7d38bcc51b42dc785",
+			"revisionTime": "2017-06-27T16:54:34Z"
 		},
 		{
 			"checksumSHA1": "K99T+YYvCBu0O1I3zuRcGhM5ADY=",
@@ -249,10 +231,10 @@
 			"revisionTime": "2017-04-28T21:28:53Z"
 		},
 		{
-			"checksumSHA1": "2dUKnKA66GwOfKV0M2tP78bt++o=",
+			"checksumSHA1": "HH3h5npBG+wwoxWeyVjIpxnloxQ=",
 			"path": "google.golang.org/grpc/metadata",
-			"revision": "84cd50a2f394888f98188c49558f7806cde76725",
-			"revisionTime": "2017-04-28T21:28:53Z"
+			"revision": "3c33c26290b747350f8650c7d38bcc51b42dc785",
+			"revisionTime": "2017-06-27T16:54:34Z"
 		},
 		{
 			"checksumSHA1": "4GSUFhOQ0kdFlBH4D5OTeKy78z0=",
@@ -295,6 +277,18 @@
 			"path": "honnef.co/go/js/dom",
 			"revision": "0a64a2db1425c1881d4ec762370250c65f44b85b",
 			"revisionTime": "2017-03-25T14:35:19Z"
+		},
+		{
+			"checksumSHA1": "yJy8Z1H4oXdW/jxT2F+VzrEViXE=",
+			"path": "honnef.co/go/js/util",
+			"revision": "96b8dd9d16214b6cd9d8c8e84b3a375da4688108",
+			"revisionTime": "2015-02-16T22:39:35Z"
+		},
+		{
+			"checksumSHA1": "BivnYL12uO9W35pVwnGzhCe7utg=",
+			"path": "honnef.co/go/js/xhr",
+			"revision": "00e3346113aed89b501ead4e863c7c3d04fa0c5b",
+			"revisionTime": "2015-03-07T03:10:22Z"
 		},
 		{
 			"checksumSHA1": "P4x5kGC21tTsxMleQ6I/wpP5KKs=",

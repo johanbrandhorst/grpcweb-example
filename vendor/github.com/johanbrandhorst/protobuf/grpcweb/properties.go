@@ -23,7 +23,7 @@ package grpcweb
 import (
 	"github.com/gopherjs/gopherjs/js"
 
-	"github.com/johanbrandhorst/grpcweb/status"
+	"github.com/johanbrandhorst/protobuf/grpcweb/status"
 )
 
 // Request pretends to be an Improbable gRPC-web Request.
