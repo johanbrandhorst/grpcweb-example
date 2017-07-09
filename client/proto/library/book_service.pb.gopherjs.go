@@ -2,19 +2,19 @@
 // source: proto/library/book_service.proto
 
 /*
-	Package library is a generated protocol buffer package.
+Package library is a generated protocol buffer package.
 
-	Package library exposes a list of books
-	over a gRPC API.
+Package library exposes a list of books
+over a gRPC API.
 
-	It is generated from these files:
-		proto/library/book_service.proto
+It is generated from these files:
+	proto/library/book_service.proto
 
-	It has these top-level messages:
-		Publisher
-		Book
-		GetBookRequest
-		QueryBooksRequest
+It has these top-level messages:
+	Publisher
+	Book
+	GetBookRequest
+	QueryBooksRequest
 */
 package library
 
@@ -61,18 +61,6 @@ type Publisher struct {
 	*js.Object
 }
 
-// New creates a new Publisher.
-// Name is the name of the Publisher.
-func (m *Publisher) New(name string) *Publisher {
-	m = &Publisher{
-		Object: js.Global.Get("proto").Get("library").Get("Publisher").New([]interface{}{
-			name,
-		}),
-	}
-
-	return m
-}
-
 // GetName gets the Name of the Publisher.
 // Name is the name of the Publisher.
 func (m *Publisher) GetName() string {
@@ -83,6 +71,18 @@ func (m *Publisher) GetName() string {
 // Name is the name of the Publisher.
 func (m *Publisher) SetName(v string) {
 	m.Call("setName", v)
+}
+
+// New creates a new Publisher.
+// Name is the name of the Publisher.
+func (m *Publisher) New(name string) *Publisher {
+	m = &Publisher{
+		Object: js.Global.Get("proto").Get("library").Get("Publisher").New([]interface{}{
+			name,
+		}),
+	}
+
+	return m
 }
 
 // Serialize marshals Publisher to a slice of bytes.
@@ -105,28 +105,6 @@ func (m *Publisher) Deserialize(rawBytes []byte) (*Publisher, error) {
 // Book represents a book in the library.
 type Book struct {
 	*js.Object
-}
-
-// New creates a new Book.
-// Isbn is the ISBN number of the book.
-// Title is the title of the book.
-// Author is the author of the book.
-// BookType is the type of the book.
-// PublicationDate is the time of publication of the book.
-func (m *Book) New(isbn int64, title string, author string, bookType BookType, publicationDate *google_protobuf.Timestamp) *Book {
-	m = &Book{
-		Object: js.Global.Get("proto").Get("library").Get("Book").New([]interface{}{
-			isbn,
-			title,
-			author,
-			bookType,
-			js.Undefined,
-			js.Undefined,
-			publicationDate.Call("toArray"),
-		}),
-	}
-
-	return m
 }
 
 // PublishingMethod is the publishing method
@@ -153,6 +131,7 @@ type Book_Publisher struct {
 func (*Book_SelfPublished) isBook_PublishingMethod() {}
 func (*Book_Publisher) isBook_PublishingMethod()     {}
 
+// GetPublishingMethod gets the PublishingMethod of the Book.
 func (m *Book) GetPublishingMethod() (x isBook_PublishingMethod) {
 	switch m.Call("getPublishingMethodCase").Int() {
 	case 5:
@@ -164,7 +143,19 @@ func (m *Book) GetPublishingMethod() (x isBook_PublishingMethod) {
 			Publisher: m.GetPublisher(),
 		}
 	}
+
 	return x
+}
+
+// SetPublishingMethod sets the PublishingMethod of theBook.
+// If the input is nil, SetPublishingMethod does nothing.
+func (m *Book) SetPublishingMethod(publishing_method isBook_PublishingMethod) {
+	switch x := publishing_method.(type) {
+	case *Book_SelfPublished:
+		m.SetSelfPublished(x.SelfPublished)
+	case *Book_Publisher:
+		m.SetPublisher(x.Publisher)
+	}
 }
 
 // GetIsbn gets the Isbn of the Book.
@@ -255,6 +246,32 @@ func (m *Book) SetPublicationDate(v *google_protobuf.Timestamp) {
 	m.Call("setPublicationDate", v.Call("toArray"))
 }
 
+// New creates a new Book.
+// Isbn is the ISBN number of the book.
+// Title is the title of the book.
+// Author is the author of the book.
+// BookType is the type of the book.
+// SelfPublished means this book was
+// self published.
+// PublicationDate is the time of publication of the book.
+func (m *Book) New(isbn int64, title string, author string, bookType BookType, publishing_method isBook_PublishingMethod, publicationDate *google_protobuf.Timestamp) *Book {
+	m = &Book{
+		Object: js.Global.Get("proto").Get("library").Get("Book").New([]interface{}{
+			isbn,
+			title,
+			author,
+			bookType,
+			js.Undefined,
+			js.Undefined,
+			publicationDate.Call("toArray"),
+		}),
+	}
+
+	m.SetPublishingMethod(publishing_method)
+
+	return m
+}
+
 // Serialize marshals Book to a slice of bytes.
 func (m *Book) Serialize() ([]byte, error) {
 	return jspb.Serialize(m)
@@ -277,19 +294,6 @@ type GetBookRequest struct {
 	*js.Object
 }
 
-// New creates a new GetBookRequest.
-// Isbn is the ISBN with which
-// to match against the ISBN of a book in the library.
-func (m *GetBookRequest) New(isbn int64) *GetBookRequest {
-	m = &GetBookRequest{
-		Object: js.Global.Get("proto").Get("library").Get("GetBookRequest").New([]interface{}{
-			isbn,
-		}),
-	}
-
-	return m
-}
-
 // GetIsbn gets the Isbn of the GetBookRequest.
 // Isbn is the ISBN with which
 // to match against the ISBN of a book in the library.
@@ -302,6 +306,19 @@ func (m *GetBookRequest) GetIsbn() int64 {
 // to match against the ISBN of a book in the library.
 func (m *GetBookRequest) SetIsbn(v int64) {
 	m.Call("setIsbn", v)
+}
+
+// New creates a new GetBookRequest.
+// Isbn is the ISBN with which
+// to match against the ISBN of a book in the library.
+func (m *GetBookRequest) New(isbn int64) *GetBookRequest {
+	m = &GetBookRequest{
+		Object: js.Global.Get("proto").Get("library").Get("GetBookRequest").New([]interface{}{
+			isbn,
+		}),
+	}
+
+	return m
 }
 
 // Serialize marshals GetBookRequest to a slice of bytes.
@@ -326,19 +343,6 @@ type QueryBooksRequest struct {
 	*js.Object
 }
 
-// New creates a new QueryBooksRequest.
-// AuthorPrefix is the prefix with which
-// to match against the author of a book in the library.
-func (m *QueryBooksRequest) New(authorPrefix string) *QueryBooksRequest {
-	m = &QueryBooksRequest{
-		Object: js.Global.Get("proto").Get("library").Get("QueryBooksRequest").New([]interface{}{
-			authorPrefix,
-		}),
-	}
-
-	return m
-}
-
 // GetAuthorPrefix gets the AuthorPrefix of the QueryBooksRequest.
 // AuthorPrefix is the prefix with which
 // to match against the author of a book in the library.
@@ -351,6 +355,19 @@ func (m *QueryBooksRequest) GetAuthorPrefix() string {
 // to match against the author of a book in the library.
 func (m *QueryBooksRequest) SetAuthorPrefix(v string) {
 	m.Call("setAuthorPrefix", v)
+}
+
+// New creates a new QueryBooksRequest.
+// AuthorPrefix is the prefix with which
+// to match against the author of a book in the library.
+func (m *QueryBooksRequest) New(authorPrefix string) *QueryBooksRequest {
+	m = &QueryBooksRequest{
+		Object: js.Global.Get("proto").Get("library").Get("QueryBooksRequest").New([]interface{}{
+			authorPrefix,
+		}),
+	}
+
+	return m
 }
 
 // Serialize marshals QueryBooksRequest to a slice of bytes.
