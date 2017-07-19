@@ -24,9 +24,12 @@ import google_protobuf "github.com/johanbrandhorst/protobuf/ptypes/timestamp"
 
 import (
 	context "context"
-
 	grpcweb "github.com/johanbrandhorst/protobuf/grpcweb"
 )
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the jspb package it is being compiled against.
+const _ = jspb.JspbPackageIsVersion1
 
 // BookType describes the different types
 // a book in the library can be.
@@ -86,7 +89,7 @@ func (m *Publisher) New(name string) *Publisher {
 }
 
 // Serialize marshals Publisher to a slice of bytes.
-func (m *Publisher) Serialize() ([]byte, error) {
+func (m *Publisher) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 
@@ -220,6 +223,20 @@ func (m *Book) SetSelfPublished(v bool) {
 	m.Call("setSelfPublished", v)
 }
 
+// HasSelfPublished indicates whether the SelfPublished of the Book is set.
+// SelfPublished means this book was
+// self published.
+func (m *Book) HasSelfPublished() bool {
+	return m.Call("hasSelfPublished").Bool()
+}
+
+// ClearSelfPublished clears the SelfPublished of the Book.
+// SelfPublished means this book was
+// self published.
+func (m *Book) ClearSelfPublished() {
+	m.Call("clearSelfPublished")
+}
+
 // GetPublisher gets the Publisher of the Book.
 // Publisher means this book was published
 // through a Publisher.
@@ -234,6 +251,20 @@ func (m *Book) SetPublisher(v *Publisher) {
 	m.Call("setPublisher", v.Call("toArray"))
 }
 
+// HasPublisher indicates whether the Publisher of the Book is set.
+// Publisher means this book was published
+// through a Publisher.
+func (m *Book) HasPublisher() bool {
+	return m.Call("hasPublisher").Bool()
+}
+
+// ClearPublisher clears the Publisher of the Book.
+// Publisher means this book was published
+// through a Publisher.
+func (m *Book) ClearPublisher() {
+	m.Call("clearPublisher")
+}
+
 // GetPublicationDate gets the PublicationDate of the Book.
 // PublicationDate is the time of publication of the book.
 func (m *Book) GetPublicationDate() *google_protobuf.Timestamp {
@@ -244,6 +275,18 @@ func (m *Book) GetPublicationDate() *google_protobuf.Timestamp {
 // PublicationDate is the time of publication of the book.
 func (m *Book) SetPublicationDate(v *google_protobuf.Timestamp) {
 	m.Call("setPublicationDate", v.Call("toArray"))
+}
+
+// HasPublicationDate indicates whether the PublicationDate of the Book is set.
+// PublicationDate is the time of publication of the book.
+func (m *Book) HasPublicationDate() bool {
+	return m.Call("hasPublicationDate").Bool()
+}
+
+// ClearPublicationDate clears the PublicationDate of the Book.
+// PublicationDate is the time of publication of the book.
+func (m *Book) ClearPublicationDate() {
+	m.Call("clearPublicationDate")
 }
 
 // New creates a new Book.
@@ -273,7 +316,7 @@ func (m *Book) New(isbn int64, title string, author string, bookType BookType, p
 }
 
 // Serialize marshals Book to a slice of bytes.
-func (m *Book) Serialize() ([]byte, error) {
+func (m *Book) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 
@@ -322,7 +365,7 @@ func (m *GetBookRequest) New(isbn int64) *GetBookRequest {
 }
 
 // Serialize marshals GetBookRequest to a slice of bytes.
-func (m *GetBookRequest) Serialize() ([]byte, error) {
+func (m *GetBookRequest) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 
@@ -371,7 +414,7 @@ func (m *QueryBooksRequest) New(authorPrefix string) *QueryBooksRequest {
 }
 
 // Serialize marshals QueryBooksRequest to a slice of bytes.
-func (m *QueryBooksRequest) Serialize() ([]byte, error) {
+func (m *QueryBooksRequest) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 
@@ -422,10 +465,7 @@ func NewBookServiceClient(hostname string, opts ...grpcweb.DialOption) BookServi
 }
 
 func (c *bookServiceClient) GetBook(ctx context.Context, in *GetBookRequest, opts ...grpcweb.CallOption) (*Book, error) {
-	req, err := in.Serialize()
-	if err != nil {
-		return nil, err
-	}
+	req := in.Serialize()
 
 	resp, err := c.client.RPCCall(ctx, "GetBook", req, opts...)
 	if err != nil {
@@ -436,10 +476,7 @@ func (c *bookServiceClient) GetBook(ctx context.Context, in *GetBookRequest, opt
 }
 
 func (c *bookServiceClient) QueryBooks(ctx context.Context, in *QueryBooksRequest, opts ...grpcweb.CallOption) (BookService_QueryBooksClient, error) {
-	req, err := in.Serialize()
-	if err != nil {
-		return nil, err
-	}
+	req := in.Serialize()
 
 	srv, err := c.client.Stream(ctx, "QueryBooks", req, opts...)
 	if err != nil {
