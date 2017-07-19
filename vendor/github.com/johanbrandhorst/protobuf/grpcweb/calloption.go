@@ -20,5 +20,43 @@
 
 package grpcweb
 
+import (
+	"github.com/johanbrandhorst/protobuf/grpcweb/browserheaders"
+)
+
+type callInfo struct {
+	headers  *browserheaders.BrowserHeaders
+	trailers *browserheaders.BrowserHeaders
+}
+
 // CallOption is a stub for any call options that may be implemented
-type CallOption func()
+type CallOption interface {
+	before(*callInfo) error
+	after(*callInfo)
+}
+
+type beforeCall func(c *callInfo) error
+
+func (o beforeCall) before(c *callInfo) error { return o(c) }
+func (o beforeCall) after(c *callInfo)        {}
+
+type afterCall func(c *callInfo)
+
+func (o afterCall) before(c *callInfo) error { return nil }
+func (o afterCall) after(c *callInfo)        { o(c) }
+
+// Header returns a CallOptions that retrieves the header metadata
+// for a unary RPC.
+func Header(headers *browserheaders.BrowserHeaders) CallOption {
+	return afterCall(func(c *callInfo) {
+		*headers = *c.headers
+	})
+}
+
+// Trailer returns a CallOptions that retrieves the trailer metadata
+// for a unary RPC.
+func Trailer(trailers *browserheaders.BrowserHeaders) CallOption {
+	return afterCall(func(c *callInfo) {
+		*trailers = *c.trailers
+	})
+}

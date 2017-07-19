@@ -80,6 +80,12 @@ func RegisterPlugin(p Plugin) {
 	plugins = append(plugins, p)
 }
 
+// generatedCodeVersion indicates a version of the generated code.
+// It is incremented whenever an incompatibility between the generated code and
+// the jspb package is introduced; the generated code references
+// a constant, jspb.JspbPackageIsVersionN (where N is generatedCodeVersion).
+const generatedCodeVersion = 1
+
 // Each type we import as a protocol buffer (other than FileDescriptorProto) needs
 // a pointer to the FileDescriptorProto that represents it.  These types achieve that
 // wrapping by placing each Proto inside a struct with the pointer to its File. The
@@ -936,6 +942,8 @@ func (g *Generator) generate(file *FileDescriptor) {
 	g.Buffer = new(bytes.Buffer)
 	g.generateHeader()
 	g.generateImports()
+	g.generateVersionAssertion()
+
 	if !g.writeOutput {
 		return
 	}
@@ -1074,6 +1082,7 @@ func (g *Generator) generateImports() {
 		g.P("import ", pname, " ", strconv.Quote(importPath))
 	}
 	g.P()
+
 	// TODO: may need to worry about uniqueness across plugins
 	for _, p := range plugins {
 		p.GenerateImports(g.file)
@@ -1101,6 +1110,14 @@ func (g *Generator) generateImported(id *ImportedDescriptor) {
 	g.P("// ", sn, " from public import ", filename)
 	g.usedPackages[df.PackageName()] = true
 
+	g.P()
+}
+
+func (g *Generator) generateVersionAssertion() {
+	// Assert version compatibility.
+	g.P("// This is a compile-time assertion to ensure that this generated file")
+	g.P("// is compatible with the jspb package it is being compiled against.")
+	g.P("const _ = ", g.Pkg["jspb"], ".JspbPackageIsVersion", generatedCodeVersion)
 	g.P()
 }
 
@@ -1298,6 +1315,8 @@ func (g *Generator) generateMessage(message *Descriptor) {
 	}
 	fieldGetterNames := make(map[*descriptor.FieldDescriptorProto]string)
 	fieldSetterNames := make(map[*descriptor.FieldDescriptorProto]string)
+	fieldHaserNames := make(map[*descriptor.FieldDescriptorProto]string)
+	fieldClearerNames := make(map[*descriptor.FieldDescriptorProto]string)
 	fieldTypes := make(map[*descriptor.FieldDescriptorProto]string)
 	mapFieldTypes := make(map[*descriptor.FieldDescriptorProto]string)
 
@@ -1347,6 +1366,20 @@ func (g *Generator) generateMessage(message *Descriptor) {
 
 		fieldGetterNames[field] = fieldGetterName
 		fieldSetterNames[field] = fieldSetterName
+
+		haser := field.OneofIndex != nil ||
+			*field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE
+		if haser {
+			fieldHaserNames[field] = allocNames("Has" + base)[0]
+		}
+
+		clearer := (field.OneofIndex != nil ||
+			*field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE ||
+			isRepeated(field) ||
+			g.getMapDescriptor(field) != nil)
+		if clearer {
+			fieldClearerNames[field] = allocNames("Clear" + base)[0]
+		}
 
 		oneof := field.OneofIndex != nil
 		if oneof && oneofFieldName[*field.OneofIndex] == "" {
@@ -1628,7 +1661,7 @@ func (g *Generator) generateMessage(message *Descriptor) {
 		g.P(`}`)
 		g.P()
 
-		// Generate setter
+		// Generate Setter
 		g.P(`// `, setterName, ` sets the `, fname, ` of the `, ccTypeName, `.`)
 		g.PrintComments(fmt.Sprintf("%s,%d,%d", message.path, messageFieldPath, i))
 		g.P(`func (m *` + ccTypeName + `) ` + setterName + `(v ` + typename + `) {`)
@@ -1636,9 +1669,10 @@ func (g *Generator) generateMessage(message *Descriptor) {
 		if d := g.getMapDescriptor(field); d != nil {
 			// Special handling for maps
 			g.P(`m.Call("clear`, fname, `Map")`)
+			g.P(`mp := m.Call("get`, fname, `Map")`)
 			g.P(`for key, value := range v {`)
 			g.In()
-			g.P(`m.Call("get`, fname, `Map").Call("set", key, value)`)
+			g.P(`mp.Call("set", key, value)`)
 			g.Out()
 			g.P(`}`)
 		} else if isRepeated(field) {
@@ -1658,6 +1692,41 @@ func (g *Generator) generateMessage(message *Descriptor) {
 		g.Out()
 		g.P(`}`)
 		g.P()
+
+		// Generate Haser (Only for oneof and message fields)
+		if field.OneofIndex != nil ||
+			(*field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE && g.getMapDescriptor(field) == nil) {
+			haserName := fieldHaserNames[field]
+			g.P(`// `, haserName, ` indicates whether the `, fname, ` of the `, ccTypeName, ` is set.`)
+			g.PrintComments(fmt.Sprintf("%s,%d,%d", message.path, messageFieldPath, i))
+			g.P(`func (m *` + ccTypeName + `) ` + haserName + `() bool {`)
+			g.In()
+			g.P(`return m.Call("has`, fname, `").Bool()`)
+			g.Out()
+			g.P(`}`)
+			g.P()
+		}
+
+		// Generate Clearer (Only for oneof, message, repeated and map fields)
+		if field.OneofIndex != nil ||
+			*field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE ||
+			isRepeated(field) || g.getMapDescriptor(field) != nil {
+			clearerName := fieldClearerNames[field]
+			g.P(`// `, clearerName, ` clears the `, fname, ` of the `, ccTypeName, `.`)
+			g.PrintComments(fmt.Sprintf("%s,%d,%d", message.path, messageFieldPath, i))
+			g.P(`func (m *` + ccTypeName + `) ` + clearerName + `() {`)
+			g.In()
+			if d := g.getMapDescriptor(field); d != nil {
+				g.P(`m.Call("clear`, fname, `Map")`)
+			} else if isRepeated(field) {
+				g.P(`m.Call("clear`, fname, `List")`)
+			} else {
+				g.P(`m.Call("clear`, fname, `")`)
+			}
+			g.Out()
+			g.P(`}`)
+			g.P()
+		}
 	}
 
 	g.P("// New", " creates a new ", ccTypeName, ".")
@@ -1788,7 +1857,7 @@ func (g *Generator) getMessageReference(typeName string) string {
 
 func (g *Generator) addSerialize(typeName string) {
 	g.P(`// Serialize marshals `, typeName, ` to a slice of bytes.`)
-	g.P(`func (m *` + typeName + `) Serialize() ([]byte, error) {`)
+	g.P(`func (m *` + typeName + `) Serialize() []byte {`)
 	g.In()
 	g.P(`return jspb.Serialize(m)`)
 	g.Out()

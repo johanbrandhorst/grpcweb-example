@@ -18,27 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package grpcweb
+package jspb
 
-import (
-	"github.com/gopherjs/gopherjs/js"
-	"google.golang.org/grpc/metadata"
-)
-
-// BrowserHeaders encasulates the Improbable
-// BrowserHeaders package as a convenient
-// link to the go gRPC metadata package.
-type browserHeaders struct {
-	*js.Object
-	headers metadata.MD `js:"keyValueMap"`
-}
-
-// NewBrowserHeaders initializes and populates a new BrowserHeaders
-func newBrowserHeaders(headers metadata.MD) *browserHeaders {
-	r := &browserHeaders{
-		Object: js.Global.Get("Object").New(),
-	}
-	r.headers = headers
-
-	return r
-}
+// JspbPackageIsVersion1 is referenced from generated protocol buffer files
+// to assert that that code is compatible with this version of the package.
+const JspbPackageIsVersion1 = true

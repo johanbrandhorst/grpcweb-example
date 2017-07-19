@@ -51,52 +51,58 @@
 			"revisionTime": "2017-04-27T15:07:31Z"
 		},
 		{
-			"checksumSHA1": "XbvJskllsdqID6cnUci5YdeevEs=",
+			"checksumSHA1": "pSdirG/rmaYEWl3oSXInVAmlfws=",
 			"path": "github.com/johanbrandhorst/protobuf/grpcweb",
-			"revision": "37ca1154306a71110b363b2f3b3b0924bcec542a",
-			"revisionTime": "2017-07-09T19:47:58Z"
+			"revision": "cd2af59aa9f59c6b9c5e232290b63c485e0cc25f",
+			"revisionTime": "2017-07-19T21:36:15Z"
 		},
 		{
-			"checksumSHA1": "nM8Uz7iwjUiF37AL3cA7DxSI03I=",
+			"checksumSHA1": "TvUVbQ/EvrMU7/Vg4n5VUlutPVc=",
+			"path": "github.com/johanbrandhorst/protobuf/grpcweb/browserheaders",
+			"revision": "cd2af59aa9f59c6b9c5e232290b63c485e0cc25f",
+			"revisionTime": "2017-07-19T21:36:15Z"
+		},
+		{
+			"checksumSHA1": "G4yy7AZG/ClnUHR3hA1eW4ij1Qc=",
 			"path": "github.com/johanbrandhorst/protobuf/grpcweb/grpcwebjs",
-			"revision": "37ca1154306a71110b363b2f3b3b0924bcec542a",
-			"revisionTime": "2017-07-09T19:47:58Z"
+			"revision": "cd2af59aa9f59c6b9c5e232290b63c485e0cc25f",
+			"revisionTime": "2017-07-19T21:36:15Z"
 		},
 		{
-			"checksumSHA1": "4gA6FY6RHYya03UmubSVjDvjDKI=",
+			"checksumSHA1": "RzPPBwCUCRSgYr3T8KSAOqo/Dwo=",
 			"path": "github.com/johanbrandhorst/protobuf/grpcweb/status",
-			"revision": "37ca1154306a71110b363b2f3b3b0924bcec542a",
-			"revisionTime": "2017-07-09T19:47:58Z"
+			"revision": "cd2af59aa9f59c6b9c5e232290b63c485e0cc25f",
+			"revisionTime": "2017-07-19T21:36:15Z"
 		},
 		{
-			"checksumSHA1": "4igmH+Y6vSjpaUEaDOt9/yk1i9M=",
+			"checksumSHA1": "mrU5W0XKuvgDks9cVewnVjbVvAw=",
 			"path": "github.com/johanbrandhorst/protobuf/jspb",
-			"revision": "37ca1154306a71110b363b2f3b3b0924bcec542a",
-			"revisionTime": "2017-07-09T19:47:58Z"
+			"revision": "cd2af59aa9f59c6b9c5e232290b63c485e0cc25f",
+			"revisionTime": "2017-07-19T21:36:15Z"
 		},
 		{
 			"checksumSHA1": "BF/1R1fhzyek2p8bt0DKg6+gVVE=",
 			"path": "github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs",
-			"revision": "37ca1154306a71110b363b2f3b3b0924bcec542a",
-			"revisionTime": "2017-07-09T19:47:58Z"
+			"revision": "cd2af59aa9f59c6b9c5e232290b63c485e0cc25f",
+			"revisionTime": "2017-07-19T21:36:15Z"
 		},
 		{
-			"checksumSHA1": "q3F39+ckofR/8hGiYErO85/bDtw=",
+			"checksumSHA1": "3AJwMeUCwUofACp3zv5qAemSkrA=",
 			"path": "github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/generator",
-			"revision": "37ca1154306a71110b363b2f3b3b0924bcec542a",
-			"revisionTime": "2017-07-09T19:47:58Z"
+			"revision": "cd2af59aa9f59c6b9c5e232290b63c485e0cc25f",
+			"revisionTime": "2017-07-19T21:36:15Z"
 		},
 		{
-			"checksumSHA1": "kDaT3Z30omKQ4joi8xAUukEoQRc=",
+			"checksumSHA1": "mzsCzC0wqx6/i6nC43RKOC42vlo=",
 			"path": "github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/grpc",
-			"revision": "37ca1154306a71110b363b2f3b3b0924bcec542a",
-			"revisionTime": "2017-07-09T19:47:58Z"
+			"revision": "cd2af59aa9f59c6b9c5e232290b63c485e0cc25f",
+			"revisionTime": "2017-07-19T21:36:15Z"
 		},
 		{
-			"checksumSHA1": "Iu8ZyCPeSOJMrSjT7X1bMGffNj8=",
+			"checksumSHA1": "TLv/7tSRuF8Z8XIFU8ZYPh7BjhU=",
 			"path": "github.com/johanbrandhorst/protobuf/ptypes/timestamp",
-			"revision": "37ca1154306a71110b363b2f3b3b0924bcec542a",
-			"revisionTime": "2017-07-09T19:47:58Z"
+			"revision": "cd2af59aa9f59c6b9c5e232290b63c485e0cc25f",
+			"revisionTime": "2017-07-19T21:36:15Z"
 		},
 		{
 			"checksumSHA1": "naf+sai8rdVYJ9ozLllNMMwE9aY=",
