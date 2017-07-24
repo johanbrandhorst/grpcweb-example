@@ -7,6 +7,7 @@ import (
 	"crypto/tls"
 	"flag"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Sirupsen/logrus"
@@ -45,8 +46,9 @@ func main() {
 	wrappedServer := grpcweb.WrapServer(gs)
 
 	handler := func(resp http.ResponseWriter, req *http.Request) {
-		if wrappedServer.IsGrpcWebRequest(req) {
-			wrappedServer.ServeHttp(resp, req)
+		// Redirect gRPC and gRPC-Web requests to the gRPC Server
+		if req.ProtoMajor == 2 && strings.Contains(req.Header.Get("Content-Type"), "application/grpc") {
+			wrappedServer.ServeHTTP(resp, req)
 		} else {
 			// Serve the GopherJS client
 			http.FileServer(&assetfs.AssetFS{
