@@ -45,10 +45,10 @@
 			"revisionTime": "2017-05-26T16:57:56Z"
 		},
 		{
-			"checksumSHA1": "P355HH35JD7+G1F06ZsOunuME3o=",
+			"checksumSHA1": "g9KHddPJSyd8UhuAUwmQtvbqgqQ=",
 			"path": "github.com/improbable-eng/grpc-web/go/grpcweb",
-			"revision": "15f1b75806168e92f5698fbf2c7e841682a26ad0",
-			"revisionTime": "2017-04-27T15:07:31Z"
+			"revision": "821be91cc9a849c728fd80ec57d6f76e2e8c5bec",
+			"revisionTime": "2017-07-16T14:52:19Z"
 		},
 		{
 			"checksumSHA1": "pSdirG/rmaYEWl3oSXInVAmlfws=",
