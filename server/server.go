@@ -104,12 +104,10 @@ func (s *BookService) GetBook(ctx context.Context, bookQuery *library.GetBookReq
 }
 
 func (s *BookService) QueryBooks(bookQuery *library.QueryBooksRequest, stream library.BookService_QueryBooksServer) error {
-	stream.SendHeader(metadata.Pairs("Pre-Response-Metadata", "Is-sent-as-headers-stream"))
 	for _, book := range books {
 		if strings.HasPrefix(book.Author, bookQuery.AuthorPrefix) {
 			stream.Send(book)
 		}
 	}
-	stream.SetTrailer(metadata.Pairs("Post-Response-Metadata", "Is-sent-as-trailers-stream"))
 	return nil
 }
