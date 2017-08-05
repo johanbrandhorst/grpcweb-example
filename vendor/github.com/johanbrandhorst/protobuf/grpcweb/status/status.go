@@ -23,6 +23,7 @@
 package status
 
 import (
+	"github.com/gopherjs/gopherjs/js"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 
@@ -32,9 +33,22 @@ import (
 
 // Status is a gRPC-web Status.
 type Status struct {
-	Code     codes.Code
-	Message  string
-	Trailers metadata.MD
+	*js.Object
+	Code     codes.Code  `js:"code"`
+	Message  string      `js:"message"`
+	Trailers metadata.MD `js:"trailers"`
+}
+
+// New creates a new, initialized, Status.
+func New(code codes.Code, msg string, trailers metadata.MD) *Status {
+	s := &Status{
+		Object: js.Global.Get("Object").New(),
+	}
+	s.Code = code
+	s.Message = msg
+	s.Trailers = trailers
+
+	return s
 }
 
 // Error returns a string representation of the status

@@ -20,41 +20,5 @@
 
 package grpcweb
 
-import "google.golang.org/grpc/metadata"
-
-type callInfo struct {
-	headers  metadata.MD
-	trailers metadata.MD
-}
-
 // CallOption is a stub for any call options that may be implemented
-type CallOption interface {
-	before(*callInfo) error
-	after(*callInfo)
-}
-
-type beforeCall func(c *callInfo) error
-
-func (o beforeCall) before(c *callInfo) error { return o(c) }
-func (o beforeCall) after(c *callInfo)        {}
-
-type afterCall func(c *callInfo)
-
-func (o afterCall) before(c *callInfo) error { return nil }
-func (o afterCall) after(c *callInfo)        { o(c) }
-
-// Header returns a CallOptions that retrieves the header metadata
-// for a unary RPC.
-func Header(headers *metadata.MD) CallOption {
-	return afterCall(func(c *callInfo) {
-		*headers = c.headers
-	})
-}
-
-// Trailer returns a CallOptions that retrieves the trailer metadata
-// for a unary RPC.
-func Trailer(trailers *metadata.MD) CallOption {
-	return afterCall(func(c *callInfo) {
-		*trailers = c.trailers
-	})
-}
+type CallOption func()

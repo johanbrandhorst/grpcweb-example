@@ -46,8 +46,8 @@ import (
 
 // generatedCodeVersion indicates a version of the generated code.
 // It is incremented whenever an incompatibility between the generated code and
-// the grpcweb package is introduced; the generated code references
-// a constant, grpcweb.GrpcWebPackageIsVersionN (where N is generatedCodeVersion).
+// the grpc package is introduced; the generated code references
+// a constant, grpc.SupportPackageIsVersionN (where N is generatedCodeVersion).
 const generatedCodeVersion = 1
 
 // Paths for packages used by code generated in this file,
@@ -102,12 +102,6 @@ func (g *grpc) typeName(str string) string {
 // P forwards to g.gen.P.
 func (g *grpc) P(args ...interface{}) { g.gen.P(args...) }
 
-// In forwards to g.gen.In.
-func (g *grpc) In() { g.gen.In() }
-
-// Out forwards to g.gen.Out.
-func (g *grpc) Out() { g.gen.Out() }
-
 // Generate generates code for the services in the given file.
 func (g *grpc) Generate(file *generator.FileDescriptor) {
 	if len(file.FileDescriptorProto.Service) == 0 {
@@ -137,9 +131,8 @@ func (g *grpc) GenerateImports(file *generator.FileDescriptor) {
 	}
 	g.P("import (")
 	g.P(contextPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, contextPkgPath)))
-	g.In()
+	g.P()
 	g.P(grpcPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, grpcPkgPath)))
-	g.Out()
 	g.P(")")
 	g.P()
 }
@@ -169,33 +162,25 @@ func (g *grpc) generateService(file *generator.FileDescriptor, service *pb.Servi
 	// Client interface.
 	g.gen.PrintComments(path)
 	g.P("type ", servName, "Client interface {")
-	g.In()
 	for i, method := range service.Method {
 		g.gen.PrintComments(fmt.Sprintf("%s,2,%d", path, i)) // 2 means method in a service.
 		g.P(g.generateClientSignature(servName, method))
 	}
-	g.Out()
 	g.P("}")
 	g.P()
 
 	// Client structure.
 	g.P("type ", unexport(servName), "Client struct {")
-	g.In()
 	g.P("client *", grpcPkg, ".Client")
-	g.Out()
 	g.P("}")
 	g.P()
 
 	// NewClient factory.
 	g.P("// New", servName, "Client creates a new gRPC-Web client.")
 	g.P("func New", servName, "Client (hostname string, opts ...grpcweb.DialOption) ", servName, "Client {")
-	g.In()
 	g.P("return &", unexport(servName), "Client{")
-	g.In()
 	g.P("client: ", grpcPkg, `.NewClient(hostname, "`, fullServName, `", opts...),`)
-	g.Out()
 	g.P("}")
-	g.Out()
 	g.P("}")
 	g.P()
 
@@ -244,43 +229,32 @@ func (g *grpc) generateClientMethod(servName, fullServName, serviceDescVar strin
 	streamType := unexport(servName) + methName + "Client"
 
 	g.P("func (c *", unexport(servName), "Client) ", g.generateClientSignature(servName, method), "{")
-	g.In()
 	switch {
 	case !method.GetServerStreaming() && !method.GetClientStreaming():
-		g.P("req := in.Serialize()")
+		g.P("req, err := in.Serialize()")
+		g.P("if err != nil { return nil, err }")
 		g.P()
 		g.P(`resp, err := c.client.RPCCall(ctx, "`, method.GetName(), `", req, opts...)`)
-		g.P("if err != nil {")
-		g.In()
-		g.P("return nil, err")
-		g.Out()
-		g.P("}")
+		g.P("if err != nil { return nil, err }")
 		g.P()
 		g.P("return new(", outType, ").Deserialize(resp)")
-		g.Out()
 		g.P("}")
 		g.P()
 		return
 	case method.GetServerStreaming():
-		g.P("req := in.Serialize()")
+		g.P("req, err := in.Serialize()")
+		g.P("if err != nil { return nil, err }")
 		g.P()
 		g.P(`srv, err := c.client.Stream(ctx, "`, method.GetName(), `", req, opts...)`)
-		g.P("if err != nil {")
-		g.In()
-		g.P("return nil, err")
-		g.Out()
-		g.P("}")
+		g.P("if err != nil { return nil, err }")
 		g.P()
 		g.P("return &", streamType, "{")
-		g.In()
 		g.P("stream: srv,")
-		g.Out()
 		g.P("}, nil")
-		g.Out()
 		g.P("}")
 		g.P()
 	case method.GetClientStreaming():
-		g.gen.Fail("Client streaming is not yet supported by gRPC-Web")
+		g.gen.Fail("Client streaming is not yet supported by gRPC Web")
 	}
 
 	genRecv := method.GetServerStreaming()
@@ -288,32 +262,22 @@ func (g *grpc) generateClientMethod(servName, fullServName, serviceDescVar strin
 	// Stream auxiliary types and methods.
 	g.P("type ", servName, "_", methName, "Client interface {")
 	if genRecv {
-		g.In()
 		g.P("Recv() (*", outType, ", error)")
-		g.Out()
 	}
 	g.P("}")
 	g.P()
 
 	g.P("type ", streamType, " struct {")
-	g.In()
 	g.P("stream *", grpcPkg, ".StreamClient")
-	g.Out()
 	g.P("}")
 	g.P()
 
 	if genRecv {
 		g.P("func (x *", streamType, ") Recv() (*", outType, ", error) {")
-		g.In()
 		g.P("resp, err := x.stream.Recv()")
-		g.P("if err != nil {")
-		g.In()
-		g.P("return nil, err")
-		g.Out()
-		g.P("}")
+		g.P("if err != nil { return nil, err }")
 		g.P()
 		g.P("return new(", outType, ").Deserialize(resp)")
-		g.Out()
 		g.P("}")
 		g.P()
 	}

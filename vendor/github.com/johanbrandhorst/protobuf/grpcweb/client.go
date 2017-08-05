@@ -26,9 +26,8 @@ import (
 
 	"github.com/gopherjs/gopherjs/js"
 	"google.golang.org/grpc/codes"
-	gmd "google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/metadata"
 
-	"github.com/johanbrandhorst/protobuf/grpcweb/metadata"
 	"github.com/johanbrandhorst/protobuf/grpcweb/status"
 )
 
@@ -56,37 +55,25 @@ func NewClient(host, service string, opts ...DialOption) *Client {
 // RPCCall performs a unary call to an endpoint, blocking until a
 // reply has been received or the context was canceled.
 func (c Client) RPCCall(ctx context.Context, method string, req []byte, opts ...CallOption) ([]byte, error) {
-	respChan := make(chan []byte, 1)
+	respChan := make(chan []byte, 10)
 	errChan := make(chan error, 1)
 
-	onMsg := func(in []byte) {
-		respChan <- in
-	}
+	onMsg := func(in []byte) { respChan <- in }
 	onEnd := func(s *status.Status) {
 		if s.Code != codes.OK {
 			errChan <- s
 		} else {
-			errChan <- io.EOF // Success!
+			errChan <- io.EOF
 		}
 	}
-	err := invoke(ctx, c.host, c.service, method, req, onMsg, onEnd, opts...)
+	err := invoke(ctx, c.host, c.service, method, req, onMsg, onEnd)
 	if err != nil {
 		return nil, err
 	}
-
 	select {
+	case resp := <-respChan:
+		return resp, nil
 	case err := <-errChan:
-		// Wait until we've gotten the result from onEnd
-		if err == io.EOF {
-			select {
-			// Now check for the response - should already be
-			// here, but can't be too careful
-			case resp := <-respChan:
-				return resp, nil
-			case <-ctx.Done():
-				return nil, ctx.Err()
-			}
-		}
 		return nil, err
 	case <-ctx.Done():
 		return nil, ctx.Err()
@@ -99,7 +86,7 @@ func (c Client) RPCCall(ctx context.Context, method string, req []byte, opts ...
 func (c Client) Stream(ctx context.Context, method string, req []byte, opts ...CallOption) (*StreamClient, error) {
 	srv := &StreamClient{
 		ctx:      ctx,
-		messages: make(chan []byte, 10), // Buffer up to 10 messages
+		messages: make(chan []byte, 10),
 		errors:   make(chan error, 1),
 	}
 
@@ -111,7 +98,7 @@ func (c Client) Stream(ctx context.Context, method string, req []byte, opts ...C
 			srv.errors <- io.EOF
 		}
 	}
-	err := invoke(ctx, c.host, c.service, method, req, onMsg, onEnd, opts...)
+	err := invoke(ctx, c.host, c.service, method, req, onMsg, onEnd)
 	if err != nil {
 		return nil, err
 	}
@@ -121,31 +108,15 @@ func (c Client) Stream(ctx context.Context, method string, req []byte, opts ...C
 
 // Invoke populates the necessary JS structures and performs the gRPC-web call.
 // It attempts to catch any JS errors thrown.
-func invoke(ctx context.Context, host, service, method string, req []byte, onMsg onMessageFunc, onEnd onEndFunc, opts ...CallOption) (err error) {
+func invoke(ctx context.Context, host, service, method string, req []byte, onMsg onMessageFunc, onEnd onEndFunc) (err error) {
 	methodDesc := newMethodDescriptor(newService(service), method, newResponseType())
 
-	c := &callInfo{}
-	rawOnEnd := func(code int, msg string, trailers metadata.Metadata) {
-		s := &status.Status{
-			Code:     codes.Code(code),
-			Message:  msg,
-			Trailers: trailers.MD,
-		}
-		c.trailers = trailers.MD
-
-		// Perform CallOptions required after call
-		for _, o := range opts {
-			o.after(c)
-		}
-
+	md, _ := metadata.FromContext(ctx)
+	rawOnEnd := func(code int, msg string, headers *browserHeaders) {
+		s := status.New(codes.Code(code), msg, headers.headers)
 		onEnd(s)
 	}
-	onHeaders := func(headers metadata.Metadata) {
-		c.headers = headers.MD
-	}
-
-	md, _ := gmd.FromOutgoingContext(ctx)
-	props := newProperties(host, false, newRequest(req), metadata.New(md), onHeaders, onMsg, rawOnEnd)
+	props := newProperties(host, false, newRequest(req), newBrowserHeaders(md), nil, onMsg, rawOnEnd)
 
 	// Recover any thrown JS errors
 	defer func() {
@@ -161,14 +132,7 @@ func invoke(ctx context.Context, host, service, method string, req []byte, onMsg
 		}
 	}()
 
-	// Perform CallOptions required before call
-	for _, o := range opts {
-		if err := o.before(c); err != nil {
-			return status.FromError(err)
-		}
-	}
-
 	js.Global.Get("grpc").Call("invoke", methodDesc, props)
 
-	return nil
+	return err
 }
