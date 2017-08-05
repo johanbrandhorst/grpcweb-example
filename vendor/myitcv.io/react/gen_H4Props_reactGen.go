@@ -2,8 +2,8 @@
 
 package react
 
-// H3Props defines the properties for the <h3> element
-type H3Props struct {
+// H4Props defines the properties for the <h4> element
+type H4Props struct {
 	ClassName               string
 	DangerouslySetInnerHTML *DangerousInnerHTML
 	ID                      string
@@ -16,7 +16,7 @@ type H3Props struct {
 	Style *CSS
 }
 
-func (h *H3Props) assign(v *_H3Props) {
+func (h *H4Props) assign(v *_H4Props) {
 
 	v.ClassName = h.ClassName
 

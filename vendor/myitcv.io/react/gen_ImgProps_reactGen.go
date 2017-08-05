@@ -2,33 +2,26 @@
 
 package react
 
-// InputProps defines the properties for the <input> element
-type InputProps struct {
+// ImgProps are the props for a <Img> component
+type ImgProps struct {
 	ClassName               string
 	DangerouslySetInnerHTML *DangerousInnerHTML
-	DefaultValue            string
 	ID                      string
 	Key                     string
 
 	OnChange
 	OnClick
 
-	Placeholder string
-	Role        string
-	Style       *CSS
-	Type        string
-	Value       string
+	Role  string
+	Src   string
+	Style *CSS
 }
 
-func (i *InputProps) assign(v *_InputProps) {
+func (i *ImgProps) assign(v *_ImgProps) {
 
 	v.ClassName = i.ClassName
 
 	v.DangerouslySetInnerHTML = i.DangerouslySetInnerHTML
-
-	if i.DefaultValue != "" {
-		v.DefaultValue = i.DefaultValue
-	}
 
 	if i.ID != "" {
 		v.ID = i.ID
@@ -46,16 +39,12 @@ func (i *InputProps) assign(v *_InputProps) {
 		v.o.Set("onClick", i.OnClick.OnClick)
 	}
 
-	v.Placeholder = i.Placeholder
-
 	v.Role = i.Role
+
+	v.Src = i.Src
 
 	// TODO: until we have a resolution on
 	// https://github.com/gopherjs/gopherjs/issues/236
 	v.Style = i.Style.hack()
-
-	v.Type = i.Type
-
-	v.Value = i.Value
 
 }

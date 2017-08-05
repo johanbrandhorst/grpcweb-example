@@ -3,11 +3,9 @@
 
 package react
 
-import "github.com/gopherjs/gopherjs/js"
-
-// CodeDef is the React component definition corresponding to the HTML <code> element
-type CodeDef struct {
-	underlying *js.Object
+// CodeElem is the React element definition corresponding to the HTML <code> element
+type CodeElem struct {
+	Element
 }
 
 // _CodeProps defines the properties for the <code> element
@@ -15,10 +13,8 @@ type _CodeProps struct {
 	*BasicHTMLElement
 }
 
-func (d *CodeDef) reactElement() {}
-
 // Code creates a new instance of a <code> element with the provided props
-func Code(props *CodeProps, children ...Element) *CodeDef {
+func Code(props *CodeProps, children ...Element) *CodeElem {
 
 	rProps := &_CodeProps{
 		BasicHTMLElement: newBasicHTMLElement(),
@@ -28,13 +24,7 @@ func Code(props *CodeProps, children ...Element) *CodeDef {
 		props.assign(rProps)
 	}
 
-	args := []interface{}{"code", rProps}
-
-	for _, v := range children {
-		args = append(args, elementToReactObj(v))
+	return &CodeElem{
+		Element: createElement("code", rProps, children...),
 	}
-
-	underlying := react.Call("createElement", args...)
-
-	return &CodeDef{underlying: underlying}
 }

@@ -11,21 +11,30 @@ For more information see https://github.com/myitcv/react/wiki
 */
 package react // import "myitcv.io/react"
 
+//go:generate reactGen
+
 import (
 	"reflect"
 
 	"honnef.co/go/js/dom"
 
 	"github.com/gopherjs/gopherjs/js"
+	"github.com/gopherjs/jsbuiltin"
 
+	// imported for the side effect of bundling react
+	// build tags control whether this actually includes
+	// js files or not
 	_ "myitcv.io/react/internal/bundle"
 )
 
 const (
+	reactInternalInstance              = "_reactInternalInstance"
 	reactCompProps                     = "props"
-	reactCompLastState                 = "_lastState"
+	reactCompLastState                 = "__lastState"
+	reactComponentBuilder              = "__componentBuilder"
 	reactCompDisplayName               = "displayName"
 	reactCompSetState                  = "setState"
+	reactCompState                     = "state"
 	reactCompGetInitialState           = "getInitialState"
 	reactCompShouldComponentUpdate     = "shouldComponentUpdate"
 	reactCompComponentDidMount         = "componentDidMount"
@@ -50,7 +59,6 @@ var object = js.Global.Get("Object")
 // ComponentDef is embedded in a type definition to indicate the type is a component
 type ComponentDef struct {
 	elem *js.Object
-	this *js.Object
 }
 
 var compMap = make(map[reflect.Type]*js.Object)
@@ -59,6 +67,16 @@ var compMap = make(map[reflect.Type]*js.Object)
 type S string
 
 func (s S) reactElement() {}
+
+type elementHolder struct {
+	elem *js.Object
+}
+
+func (r elementHolder) element() *js.Object {
+	return r.elem
+}
+
+func (r elementHolder) reactElement() {}
 
 type Element interface {
 	reactElement()
@@ -69,62 +87,54 @@ type generatesElement interface {
 }
 
 type Component interface {
-	ShouldComponentUpdateIntf(nextProps, prevState, nextState interface{}) bool
+	ShouldComponentUpdateIntf(nextProps Props, prevState, nextState State) bool
 	Render() Element
-
-	setThis(this *js.Object)
-	setElem(elem *js.Object)
 }
 
-type ComponentWithWillMount interface {
+type componentWithWillMount interface {
 	Component
 	ComponentWillMount()
 }
 
-type ComponentWithDidMount interface {
+type componentWithDidMount interface {
 	Component
 	ComponentDidMount()
 }
 
-type ComponentWithWillReceiveProps interface {
+type componentWithWillReceiveProps interface {
 	Component
 	ComponentWillReceivePropsIntf(i interface{})
 }
 
-type ComponentWithGetInitialState interface {
+type componentWithGetInitialState interface {
 	Component
 	GetInitialStateIntf() State
 }
 
-type ComponentWithWillUnmount interface {
+type componentWithWillUnmount interface {
 	Component
 	ComponentWillUnmount()
 }
 
+type Props interface {
+	IsProps()
+	EqualsIntf(v Props) bool
+}
+
 type State interface {
 	IsState()
-	EqualsIntf(v interface{}) bool
+	EqualsIntf(v State) bool
 }
 
-type Equals interface {
-	EqualsIntf(v interface{}) bool
+func (c ComponentDef) Props() Props {
+	return c.instance().Get(reactCompProps).Get(nestedProps).Interface().(Props)
 }
 
-func (c *ComponentDef) reactElement() {}
-
-func (c *ComponentDef) element() *js.Object {
-	return c.elem
+func (c ComponentDef) instance() *js.Object {
+	return c.elem.Get("_instance")
 }
 
-func (c *ComponentDef) Props() interface{} {
-	if c.this != nil {
-		return c.this.Get(reactCompProps).Get(nestedProps).Interface()
-	}
-
-	return c.elem.Get(reactCompProps).Get(nestedProps).Interface()
-}
-
-func (c *ComponentDef) SetState(i State) {
+func (c ComponentDef) SetState(i State) {
 	cur := c.State()
 
 	if i.EqualsIntf(cur) {
@@ -133,28 +143,35 @@ func (c *ComponentDef) SetState(i State) {
 
 	res := object.New()
 	res.Set(nestedState, js.MakeWrapper(i))
-	c.this.Set(reactCompLastState, res)
-	c.this.Call(reactCompSetState, res)
+	c.instance().Set(reactCompLastState, res)
+	c.instance().Call(reactCompSetState, res)
 }
 
-func (c *ComponentDef) setThis(this *js.Object) {
-	c.this = this
+func (c ComponentDef) State() State {
+	ok, err := jsbuiltin.In(reactCompLastState, c.instance())
+	if err != nil {
+		// TODO better handle this case... does that function even need to
+		// return an error?
+		panic(err)
+	}
+
+	if !ok {
+		s := c.instance().Get(reactCompState)
+		c.instance().Set(reactCompLastState, s)
+	}
+
+	return c.instance().Get(reactCompLastState).Get(nestedState).Interface().(State)
 }
 
-func (c *ComponentDef) setElem(elem *js.Object) {
-	c.elem = elem
-}
+type ComponentBuilder func(elem ComponentDef) Component
 
-func (c *ComponentDef) State() interface{} {
-	return c.this.Get(reactCompLastState).Get(nestedState).Interface()
-}
-
-func BlessElement(cmp Component, newprops interface{}, children ...Element) {
+func CreateElement(buildCmp ComponentBuilder, newprops Props, children ...Element) Element {
+	cmp := buildCmp(ComponentDef{})
 	typ := reflect.TypeOf(cmp)
 
 	comp, ok := compMap[typ]
 	if !ok {
-		comp = buildReactComponent(typ)
+		comp = buildReactComponent(typ, buildCmp)
 		compMap[typ] = comp
 	}
 
@@ -162,7 +179,6 @@ func BlessElement(cmp Component, newprops interface{}, children ...Element) {
 	if newprops != nil {
 		propsWrap.Set(nestedProps, js.MakeWrapper(newprops))
 	}
-	propsWrap.Set(nestedComponentWrapper, js.MakeWrapper(cmp))
 
 	args := []interface{}{comp, propsWrap}
 
@@ -170,30 +186,39 @@ func BlessElement(cmp Component, newprops interface{}, children ...Element) {
 		args = append(args, elementToReactObj(v))
 	}
 
-	elem := react.Call(reactCreateElement, args...)
-
-	cmp.setElem(elem)
+	return elementHolder{
+		elem: react.Call(reactCreateElement, args...),
+	}
 }
 
-func buildReactComponent(typ reflect.Type) *js.Object {
+func createElement(cmp string, props interface{}, children ...Element) Element {
+	args := []interface{}{cmp, props}
+
+	for _, v := range children {
+		args = append(args, elementToReactObj(v))
+	}
+
+	return elementHolder{
+		elem: react.Call("createElement", args...),
+	}
+}
+
+func buildReactComponent(typ reflect.Type, builder ComponentBuilder) *js.Object {
 	compDef := object.New()
 	compDef.Set(reactCompDisplayName, typ.String())
+	compDef.Set(reactComponentBuilder, builder)
 
 	compDef.Set(reactCompGetInitialState, js.MakeFunc(func(this *js.Object, arguments []*js.Object) interface{} {
-		props := this.Get(reactCompProps)
-		cw := props.Get(nestedComponentWrapper)
-		cmp := cw.Interface().(Component)
+		elem := this.Get(reactInternalInstance)
+		cmp := builder(ComponentDef{elem: elem})
 
-		cmp.setThis(this)
-
-		if cmp, ok := cw.Interface().(ComponentWithGetInitialState); ok {
+		if cmp, ok := cmp.(componentWithGetInitialState); ok {
 			x := cmp.GetInitialStateIntf()
 			if x == nil {
 				return nil
 			}
 			res := object.New()
 			res.Set(nestedState, js.MakeWrapper(x))
-			this.Set(reactCompLastState, res)
 			return res
 		}
 
@@ -201,32 +226,31 @@ func buildReactComponent(typ reflect.Type) *js.Object {
 	}))
 
 	compDef.Set(reactCompShouldComponentUpdate, js.MakeFunc(func(this *js.Object, arguments []*js.Object) interface{} {
-		props := this.Get(reactCompProps)
-		cw := props.Get(nestedComponentWrapper)
-		cmp := cw.Interface().(Component)
+		elem := this.Get(reactInternalInstance)
+		cmp := builder(ComponentDef{elem: elem})
 
-		cmp.setThis(this)
-
-		var nextProps interface{}
-		var prevState interface{}
-		var nextState interface{}
+		var nextProps Props
+		var prevState State
+		var nextState State
 
 		if arguments[0] != nil {
-			if i := arguments[0].Get(nestedProps); i != nil {
-				nextProps = i.Interface()
+			if ok, err := jsbuiltin.In(nestedProps, arguments[0]); err == nil && ok {
+				nextProps = arguments[0].Get(nestedProps).Interface().(Props)
 			}
 		}
 
 		if arguments[1] != nil {
-			if i := arguments[1].Get(nestedState); i != nil {
-				nextState = i.Interface()
+			if ok, err := jsbuiltin.In(nestedState, arguments[1]); err == nil && ok {
+				nextState = arguments[1].Get(nestedState).Interface().(State)
 			}
 		}
 
+		// here we _deliberately_ get React's version of the current state
+		// as opposed to the last state value
 		if this != nil {
-			if s := this.Get("state"); s != nil {
-				if v := s.Get(nestedState); v != nil {
-					prevState = v.Interface()
+			if s := this.Get(reactCompState); s != nil {
+				if v := s.Get(nestedState); v.Interface() != nil {
+					prevState = v.Interface().(State)
 				}
 			}
 		}
@@ -235,13 +259,10 @@ func buildReactComponent(typ reflect.Type) *js.Object {
 	}))
 
 	compDef.Set(reactCompComponentDidMount, js.MakeFunc(func(this *js.Object, arguments []*js.Object) interface{} {
-		props := this.Get(reactCompProps)
-		cw := props.Get(nestedComponentWrapper)
-		cmp := cw.Interface().(Component)
+		elem := this.Get(reactInternalInstance)
+		cmp := builder(ComponentDef{elem: elem})
 
-		cmp.setThis(this)
-
-		if cmp, ok := cw.Interface().(ComponentWithDidMount); ok {
+		if cmp, ok := cmp.(componentWithDidMount); ok {
 			cmp.ComponentDidMount()
 		}
 
@@ -249,13 +270,10 @@ func buildReactComponent(typ reflect.Type) *js.Object {
 	}))
 
 	compDef.Set(reactCompComponentWillReceiveProps, js.MakeFunc(func(this *js.Object, arguments []*js.Object) interface{} {
-		props := this.Get(reactCompProps)
-		cw := props.Get(nestedComponentWrapper)
-		cmp := cw.Interface().(Component)
+		elem := this.Get(reactInternalInstance)
+		cmp := builder(ComponentDef{elem: elem})
 
-		cmp.setThis(this)
-
-		if cmp, ok := cw.Interface().(ComponentWithWillReceiveProps); ok {
+		if cmp, ok := cmp.(componentWithWillReceiveProps); ok {
 			ourProps := arguments[0].Get(nestedProps).Interface()
 			cmp.ComponentWillReceivePropsIntf(ourProps)
 		}
@@ -264,13 +282,10 @@ func buildReactComponent(typ reflect.Type) *js.Object {
 	}))
 
 	compDef.Set(reactCompComponentWillUnmount, js.MakeFunc(func(this *js.Object, arguments []*js.Object) interface{} {
-		props := this.Get(reactCompProps)
-		cw := props.Get(nestedComponentWrapper)
-		cmp := cw.Interface().(Component)
+		elem := this.Get(reactInternalInstance)
+		cmp := builder(ComponentDef{elem: elem})
 
-		cmp.setThis(this)
-
-		if cmp, ok := cw.Interface().(ComponentWithWillUnmount); ok {
+		if cmp, ok := cmp.(componentWithWillUnmount); ok {
 			cmp.ComponentWillUnmount()
 		}
 
@@ -278,16 +293,13 @@ func buildReactComponent(typ reflect.Type) *js.Object {
 	}))
 
 	compDef.Set(reactCompComponentWillMount, js.MakeFunc(func(this *js.Object, arguments []*js.Object) interface{} {
-		props := this.Get(reactCompProps)
-		cw := props.Get(nestedComponentWrapper)
-		cmp := cw.Interface().(Component)
-
-		cmp.setThis(this)
+		elem := this.Get(reactInternalInstance)
+		cmp := builder(ComponentDef{elem: elem})
 
 		// TODO we can make this more efficient by not doing the type check
 		// within the function body; it is known at the time of setting
 		// "componentWillMount" on the compDef
-		if cmp, ok := cmp.(ComponentWithWillMount); ok {
+		if cmp, ok := cmp.(componentWithWillMount); ok {
 			cmp.ComponentWillMount()
 		}
 
@@ -295,11 +307,8 @@ func buildReactComponent(typ reflect.Type) *js.Object {
 	}))
 
 	compDef.Set(reactCompRender, js.MakeFunc(func(this *js.Object, arguments []*js.Object) interface{} {
-		props := this.Get(reactCompProps)
-		cw := props.Get(nestedComponentWrapper)
-		cmp := cw.Interface().(Component)
-
-		cmp.setThis(this)
+		elem := this.Get(reactInternalInstance)
+		cmp := builder(ComponentDef{elem: elem})
 
 		renderRes := cmp.Render()
 

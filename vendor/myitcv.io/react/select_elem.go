@@ -3,11 +3,9 @@
 
 package react
 
-import "github.com/gopherjs/gopherjs/js"
-
-// SelectDef is the React component definition corresponding to the HTML <select> element
-type SelectDef struct {
-	underlying *js.Object
+// SelectElem is the React element definition corresponding to the HTML <select> element
+type SelectElem struct {
+	Element
 }
 
 // _SelectProps are the props for a <select> component
@@ -17,10 +15,8 @@ type _SelectProps struct {
 	Value string `js:"value"`
 }
 
-func (d *SelectDef) reactElement() {}
-
 // Select creates a new instance of a <select> element with the provided props and children
-func Select(props *SelectProps, children ...*OptionDef) *SelectDef {
+func Select(props *SelectProps, children ...*OptionElem) *SelectElem {
 
 	rProps := &_SelectProps{
 		BasicHTMLElement: newBasicHTMLElement(),
@@ -30,13 +26,12 @@ func Select(props *SelectProps, children ...*OptionDef) *SelectDef {
 		props.assign(rProps)
 	}
 
-	args := []interface{}{"select", rProps}
-
+	var elems []Element
 	for _, v := range children {
-		args = append(args, elementToReactObj(v))
+		elems = append(elems, v)
 	}
 
-	underlying := react.Call("createElement", args...)
-
-	return &SelectDef{underlying: underlying}
+	return &SelectElem{
+		Element: createElement("select", rProps, elems...),
+	}
 }

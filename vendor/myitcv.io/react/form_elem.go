@@ -3,11 +3,9 @@
 
 package react
 
-import "github.com/gopherjs/gopherjs/js"
-
-// FormDef is the React component definition corresponding to the HTML <form> element
-type FormDef struct {
-	underlying *js.Object
+// FormElem is the React element definition corresponding to the HTML <form> element
+type FormElem struct {
+	Element
 }
 
 // _FormProps defines the properties for the <form> element
@@ -15,11 +13,9 @@ type _FormProps struct {
 	*BasicHTMLElement
 }
 
-func (d *FormDef) reactElement() {}
-
 // Form creates a new instance of a <form> element with the provided props and
 // children
-func Form(props *FormProps, children ...Element) *FormDef {
+func Form(props *FormProps, children ...Element) *FormElem {
 
 	rProps := &_FormProps{
 		BasicHTMLElement: newBasicHTMLElement(),
@@ -29,13 +25,7 @@ func Form(props *FormProps, children ...Element) *FormDef {
 		props.assign(rProps)
 	}
 
-	args := []interface{}{"form", rProps}
-
-	for _, v := range children {
-		args = append(args, elementToReactObj(v))
+	return &FormElem{
+		Element: createElement("form", rProps, children...),
 	}
-
-	underlying := react.Call("createElement", args...)
-
-	return &FormDef{underlying: underlying}
 }
