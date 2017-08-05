@@ -18,7 +18,7 @@ func renderBook(bk *library.Book) r.Element {
 		publisher = "Self-published"
 	}
 	return r.Div(nil,
-		r.HR(nil),
+		r.Hr(nil),
 		r.Div(nil,
 			r.S("Title: "),
 			r.Code(nil,

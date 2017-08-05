@@ -84,7 +84,7 @@ func (q *QueryBooksDef) Render() r.Element {
 	if st.err != "" {
 		content = append(content,
 			r.Div(nil,
-				r.HR(nil),
+				r.Hr(nil),
 				r.S("Error: "+st.err),
 			),
 		)
