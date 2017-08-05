@@ -1,5 +1,5 @@
-test:
-	cd testdata && make test
+tests:
+	go install ./ && cd test && make test
 
 regenerate:
-	cd testdata && make regenerate
+	cd test && make regenerate

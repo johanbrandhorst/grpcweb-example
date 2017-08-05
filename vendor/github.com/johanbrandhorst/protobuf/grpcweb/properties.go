@@ -23,7 +23,7 @@ package grpcweb
 import (
 	"github.com/gopherjs/gopherjs/js"
 
-	"github.com/johanbrandhorst/protobuf/grpcweb/browserheaders"
+	"github.com/johanbrandhorst/protobuf/grpcweb/metadata"
 	"github.com/johanbrandhorst/protobuf/grpcweb/status"
 )
 
@@ -44,25 +44,25 @@ func newRequest(rawBytes []byte) *request {
 	return r
 }
 
-type onHeadersFunc func(*browserheaders.BrowserHeaders)
+type onHeadersFunc func(metadata.Metadata)
 type onEndFunc func(*status.Status)
-type rawOnEndFunc func(int, string, *browserheaders.BrowserHeaders)
+type rawOnEndFunc func(int, string, metadata.Metadata)
 type onMessageFunc func([]byte)
 
 // Properties pretends to be an Improbable gRPC-web Properties struct.
 type properties struct {
 	*js.Object
-	request   *request                       `js:"request"`
-	headers   *browserheaders.BrowserHeaders `js:"headers"`
-	onHeaders onHeadersFunc                  `js:"onHeaders"`
-	onMessage onMessageFunc                  `js:"onMessage"`
-	onEnd     rawOnEndFunc                   `js:"onEnd"`
-	host      string                         `js:"host"`
-	debug     bool                           `js:"debug"`
+	request   *request           `js:"request"`
+	headers   *metadata.Metadata `js:"metadata"`
+	onHeaders onHeadersFunc      `js:"onHeaders"`
+	onMessage onMessageFunc      `js:"onMessage"`
+	onEnd     rawOnEndFunc       `js:"onEnd"`
+	host      string             `js:"host"`
+	debug     bool               `js:"debug"`
 }
 
 // NewProperties creates a new, initialized, Properties struct.
-func newProperties(host string, debug bool, req *request, headers *browserheaders.BrowserHeaders,
+func newProperties(host string, debug bool, req *request, headers *metadata.Metadata,
 	onHeaders onHeadersFunc, onMsg onMessageFunc, onEnd rawOnEndFunc) *properties {
 	r := &properties{
 		Object: js.Global.Get("Object").New(),

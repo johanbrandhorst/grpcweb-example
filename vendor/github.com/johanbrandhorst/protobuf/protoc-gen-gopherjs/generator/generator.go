@@ -1368,7 +1368,9 @@ func (g *Generator) generateMessage(message *Descriptor) {
 		fieldSetterNames[field] = fieldSetterName
 
 		haser := field.OneofIndex != nil ||
-			*field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE
+			(*field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE &&
+				!isRepeated(field) &&
+				g.getMapDescriptor(field) == nil)
 		if haser {
 			fieldHaserNames[field] = allocNames("Has" + base)[0]
 		}
@@ -1653,6 +1655,8 @@ func (g *Generator) generateMessage(message *Descriptor) {
 				g.P(`return int32(m.Call("get`+fname+`").`+typeFunc, `)`)
 			case descriptor.FieldDescriptorProto_TYPE_UINT32, descriptor.FieldDescriptorProto_TYPE_FIXED32:
 				g.P(`return uint32(m.Call("get`+fname+`").`+typeFunc, `)`)
+			case descriptor.FieldDescriptorProto_TYPE_BYTES:
+				g.P(`return m.Call("get` + fname + `_asU8").` + typeFunc)
 			default:
 				g.P(`return m.Call("get` + fname + `").` + typeFunc)
 			}
@@ -1695,7 +1699,9 @@ func (g *Generator) generateMessage(message *Descriptor) {
 
 		// Generate Haser (Only for oneof and message fields)
 		if field.OneofIndex != nil ||
-			(*field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE && g.getMapDescriptor(field) == nil) {
+			(*field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE &&
+				!isRepeated(field) &&
+				g.getMapDescriptor(field) == nil) {
 			haserName := fieldHaserNames[field]
 			g.P(`// `, haserName, ` indicates whether the `, fname, ` of the `, ccTypeName, ` is set.`)
 			g.PrintComments(fmt.Sprintf("%s,%d,%d", message.path, messageFieldPath, i))
