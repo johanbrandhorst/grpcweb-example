@@ -15,6 +15,10 @@ package timestamp
 import js "github.com/gopherjs/gopherjs/js"
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the jspb package it is being compiled against.
+const _ = jspb.JspbPackageIsVersion1
+
 // A Timestamp represents a point in time independent of any time zone
 // or calendar, represented as seconds and fractions of seconds at
 // nanosecond resolution in UTC Epoch time. It is encoded using the
@@ -151,7 +155,7 @@ func (m *Timestamp) New(seconds int64, nanos int32) *Timestamp {
 }
 
 // Serialize marshals Timestamp to a slice of bytes.
-func (m *Timestamp) Serialize() ([]byte, error) {
+func (m *Timestamp) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 

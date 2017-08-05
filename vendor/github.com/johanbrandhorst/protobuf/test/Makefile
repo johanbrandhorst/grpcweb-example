@@ -15,8 +15,11 @@ regenerate:
 	# Move original file
 	mv ./client/proto/test/test_pb.js ./client/proto/test/test_pb.inc.js
 
+	# Regenerate dependencies
+	(cd ../protoc-gen-gopherjs/test && make regenerate)
+
 	# Generate GopherJS files
 	go generate ./client/...
 
 test:
-	go run main.go
+	ginkgo -v .

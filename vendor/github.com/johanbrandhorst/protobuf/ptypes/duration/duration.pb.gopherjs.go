@@ -15,6 +15,10 @@ package duration
 import js "github.com/gopherjs/gopherjs/js"
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the jspb package it is being compiled against.
+const _ = jspb.JspbPackageIsVersion1
+
 // A Duration represents a signed, fixed-length span of time represented
 // as a count of seconds and fractions of seconds at nanosecond
 // resolution. It is independent of any calendar and concepts like "day"
@@ -139,7 +143,7 @@ func (m *Duration) New(seconds int64, nanos int32) *Duration {
 }
 
 // Serialize marshals Duration to a slice of bytes.
-func (m *Duration) Serialize() ([]byte, error) {
+func (m *Duration) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 

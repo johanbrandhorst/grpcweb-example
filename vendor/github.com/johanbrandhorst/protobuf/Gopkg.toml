@@ -23,20 +23,8 @@
 ignored = ["github.com/gopherjs/gopherjs/js"]
 
 [[constraint]]
-  name = "github.com/Sirupsen/logrus"
-  version = "1.0.2"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/elazarl/go-bindata-assetfs"
-
-[[constraint]]
   branch = "master"
   name = "github.com/golang/protobuf"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/gopherjs/gopherjs"
 
 [[constraint]]
   branch = "master"
@@ -44,11 +32,19 @@ ignored = ["github.com/gopherjs/gopherjs/js"]
 
 [[constraint]]
   branch = "master"
-  name = "github.com/johanbrandhorst/protobuf"
+  name = "github.com/onsi/ginkgo"
 
 [[constraint]]
   branch = "master"
-  name = "golang.org/x/crypto"
+  name = "github.com/onsi/gomega"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/rusco/qunit"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/sclevine/agouti"
 
 [[constraint]]
   branch = "master"
@@ -61,19 +57,3 @@ ignored = ["github.com/gopherjs/gopherjs/js"]
 [[constraint]]
   branch = "master"
   name = "honnef.co/go/js/dom"
-
-[[constraint]]
-  branch = "master"
-  name = "honnef.co/go/js/xhr"
-
-[[constraint]]
-  branch = "master"
-  name = "myitcv.io/highlightjs"
-
-[[constraint]]
-  branch = "master"
-  name = "myitcv.io/immutable"
-
-[[constraint]]
-  branch = "master"
-  name = "myitcv.io/react"

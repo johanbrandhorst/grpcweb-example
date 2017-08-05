@@ -14,7 +14,6 @@ message ExtraStuff {
 }
 
 message PingRequest {
-
   enum FailureType {
     NONE = 0;
     CODE = 1;
@@ -44,8 +43,4 @@ service TestService {
   rpc PingError(PingRequest) returns (google.protobuf.Empty) {}
 
   rpc PingList(PingRequest) returns (stream PingResponse) {}
-}
-
-service FailService {
-  rpc NonExistant(PingRequest) returns (PingResponse) {}
 }

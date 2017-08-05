@@ -23,6 +23,10 @@ package wrappers
 import js "github.com/gopherjs/gopherjs/js"
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the jspb package it is being compiled against.
+const _ = jspb.JspbPackageIsVersion1
+
 // Wrapper message for `double`.
 //
 // The JSON representation for `DoubleValue` is JSON number.
@@ -55,7 +59,7 @@ func (m *DoubleValue) New(value float64) *DoubleValue {
 }
 
 // Serialize marshals DoubleValue to a slice of bytes.
-func (m *DoubleValue) Serialize() ([]byte, error) {
+func (m *DoubleValue) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 
@@ -103,7 +107,7 @@ func (m *FloatValue) New(value float32) *FloatValue {
 }
 
 // Serialize marshals FloatValue to a slice of bytes.
-func (m *FloatValue) Serialize() ([]byte, error) {
+func (m *FloatValue) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 
@@ -151,7 +155,7 @@ func (m *Int64Value) New(value int64) *Int64Value {
 }
 
 // Serialize marshals Int64Value to a slice of bytes.
-func (m *Int64Value) Serialize() ([]byte, error) {
+func (m *Int64Value) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 
@@ -199,7 +203,7 @@ func (m *UInt64Value) New(value uint64) *UInt64Value {
 }
 
 // Serialize marshals UInt64Value to a slice of bytes.
-func (m *UInt64Value) Serialize() ([]byte, error) {
+func (m *UInt64Value) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 
@@ -247,7 +251,7 @@ func (m *Int32Value) New(value int32) *Int32Value {
 }
 
 // Serialize marshals Int32Value to a slice of bytes.
-func (m *Int32Value) Serialize() ([]byte, error) {
+func (m *Int32Value) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 
@@ -295,7 +299,7 @@ func (m *UInt32Value) New(value uint32) *UInt32Value {
 }
 
 // Serialize marshals UInt32Value to a slice of bytes.
-func (m *UInt32Value) Serialize() ([]byte, error) {
+func (m *UInt32Value) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 
@@ -343,7 +347,7 @@ func (m *BoolValue) New(value bool) *BoolValue {
 }
 
 // Serialize marshals BoolValue to a slice of bytes.
-func (m *BoolValue) Serialize() ([]byte, error) {
+func (m *BoolValue) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 
@@ -391,7 +395,7 @@ func (m *StringValue) New(value string) *StringValue {
 }
 
 // Serialize marshals StringValue to a slice of bytes.
-func (m *StringValue) Serialize() ([]byte, error) {
+func (m *StringValue) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 
@@ -417,7 +421,7 @@ type BytesValue struct {
 // GetValue gets the Value of the BytesValue.
 // The bytes value.
 func (m *BytesValue) GetValue() []byte {
-	return m.Call("getValue").Interface().([]byte)
+	return m.Call("getValue_asU8").Interface().([]byte)
 }
 
 // SetValue sets the Value of the BytesValue.
@@ -439,7 +443,7 @@ func (m *BytesValue) New(value []byte) *BytesValue {
 }
 
 // Serialize marshals BytesValue to a slice of bytes.
-func (m *BytesValue) Serialize() ([]byte, error) {
+func (m *BytesValue) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 

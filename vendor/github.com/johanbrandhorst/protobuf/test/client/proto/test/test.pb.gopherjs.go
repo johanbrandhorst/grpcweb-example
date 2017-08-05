@@ -20,9 +20,12 @@ import google_protobuf "github.com/johanbrandhorst/protobuf/ptypes/empty"
 
 import (
 	context "context"
-
 	grpcweb "github.com/johanbrandhorst/protobuf/grpcweb"
 )
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the jspb package it is being compiled against.
+const _ = jspb.JspbPackageIsVersion1
 
 type PingRequest_FailureType int
 
@@ -213,7 +216,7 @@ func (m *ExtraStuff) New(addresses map[int32]string, title isExtraStuff_Title, c
 }
 
 // Serialize marshals ExtraStuff to a slice of bytes.
-func (m *ExtraStuff) Serialize() ([]byte, error) {
+func (m *ExtraStuff) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 
@@ -332,7 +335,7 @@ func (m *PingRequest) New(value string, responseCount int32, errorCodeReturned u
 }
 
 // Serialize marshals PingRequest to a slice of bytes.
-func (m *PingRequest) Serialize() ([]byte, error) {
+func (m *PingRequest) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 
@@ -385,7 +388,7 @@ func (m *PingResponse) New(Value string, counter int32) *PingResponse {
 }
 
 // Serialize marshals PingResponse to a slice of bytes.
-func (m *PingResponse) Serialize() ([]byte, error) {
+func (m *PingResponse) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 
@@ -430,10 +433,7 @@ func NewTestServiceClient(hostname string, opts ...grpcweb.DialOption) TestServi
 }
 
 func (c *testServiceClient) PingEmpty(ctx context.Context, in *google_protobuf.Empty, opts ...grpcweb.CallOption) (*PingResponse, error) {
-	req, err := in.Serialize()
-	if err != nil {
-		return nil, err
-	}
+	req := in.Serialize()
 
 	resp, err := c.client.RPCCall(ctx, "PingEmpty", req, opts...)
 	if err != nil {
@@ -444,10 +444,7 @@ func (c *testServiceClient) PingEmpty(ctx context.Context, in *google_protobuf.E
 }
 
 func (c *testServiceClient) Ping(ctx context.Context, in *PingRequest, opts ...grpcweb.CallOption) (*PingResponse, error) {
-	req, err := in.Serialize()
-	if err != nil {
-		return nil, err
-	}
+	req := in.Serialize()
 
 	resp, err := c.client.RPCCall(ctx, "Ping", req, opts...)
 	if err != nil {
@@ -458,10 +455,7 @@ func (c *testServiceClient) Ping(ctx context.Context, in *PingRequest, opts ...g
 }
 
 func (c *testServiceClient) PingError(ctx context.Context, in *PingRequest, opts ...grpcweb.CallOption) (*google_protobuf.Empty, error) {
-	req, err := in.Serialize()
-	if err != nil {
-		return nil, err
-	}
+	req := in.Serialize()
 
 	resp, err := c.client.RPCCall(ctx, "PingError", req, opts...)
 	if err != nil {
@@ -472,10 +466,7 @@ func (c *testServiceClient) PingError(ctx context.Context, in *PingRequest, opts
 }
 
 func (c *testServiceClient) PingList(ctx context.Context, in *PingRequest, opts ...grpcweb.CallOption) (TestService_PingListClient, error) {
-	req, err := in.Serialize()
-	if err != nil {
-		return nil, err
-	}
+	req := in.Serialize()
 
 	srv, err := c.client.Stream(ctx, "PingList", req, opts...)
 	if err != nil {
@@ -497,37 +488,6 @@ type testServicePingListClient struct {
 
 func (x *testServicePingListClient) Recv() (*PingResponse, error) {
 	resp, err := x.stream.Recv()
-	if err != nil {
-		return nil, err
-	}
-
-	return new(PingResponse).Deserialize(resp)
-}
-
-// Client API for FailService service
-
-type FailServiceClient interface {
-	NonExistant(ctx context.Context, in *PingRequest, opts ...grpcweb.CallOption) (*PingResponse, error)
-}
-
-type failServiceClient struct {
-	client *grpcweb.Client
-}
-
-// NewFailServiceClient creates a new gRPC-Web client.
-func NewFailServiceClient(hostname string, opts ...grpcweb.DialOption) FailServiceClient {
-	return &failServiceClient{
-		client: grpcweb.NewClient(hostname, "test.FailService", opts...),
-	}
-}
-
-func (c *failServiceClient) NonExistant(ctx context.Context, in *PingRequest, opts ...grpcweb.CallOption) (*PingResponse, error) {
-	req, err := in.Serialize()
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.client.RPCCall(ctx, "NonExistant", req, opts...)
 	if err != nil {
 		return nil, err
 	}

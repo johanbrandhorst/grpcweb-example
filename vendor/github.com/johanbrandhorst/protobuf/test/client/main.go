@@ -1,16 +1,34 @@
 package main
 
 import (
+	"context"
+	"fmt"
+	"io"
+	"strings"
+
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/rusco/qunit"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"honnef.co/go/js/dom"
 
+	"github.com/johanbrandhorst/protobuf/grpcweb"
+	metatest "github.com/johanbrandhorst/protobuf/grpcweb/metadata/test"
+	"github.com/johanbrandhorst/protobuf/grpcweb/status"
+	grpctest "github.com/johanbrandhorst/protobuf/grpcweb/test"
+	gentest "github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/test"
+	"github.com/johanbrandhorst/protobuf/ptypes/empty"
 	"github.com/johanbrandhorst/protobuf/test/client/proto/test"
+	"github.com/johanbrandhorst/protobuf/test/recoverer"
+	"github.com/johanbrandhorst/protobuf/test/shared"
 )
 
 //go:generate gopherjs build main.go -m -o html/index.js
 
-func main() {
-	qunit.Module("grpcweb")
+var uri = strings.TrimSuffix(dom.GetWindow().Document().BaseURI(), shared.GopherJSServer+"/")
+
+func typeTests() {
+	qunit.Module("Integration Types tests")
 
 	qunit.Test("Simple type factory", func(assert qunit.QUnitAssert) {
 		qunit.Expect(8)
@@ -170,5 +188,675 @@ func main() {
 		assert.Equal(req.HasFirstName(), false, "HasFirstName was false")
 		assert.Equal(req.HasIdNumber(), false, "HasIdNumber was false")
 	})
+}
 
+func serverTests(label, serverAddr, emptyServerAddr string) {
+	qunit.Module(fmt.Sprintf("%s Integration tests", label))
+
+	qunit.AsyncTest("Unary server call", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			req := new(test.PingRequest).New(
+				"test", 1, 0, test.PingRequest_NONE, false, false, false, 0)
+			resp, err := c.Ping(context.Background(), req)
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected Ping error seen: "+st.Message)
+				return
+			}
+
+			qunit.Ok(true, "Request succeeded")
+			if resp.GetValue() != "test" {
+				qunit.Ok(false, fmt.Sprintf("Value was not as expected, was %q", resp.GetValue()))
+			}
+			if resp.GetCounter() != 1 {
+				qunit.Ok(false, fmt.Sprintf("Counter was not as expected, was %q", resp.GetCounter()))
+			}
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Unary server call with metadata", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			req := new(test.PingRequest).New(
+				"test", 1, 0, test.PingRequest_NONE, true, false, false, 0)
+			ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs(shared.ClientMDTestKey, shared.ClientMDTestValue))
+			resp, err := c.Ping(ctx, req)
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected Ping error seen: "+st.Message)
+				return
+			}
+
+			qunit.Ok(true, "Request succeeded")
+			if resp.GetValue() != "test" {
+				qunit.Ok(false, fmt.Sprintf("Value was not as expected, was %q", resp.GetValue()))
+			}
+			if resp.GetCounter() != 1 {
+				qunit.Ok(false, fmt.Sprintf("Counter was not as expected, was %q", resp.GetCounter()))
+			}
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Unary server call expecting headers and trailers", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			req := new(test.PingRequest).New(
+				"test", 1, 0, test.PingRequest_NONE, false, true, true, 0)
+			headers, trailers := metadata.New(nil), metadata.New(nil)
+			resp, err := c.Ping(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected Ping error seen: "+st.Message)
+				return
+			}
+
+			qunit.Ok(true, "Request succeeded")
+
+			if resp.GetValue() != "test" {
+				qunit.Ok(false, fmt.Sprintf("Value was not as expected, was %q", resp.GetValue()))
+			}
+			if resp.GetCounter() != 1 {
+				qunit.Ok(false, fmt.Sprintf("Counter was not as expected, was %q", resp.GetCounter()))
+			}
+
+			if len(headers[strings.ToLower(shared.ServerMDTestKey1)]) != 1 {
+				qunit.Ok(false, fmt.Sprintf("Size of Header 1 was not as expected, was %v", len(headers[strings.ToLower(shared.ServerMDTestKey1)])))
+			}
+			if headers[strings.ToLower(shared.ServerMDTestKey1)][0] != shared.ServerMDTestValue1 {
+				qunit.Ok(false, fmt.Sprintf("Header 1 was not as expected, was %q", headers[strings.ToLower(shared.ServerMDTestKey1)]))
+			}
+			if len(headers[strings.ToLower(shared.ServerMDTestKey2)]) != 1 {
+				qunit.Ok(false, fmt.Sprintf("Size of Header 2 was not as expected, was %v", len(headers[strings.ToLower(shared.ServerMDTestKey2)])))
+			}
+			if headers[strings.ToLower(shared.ServerMDTestKey2)][0] != shared.ServerMDTestValue2 {
+				qunit.Ok(false, fmt.Sprintf("Header 2 was not as expected, was %q", headers[strings.ToLower(shared.ServerMDTestKey2)]))
+			}
+
+			if len(trailers[strings.ToLower(shared.ServerTrailerTestKey1)]) != 1 {
+				qunit.Ok(false, fmt.Sprintf("Size of Trailer 1 was not as expected, was %v", len(trailers[strings.ToLower(shared.ServerTrailerTestKey1)])))
+			}
+			if trailers[strings.ToLower(shared.ServerTrailerTestKey1)][0] != shared.ServerMDTestValue1 {
+				qunit.Ok(false, fmt.Sprintf("Trailer 1 was not as expected, was %q", trailers[strings.ToLower(shared.ServerTrailerTestKey1)]))
+			}
+			if len(trailers[strings.ToLower(shared.ServerTrailerTestKey2)]) != 1 {
+				qunit.Ok(false, fmt.Sprintf("Size of Trailer 2 was not as expected, was %v", len(trailers[strings.ToLower(shared.ServerTrailerTestKey2)])))
+			}
+			if trailers[strings.ToLower(shared.ServerTrailerTestKey2)][0] != shared.ServerMDTestValue2 {
+				qunit.Ok(false, fmt.Sprintf("Trailer 2 was not as expected, was %q", trailers[strings.ToLower(shared.ServerTrailerTestKey2)]))
+			}
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Unary server call expecting only headers", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			req := new(test.PingRequest).New(
+				"test", 1, 0, test.PingRequest_NONE, false, true, false, 0)
+			headers, trailers := metadata.New(nil), metadata.New(nil)
+			resp, err := c.Ping(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected Ping error seen: "+st.Message)
+				return
+			}
+
+			qunit.Ok(true, "Request succeeded")
+
+			if resp.GetValue() != "test" {
+				qunit.Ok(false, fmt.Sprintf("Value was not as expected, was %q", resp.GetValue()))
+			}
+			if resp.GetCounter() != 1 {
+				qunit.Ok(false, fmt.Sprintf("Counter was not as expected, was %q", resp.GetCounter()))
+			}
+
+			if len(headers[strings.ToLower(shared.ServerMDTestKey1)]) != 1 {
+				qunit.Ok(false, fmt.Sprintf("Size of Header 1 was not as expected, was %v", len(headers[strings.ToLower(shared.ServerMDTestKey1)])))
+			}
+			if headers[strings.ToLower(shared.ServerMDTestKey1)][0] != shared.ServerMDTestValue1 {
+				qunit.Ok(false, fmt.Sprintf("Header 1 was not as expected, was %q", headers[strings.ToLower(shared.ServerMDTestKey1)]))
+			}
+			if len(headers[strings.ToLower(shared.ServerMDTestKey2)]) != 1 {
+				qunit.Ok(false, fmt.Sprintf("Size of Header 2 was not as expected, was %v", len(headers[strings.ToLower(shared.ServerMDTestKey2)])))
+			}
+			if headers[strings.ToLower(shared.ServerMDTestKey2)][0] != shared.ServerMDTestValue2 {
+				qunit.Ok(false, fmt.Sprintf("Header 2 was not as expected, was %q", headers[strings.ToLower(shared.ServerMDTestKey2)]))
+			}
+
+			// Trailers always include the grpc-status, anything else is unexpected
+			if trailers.Len() > 1 {
+				qunit.Ok(false, fmt.Sprintf("Unexpected trailer provided, size of trailers was %d", trailers.Len()))
+			}
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Unary server call expecting only trailers", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			req := new(test.PingRequest).New(
+				"test", 1, 0, test.PingRequest_NONE, false, false, true, 0)
+			headers, trailers := metadata.New(nil), metadata.New(nil)
+			resp, err := c.Ping(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected Ping error seen: "+st.Message)
+				return
+			}
+
+			qunit.Ok(true, "Request succeeded")
+
+			if resp.GetValue() != "test" {
+				qunit.Ok(false, fmt.Sprintf("Value was not as expected, was %q", resp.GetValue()))
+			}
+			if resp.GetCounter() != 1 {
+				qunit.Ok(false, fmt.Sprintf("Counter was not as expected, was %q", resp.GetCounter()))
+			}
+
+			if len(trailers[strings.ToLower(shared.ServerTrailerTestKey1)]) != 1 {
+				qunit.Ok(false, fmt.Sprintf("Size of Trailer 1 was not as expected, was %v", len(trailers[strings.ToLower(shared.ServerTrailerTestKey1)])))
+			}
+			if trailers[strings.ToLower(shared.ServerTrailerTestKey1)][0] != shared.ServerMDTestValue1 {
+				qunit.Ok(false, fmt.Sprintf("Trailer 1 was not as expected, was %q", trailers[strings.ToLower(shared.ServerTrailerTestKey1)]))
+			}
+			if len(trailers[strings.ToLower(shared.ServerTrailerTestKey2)]) != 1 {
+				qunit.Ok(false, fmt.Sprintf("Size of Trailer 2 was not as expected, was %v", len(trailers[strings.ToLower(shared.ServerTrailerTestKey2)])))
+			}
+			if trailers[strings.ToLower(shared.ServerTrailerTestKey2)][0] != shared.ServerMDTestValue2 {
+				qunit.Ok(false, fmt.Sprintf("Trailer 2 was not as expected, was %q", trailers[strings.ToLower(shared.ServerTrailerTestKey2)]))
+			}
+
+			// Headers always include the content-type, anything else is unexpected
+			if headers.Len() > 1 {
+				qunit.Ok(false, fmt.Sprintf("Unexpected header provided, size of headers was %d", headers.Len()))
+			}
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Unary server call returning gRPC error", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			req := new(test.PingRequest).New(
+				"", 0, uint32(codes.InvalidArgument), test.PingRequest_CODE, false, false, false, 0)
+			_, err := c.PingError(context.Background(), req)
+			if err == nil {
+				qunit.Ok(false, "Expected error, returned nil")
+				return
+			}
+
+			st := status.FromError(err)
+			if st.Code != codes.InvalidArgument {
+				qunit.Ok(false, fmt.Sprintf("Unexpected code returned, was %s", st.Code))
+			}
+
+			qunit.Ok(true, "Error was as expected")
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Unary server call returning network error", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			req := new(test.PingRequest).New(
+				"", 0, 0, test.PingRequest_DROP, false, false, false, 0)
+			_, err := c.PingError(context.Background(), req)
+			if err == nil {
+				qunit.Ok(false, "Expected error, returned nil")
+				return
+			}
+
+			st := status.FromError(err)
+			if st.Code != codes.Internal {
+				qunit.Ok(false, fmt.Sprintf("Unexpected code returned, was %s", st.Code))
+			}
+			if st.Message != "Response closed without grpc-status (Headers only)" {
+				qunit.Ok(false, fmt.Sprintf("Unexpected message returned, was %q", st.Message))
+			}
+
+			qunit.Ok(true, "Error was as expected")
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Streaming server call", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			// Send 20 messages with 1ms wait before each
+			req := new(test.PingRequest).New(
+				"test", 20, 0, test.PingRequest_NONE, false, false, false, 1)
+			srv, err := c.PingList(context.Background(), req)
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected PingList error seen: "+st.Message)
+				return
+			}
+
+			var pings []*test.PingResponse
+			for {
+				ping, err := srv.Recv()
+				if err != nil {
+					if err == io.EOF {
+						break
+					}
+
+					st := status.FromError(err)
+					qunit.Ok(false, "Unexpected Recv error seen:"+st.Message)
+					return
+				}
+
+				pings = append(pings, ping)
+			}
+
+			if len(pings) != int(req.GetResponseCount()) {
+				qunit.Ok(false, fmt.Sprintf("Unexpected number of replies: expected 20, saw %d", len(pings)))
+			}
+
+			for i, ping := range pings {
+				if int(ping.GetCounter()) != i {
+					qunit.Ok(false, fmt.Sprintf("Unexpected count in ping #%d, was %d", i, ping.GetCounter()))
+				}
+				if ping.GetValue() != fmt.Sprintf(`test %d`, i) {
+					qunit.Ok(false, fmt.Sprintf("Unexpected value in ping #%d, was %q", i, ping.GetValue()))
+				}
+			}
+
+			qunit.Ok(true, "Request succeeded")
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Streaming server call with metadata", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			// Send 20 messages with 1ms wait before each
+			req := new(test.PingRequest).New(
+				"test", 20, 0, test.PingRequest_NONE, true, false, false, 1)
+			ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs(shared.ClientMDTestKey, shared.ClientMDTestValue))
+			srv, err := c.PingList(ctx, req)
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected PingList error seen: "+st.Message)
+				return
+			}
+
+			var pings []*test.PingResponse
+			for {
+				ping, err := srv.Recv()
+				if err != nil {
+					if err == io.EOF {
+						break
+					}
+
+					st := status.FromError(err)
+					qunit.Ok(false, "Unexpected Recv error seen:"+st.Message)
+					return
+				}
+
+				pings = append(pings, ping)
+			}
+
+			if len(pings) != int(req.GetResponseCount()) {
+				qunit.Ok(false, fmt.Sprintf("Unexpected number of replies: expected 20, saw %d", len(pings)))
+			}
+
+			for i, ping := range pings {
+				if int(ping.GetCounter()) != i {
+					qunit.Ok(false, fmt.Sprintf("Unexpected count in ping #%d, was %d", i, ping.GetCounter()))
+				}
+				if ping.GetValue() != fmt.Sprintf(`test %d`, i) {
+					qunit.Ok(false, fmt.Sprintf("Unexpected value in ping #%d, was %q", i, ping.GetValue()))
+				}
+			}
+
+			qunit.Ok(true, "Request succeeded")
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Streaming server call expecting headers and trailers", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			// Send 20 messages with 1ms wait before each
+			req := new(test.PingRequest).New(
+				"test", 20, 0, test.PingRequest_NONE, false, true, true, 1)
+			headers, trailers := metadata.New(nil), metadata.New(nil)
+			srv, err := c.PingList(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected PingList error seen: "+st.Message)
+				return
+			}
+
+			var pings []*test.PingResponse
+			for {
+				ping, err := srv.Recv()
+				if err != nil {
+					if err == io.EOF {
+						break
+					}
+
+					st := status.FromError(err)
+					qunit.Ok(false, "Unexpected Recv error seen:"+st.Message)
+					return
+				}
+
+				pings = append(pings, ping)
+			}
+
+			if len(pings) != int(req.GetResponseCount()) {
+				qunit.Ok(false, fmt.Sprintf("Unexpected number of replies: expected 20, saw %d", len(pings)))
+			}
+
+			for i, ping := range pings {
+				if int(ping.GetCounter()) != i {
+					qunit.Ok(false, fmt.Sprintf("Unexpected count in ping #%d, was %d", i, ping.GetCounter()))
+				}
+				if ping.GetValue() != fmt.Sprintf(`test %d`, i) {
+					qunit.Ok(false, fmt.Sprintf("Unexpected value in ping #%d, was %q", i, ping.GetValue()))
+				}
+			}
+
+			if len(headers[strings.ToLower(shared.ServerMDTestKey1)]) != 1 {
+				qunit.Ok(false, fmt.Sprintf("Size of Header 1 was not as expected, was %v", len(headers[strings.ToLower(shared.ServerMDTestKey1)])))
+			}
+			if headers[strings.ToLower(shared.ServerMDTestKey1)][0] != shared.ServerMDTestValue1 {
+				qunit.Ok(false, fmt.Sprintf("Header 1 was not as expected, was %q", headers[strings.ToLower(shared.ServerMDTestKey1)]))
+			}
+			if len(headers[strings.ToLower(shared.ServerMDTestKey2)]) != 1 {
+				qunit.Ok(false, fmt.Sprintf("Size of Header 2 was not as expected, was %v", len(headers[strings.ToLower(shared.ServerMDTestKey2)])))
+			}
+			if headers[strings.ToLower(shared.ServerMDTestKey2)][0] != shared.ServerMDTestValue2 {
+				qunit.Ok(false, fmt.Sprintf("Header 2 was not as expected, was %q", headers[strings.ToLower(shared.ServerMDTestKey2)]))
+			}
+
+			if len(trailers[strings.ToLower(shared.ServerTrailerTestKey1)]) != 1 {
+				qunit.Ok(false, fmt.Sprintf("Size of Trailer 1 was not as expected, was %v", len(trailers[strings.ToLower(shared.ServerTrailerTestKey1)])))
+			}
+			if trailers[strings.ToLower(shared.ServerTrailerTestKey1)][0] != shared.ServerMDTestValue1 {
+				qunit.Ok(false, fmt.Sprintf("Trailer 1 was not as expected, was %q", trailers[strings.ToLower(shared.ServerTrailerTestKey1)]))
+			}
+			if len(trailers[strings.ToLower(shared.ServerTrailerTestKey2)]) != 1 {
+				qunit.Ok(false, fmt.Sprintf("Size of Trailer 2 was not as expected, was %v", len(trailers[strings.ToLower(shared.ServerTrailerTestKey2)])))
+			}
+			if trailers[strings.ToLower(shared.ServerTrailerTestKey2)][0] != shared.ServerMDTestValue2 {
+				qunit.Ok(false, fmt.Sprintf("Trailer 2 was not as expected, was %q", trailers[strings.ToLower(shared.ServerTrailerTestKey2)]))
+			}
+
+			qunit.Ok(true, "Request succeeded")
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Streaming server call expecting only headers", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			// Send 20 messages with 1ms wait before each
+			req := new(test.PingRequest).New(
+				"test", 20, 0, test.PingRequest_NONE, false, true, false, 1)
+			headers, trailers := metadata.New(nil), metadata.New(nil)
+			srv, err := c.PingList(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected PingList error seen: "+st.Message)
+				return
+			}
+
+			var pings []*test.PingResponse
+			for {
+				ping, err := srv.Recv()
+				if err != nil {
+					if err == io.EOF {
+						break
+					}
+
+					st := status.FromError(err)
+					qunit.Ok(false, "Unexpected Recv error seen:"+st.Message)
+					return
+				}
+
+				pings = append(pings, ping)
+			}
+
+			if len(pings) != int(req.GetResponseCount()) {
+				qunit.Ok(false, fmt.Sprintf("Unexpected number of replies: expected 20, saw %d", len(pings)))
+			}
+
+			for i, ping := range pings {
+				if int(ping.GetCounter()) != i {
+					qunit.Ok(false, fmt.Sprintf("Unexpected count in ping #%d, was %d", i, ping.GetCounter()))
+				}
+				if ping.GetValue() != fmt.Sprintf(`test %d`, i) {
+					qunit.Ok(false, fmt.Sprintf("Unexpected value in ping #%d, was %q", i, ping.GetValue()))
+				}
+			}
+
+			if len(headers[strings.ToLower(shared.ServerMDTestKey1)]) != 1 {
+				qunit.Ok(false, fmt.Sprintf("Size of Header 1 was not as expected, was %v", len(headers[strings.ToLower(shared.ServerMDTestKey1)])))
+			}
+			if headers[strings.ToLower(shared.ServerMDTestKey1)][0] != shared.ServerMDTestValue1 {
+				qunit.Ok(false, fmt.Sprintf("Header 1 was not as expected, was %q", headers[strings.ToLower(shared.ServerMDTestKey1)]))
+			}
+			if len(headers[strings.ToLower(shared.ServerMDTestKey2)]) != 1 {
+				qunit.Ok(false, fmt.Sprintf("Size of Header 2 was not as expected, was %v", len(headers[strings.ToLower(shared.ServerMDTestKey2)])))
+			}
+			if headers[strings.ToLower(shared.ServerMDTestKey2)][0] != shared.ServerMDTestValue2 {
+				qunit.Ok(false, fmt.Sprintf("Header 2 was not as expected, was %q", headers[strings.ToLower(shared.ServerMDTestKey2)]))
+			}
+
+			// Trailers always include the grpc-status, anything else is unexpected
+			if trailers.Len() > 1 {
+				qunit.Ok(false, fmt.Sprintf("Unexpected trailer provided, size of trailers was %d", trailers.Len()))
+			}
+
+			qunit.Ok(true, "Request succeeded")
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Streaming server call expecting only trailers", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			// Send 20 messages with 1ms wait before each
+			req := new(test.PingRequest).New(
+				"test", 20, 0, test.PingRequest_NONE, false, false, true, 1)
+			headers, trailers := metadata.New(nil), metadata.New(nil)
+			srv, err := c.PingList(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected PingList error seen: "+st.Message)
+				return
+			}
+
+			var pings []*test.PingResponse
+			for {
+				ping, err := srv.Recv()
+				if err != nil {
+					if err == io.EOF {
+						break
+					}
+
+					st := status.FromError(err)
+					qunit.Ok(false, "Unexpected Recv error seen:"+st.Message)
+					return
+				}
+
+				pings = append(pings, ping)
+			}
+
+			if len(pings) != int(req.GetResponseCount()) {
+				qunit.Ok(false, fmt.Sprintf("Unexpected number of replies: expected 20, saw %d", len(pings)))
+			}
+
+			for i, ping := range pings {
+				if int(ping.GetCounter()) != i {
+					qunit.Ok(false, fmt.Sprintf("Unexpected count in ping #%d, was %d", i, ping.GetCounter()))
+				}
+				if ping.GetValue() != fmt.Sprintf(`test %d`, i) {
+					qunit.Ok(false, fmt.Sprintf("Unexpected value in ping #%d, was %q", i, ping.GetValue()))
+				}
+			}
+
+			if len(trailers[strings.ToLower(shared.ServerTrailerTestKey1)]) != 1 {
+				qunit.Ok(false, fmt.Sprintf("Size of Trailer 1 was not as expected, was %v", len(trailers[strings.ToLower(shared.ServerTrailerTestKey1)])))
+			}
+			if trailers[strings.ToLower(shared.ServerTrailerTestKey1)][0] != shared.ServerMDTestValue1 {
+				qunit.Ok(false, fmt.Sprintf("Trailer 1 was not as expected, was %q", trailers[strings.ToLower(shared.ServerTrailerTestKey1)]))
+			}
+			if len(trailers[strings.ToLower(shared.ServerTrailerTestKey2)]) != 1 {
+				qunit.Ok(false, fmt.Sprintf("Size of Trailer 2 was not as expected, was %v", len(trailers[strings.ToLower(shared.ServerTrailerTestKey2)])))
+			}
+			if trailers[strings.ToLower(shared.ServerTrailerTestKey2)][0] != shared.ServerMDTestValue2 {
+				qunit.Ok(false, fmt.Sprintf("Trailer 2 was not as expected, was %q", trailers[strings.ToLower(shared.ServerTrailerTestKey2)]))
+			}
+
+			// Headers always include the content-type, anything else is unexpected
+			if headers.Len() > 1 {
+				qunit.Ok(false, fmt.Sprintf("Unexpected header provided, size of headers was %d", headers.Len()))
+			}
+
+			qunit.Ok(true, "Request succeeded")
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Streaming server call returning network error", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			// Send 20 messages with 1ms wait before each
+			req := new(test.PingRequest).New(
+				"test", 20, 0, test.PingRequest_DROP, false, false, false, 1)
+			srv, err := c.PingList(context.Background(), req)
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected PingList error seen: "+st.Message)
+				return
+			}
+			_, err = srv.Recv()
+			if err == nil {
+				qunit.Ok(false, "Expected error, returned nil")
+				return
+			}
+
+			st := status.FromError(err)
+			if st.Code != codes.Internal {
+				qunit.Ok(false, fmt.Sprintf("Unexpected code returned, was %s", st.Code))
+			}
+			if st.Message != "Response closed without grpc-status (Headers only)" {
+				qunit.Ok(false, fmt.Sprintf("Unexpected message returned, was %q", st.Message))
+			}
+
+			qunit.Ok(true, "Error was as expected")
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Unary call to empty server", func() interface{} {
+		c := test.NewTestServiceClient(uri + emptyServerAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			_, err := c.PingEmpty(context.Background(), new(empty.Empty).New())
+			if err == nil {
+				qunit.Ok(false, "Expected error, returned nil")
+				return
+			}
+
+			st := status.FromError(err)
+			if st.Message != "unknown service test.TestService" {
+				qunit.Ok(false, "Unexpected error, saw "+st.Message)
+			}
+
+			qunit.Ok(true, "Error was as expected")
+		}()
+
+		return nil
+	})
+}
+
+func main() {
+	defer recoverer.Recover() // recovers any panics and fails tests
+
+	typeTests()
+	serverTests("HTTP2", shared.HTTP2Server, shared.EmptyHTTP2Server)
+	serverTests("HTTP1", shared.HTTP1Server, shared.EmptyHTTP1Server)
+
+	// protoc-gen-gopherjs tests
+	gentest.GenTypesTest()
+
+	// grpcweb metadata tests
+	metatest.MetadataTest()
+
+	// grpcweb tests
+	grpctest.GRPCWebTest()
 }

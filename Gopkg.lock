@@ -21,12 +21,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/gopherjs/gopherjs"
-  packages = ["js"]
-  revision = "2b1d432c8a82c9bff0b0baffaeb3ec6e92974112"
-
-[[projects]]
-  branch = "master"
   name = "github.com/gopherjs/jsbuiltin"
   packages = ["."]
   revision = "67703bfb044e3192fbcab025c3aeaeedafad1f2f"
@@ -38,10 +32,10 @@
   revision = "821be91cc9a849c728fd80ec57d6f76e2e8c5bec"
 
 [[projects]]
+  branch = "master"
   name = "github.com/johanbrandhorst/protobuf"
-  packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/status","jspb","ptypes/timestamp"]
-  revision = "c494d0f01cf71f69e216601b14bc338f9e0cf2d5"
-  version = "v0.1.3-alpha"
+  packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/metadata","grpcweb/status","jspb","ptypes/timestamp"]
+  revision = "3e467d8e7a18dc834f88eb8fe760e3ab8755e4d8"
 
 [[projects]]
   name = "github.com/rs/cors"
@@ -124,6 +118,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f0e8f4e62c9959f6a86de0d3988783cb3c2cb6ab43ac80c03214daa960896860"
+  inputs-digest = "4ce766e65b1229710a8b1f931f13d5e08230f7163c9981dbb2560c86d844a1ec"
   solver-name = "gps-cdcl"
   solver-version = 1

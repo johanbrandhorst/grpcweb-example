@@ -7,5 +7,5 @@ build:
 	./node_modules/.bin/webpack
 
 clean:
-	rm -f grpc.inc.js jspb.inc.js
+	rm -f grpc.inc.js
 	rm -rf node_modules

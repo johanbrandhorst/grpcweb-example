@@ -1,4 +1,4 @@
-package protobufjs
+package jspb
 
 import (
 	"github.com/gopherjs/gopherjs/js"
@@ -11,24 +11,9 @@ type ProtoMessage interface {
 }
 
 // Serialize marshals the provided ProtoMessage into
-// a slice of bytes using the serializeBinary ProtobufJS function,
-// returning an error if one was thrown.
-func Serialize(m ProtoMessage) (resp []byte, err error) {
-	// Recover any thrown JS errors
-	defer func() {
-		e := recover()
-		if e == nil {
-			return
-		}
-
-		if e, ok := e.(*js.Error); ok {
-			err = e
-		} else {
-			panic(e)
-		}
-	}()
-
-	return m.Call("serializeBinary").Interface().([]byte), err
+// a slice of bytes using the serializeBinary ProtobufJS function.
+func Serialize(m ProtoMessage) []byte {
+	return m.Call("serializeBinary").Interface().([]byte)
 }
 
 // Deserialize unmarshals the provided ProtoMessage bytes into

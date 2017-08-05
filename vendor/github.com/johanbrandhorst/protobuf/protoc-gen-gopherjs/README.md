@@ -58,7 +58,10 @@ The generated JS file must be manually edited to be compatible;
 
   1. Each instance of `require('google-protobuf')` replaced with `$global`
   1. Each instance of `require('google-protobuf/.*')` replace with `$global.proto.google.protobuf`
-  1. Any other `require()` instances must be modified to include correct objects. This will depend on the configuration of the proto files that were used when generating, but should be fairly straightforward given the examples here.
+  1. Any other `require()` instances must be modified to include correct objects.
+  This will depend on the configuration of the proto files that were used when generating.
+  This can get pretty complicated, see the [test files](test/multi/multi1_pb.inc.js)
+  and the [test Makefile](test/Makefile) for examples.
   1. The `export` statements at the end of the files must be removed.
   1. The generated JS file must be renamed `*.inc.js` to be properly included by GopherJS.
 

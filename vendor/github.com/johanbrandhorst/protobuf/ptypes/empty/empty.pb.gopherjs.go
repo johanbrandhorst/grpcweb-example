@@ -15,6 +15,10 @@ package empty
 import js "github.com/gopherjs/gopherjs/js"
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the jspb package it is being compiled against.
+const _ = jspb.JspbPackageIsVersion1
+
 // A generic empty message that you can re-use to avoid defining duplicated
 // empty messages in your APIs. A typical example is to use it as the request
 // or the response type of an API method. For instance:
@@ -38,7 +42,7 @@ func (m *Empty) New() *Empty {
 }
 
 // Serialize marshals Empty to a slice of bytes.
-func (m *Empty) Serialize() ([]byte, error) {
+func (m *Empty) Serialize() []byte {
 	return jspb.Serialize(m)
 }
 
