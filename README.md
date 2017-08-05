@@ -16,17 +16,16 @@ To run the server on `https://localhost:10000`:
 $ go run main.go
 ```
 
-If you want to make any changes to the client, you'll need to install GopherJS
-and govendor:
+If you want to make any changes to the client, you'll need to install GopherJS:
 
 ```
-$ go get -u github.com/gopherjs/gopherjs github.com/kardianos/govendor
+$ go get -u github.com/gopherjs/gopherjs
 ```
 
-Then you'll need to also installed some vendored generators:
+Then you'll need to also install some vendored generators:
 
 ```
-$ govendor install +vendor,program
+$ go install ./vendor/myitcv.io/react/cmd/reactGen ./vendor/myitcv.io/immutable/cmd/immutableGen
 ```
 
 After that, any changes you make to the proto file in `./proto/` should be followed by
