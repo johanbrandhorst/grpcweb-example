@@ -18,7 +18,11 @@ import (
 // QueryBooksDef defines the QueryBooks component
 type QueryBooksDef struct {
 	r.ComponentDef
-	client library.BookServiceClient
+}
+
+// QueryBooksProps defines the properties of this component
+type QueryBooksProps struct {
+	Client library.BookServiceClient
 }
 
 // _Imm_books is generated to an immutable
@@ -41,17 +45,12 @@ func (q *QueryBooksDef) GetInitialState() QueryBooksState {
 }
 
 // QueryBooks returns the QueryBooks component.
-func QueryBooks(client library.BookServiceClient) *QueryBooksDef {
-	res := &QueryBooksDef{
-		client: client,
-	}
-	r.BlessElement(res, nil)
-
-	return res
+func QueryBooks(p QueryBooksProps) *QueryBooksElem {
+	return buildQueryBooksElem(p)
 }
 
 // Render renders the QueryBooks component.
-func (q *QueryBooksDef) Render() r.Element {
+func (q QueryBooksDef) Render() r.Element {
 	st := q.State()
 	content := []r.Element{
 		r.P(nil, r.S("Search for books by author name prefix (for example, George).")),
@@ -93,8 +92,8 @@ func (q *QueryBooksDef) Render() r.Element {
 	return r.Div(nil, content...)
 }
 
-type authorInputChange struct{ q *QueryBooksDef }
-type triggerQuery struct{ q *QueryBooksDef }
+type authorInputChange struct{ q QueryBooksDef }
+type triggerQuery struct{ q QueryBooksDef }
 
 func (a authorInputChange) OnChange(se *r.SyntheticEvent) {
 	target := se.Target().(*dom.HTMLInputElement)
@@ -116,7 +115,7 @@ func (t triggerQuery) OnClick(se *r.SyntheticMouseEvent) {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
-		srv, err := t.q.client.QueryBooks(ctx, new(library.QueryBooksRequest).New(newSt.authorInput))
+		srv, err := t.q.Props().Client.QueryBooks(ctx, new(library.QueryBooksRequest).New(newSt.authorInput))
 		if err != nil {
 			sts := status.FromError(err)
 			newSt.err = sts.Message
