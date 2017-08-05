@@ -2,8 +2,8 @@
 
 package react
 
-// FormProps defines the properties for the <form> element
-type FormProps struct {
+// FooterProps are the props for a <footer> component
+type FooterProps struct {
 	ClassName               string
 	DangerouslySetInnerHTML *DangerousInnerHTML
 	ID                      string
@@ -16,7 +16,7 @@ type FormProps struct {
 	Style *CSS
 }
 
-func (f *FormProps) assign(v *_FormProps) {
+func (f *FooterProps) assign(v *_FooterProps) {
 
 	v.ClassName = f.ClassName
 

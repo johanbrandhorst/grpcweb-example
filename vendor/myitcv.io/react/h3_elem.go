@@ -3,11 +3,9 @@
 
 package react
 
-import "github.com/gopherjs/gopherjs/js"
-
-// H3Def is the React component definition corresponding to the HTML <h3> element
-type H3Def struct {
-	underlying *js.Object
+// H3Elem is the React element definition corresponding to the HTML <h3> element
+type H3Elem struct {
+	Element
 }
 
 // _H3Props defines the properties for the <h3> element
@@ -15,11 +13,9 @@ type _H3Props struct {
 	*BasicHTMLElement
 }
 
-func (d *H3Def) reactElement() {}
-
 // H3 creates a new instance of a <h3> element with the provided props and
 // child
-func H3(props *H3Props, children ...Element) *H3Def {
+func H3(props *H3Props, children ...Element) *H3Elem {
 
 	rProps := &_H3Props{
 		BasicHTMLElement: newBasicHTMLElement(),
@@ -29,13 +25,7 @@ func H3(props *H3Props, children ...Element) *H3Def {
 		props.assign(rProps)
 	}
 
-	args := []interface{}{"h3", rProps}
-
-	for _, v := range children {
-		args = append(args, elementToReactObj(v))
+	return &H3Elem{
+		Element: createElement("h3", rProps, children...),
 	}
-
-	underlying := react.Call("createElement", args...)
-
-	return &H3Def{underlying: underlying}
 }

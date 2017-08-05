@@ -17,7 +17,11 @@ import (
 // GetBookDef defines the getbook component
 type GetBookDef struct {
 	r.ComponentDef
-	client library.BookServiceClient
+}
+
+// GetBookProps defines the properties of this component
+type GetBookProps struct {
+	Client library.BookServiceClient
 }
 
 // GetBookState holds the state for the GetBook component
@@ -27,18 +31,13 @@ type GetBookState struct {
 	err       string
 }
 
-// GetBook returns a new GetBookDef
-func GetBook(client library.BookServiceClient) *GetBookDef {
-	res := &GetBookDef{
-		client: client,
-	}
-	r.BlessElement(res, nil)
-
-	return res
+// GetBook returns a new GetBookElem
+func GetBook(p GetBookProps) *GetBookElem {
+	return buildGetBookElem(p)
 }
 
 // Render renders the GetBook component
-func (g *GetBookDef) Render() r.Element {
+func (g GetBookDef) Render() r.Element {
 	st := g.State()
 	content := []r.Element{
 		r.P(nil, r.S("Search for book by ISBN (for example, 140008381).")),
@@ -69,7 +68,7 @@ func (g *GetBookDef) Render() r.Element {
 	if st.err != "" {
 		content = append(content,
 			r.Div(nil,
-				r.HR(nil),
+				r.Hr(nil),
 				r.S("Error: "+st.err),
 			),
 		)
@@ -78,8 +77,8 @@ func (g *GetBookDef) Render() r.Element {
 	return r.Div(nil, content...)
 }
 
-type isbnInputChange struct{ g *GetBookDef }
-type triggerGet struct{ g *GetBookDef }
+type isbnInputChange struct{ g GetBookDef }
+type triggerGet struct{ g GetBookDef }
 
 func (i isbnInputChange) OnChange(se *r.SyntheticEvent) {
 	target := se.Target().(*dom.HTMLInputElement)
@@ -109,7 +108,7 @@ func (t triggerGet) OnClick(se *r.SyntheticMouseEvent) {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 
-		bk, err := t.g.client.GetBook(ctx, new(library.GetBookRequest).New(int64(isbn)))
+		bk, err := t.g.Props().Client.GetBook(ctx, new(library.GetBookRequest).New(int64(isbn)))
 		if err != nil {
 			sts := status.FromError(err)
 			newSt.err = sts.Message

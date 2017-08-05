@@ -2,10 +2,10 @@
 
 package react
 
-// APropsDef defines the properties for the <a> element
+// AProps defines the properties for the <a> element
 type AProps struct {
 	ClassName               string
-	DangerouslySetInnerHTML *DangerousInnerHTMLDef
+	DangerouslySetInnerHTML *DangerousInnerHTML
 	Href                    string
 	ID                      string
 	Key                     string

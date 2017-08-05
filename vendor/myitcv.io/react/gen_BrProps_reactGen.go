@@ -2,10 +2,10 @@
 
 package react
 
-// BRProps defines the properties for the <br> element
-type BRProps struct {
+// BrProps defines the properties for the <br> element
+type BrProps struct {
 	ClassName               string
-	DangerouslySetInnerHTML *DangerousInnerHTMLDef
+	DangerouslySetInnerHTML *DangerousInnerHTML
 	ID                      string
 	Key                     string
 
@@ -16,7 +16,7 @@ type BRProps struct {
 	Style *CSS
 }
 
-func (b *BRProps) assign(v *_BRProps) {
+func (b *BrProps) assign(v *_BrProps) {
 
 	v.ClassName = b.ClassName
 

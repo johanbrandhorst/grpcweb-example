@@ -26,15 +26,12 @@ type ContainerState struct {
 }
 
 // Container creates the Container
-func Container() *ContainerDef {
-	res := new(ContainerDef)
-	r.BlessElement(res, nil)
-
-	return res
+func Container() *ContainerElem {
+	return buildContainerElem()
 }
 
 // GetInitialState returns in the initial state for the ContainerDef component
-func (p *ContainerDef) GetInitialState() ContainerState {
+func (p ContainerDef) GetInitialState() ContainerState {
 	return ContainerState{
 		client:   nil,
 		examples: newExampleSource(),
@@ -43,7 +40,7 @@ func (p *ContainerDef) GetInitialState() ContainerState {
 
 // ComponentWillMount is a React lifecycle method for the ContainerDef component.
 // It populates the sources from the source code on github.
-func (p *ContainerDef) ComponentWillMount() {
+func (p ContainerDef) ComponentWillMount() {
 	newSt := p.State()
 	if !fetchStarted {
 		for i, e := range sources.Range() {
@@ -71,14 +68,14 @@ func (p *ContainerDef) ComponentWillMount() {
 	p.SetState(newSt)
 }
 
-func (p *ContainerDef) renderExample(key exampleKey, title, msg, elem r.Element) r.Element {
+func (p ContainerDef) renderExample(key exampleKey, title, msg, elem r.Element) r.Element {
 	var goSrc string
 	src, _ := p.State().examples.Get(key)
 	if src != nil {
 		goSrc = src.src()
 	}
 
-	code := r.DangerousInnerHTML(highlightjs.Highlight("go", goSrc, true).Value)
+	code := r.NewDangerousInnerHTML(highlightjs.Highlight("go", goSrc, true).Value)
 
 	return r.Div(nil,
 		r.H3(nil, title),
@@ -104,7 +101,7 @@ func (p *ContainerDef) renderExample(key exampleKey, title, msg, elem r.Element)
 }
 
 // Render renders the Container
-func (p *ContainerDef) Render() r.Element {
+func (p ContainerDef) Render() r.Element {
 	navbar := r.Nav(&r.NavProps{ClassName: "navbar navbar-inverse navbar-fixed-top"},
 		r.Div(&r.DivProps{ClassName: "container"},
 			r.Div(&r.DivProps{ClassName: "navbar-header"},
@@ -157,14 +154,14 @@ func (p *ContainerDef) Render() r.Element {
 			r.Span(nil, r.S("Getting a book from the library by ISBN")),
 			r.P(nil, r.S("Sends a GetBook request to the gRPC server asking for the book with the given ISBN. "+
 				"Renders the returned book (or error).")),
-			book.GetBook(p.State().client),
+			book.GetBook(book.GetBookProps{Client: p.State().client}),
 		),
 		p.renderExample(
 			exampleQueryBooks,
 			r.Span(nil, r.S("Querying for books in the library by author")),
 			r.P(nil, r.S("Sends a request to the gRPC backend asking for all books by authors whose names "+
 				"start with the provided string. Renders the returned book (or error).")),
-			book.QueryBooks(p.State().client),
+			book.QueryBooks(book.QueryBooksProps{Client: p.State().client}),
 		),
 	)
 
