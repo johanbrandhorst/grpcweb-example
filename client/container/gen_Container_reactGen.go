@@ -4,7 +4,11 @@ package container
 
 import "myitcv.io/react"
 
-func (c *ContainerDef) ShouldComponentUpdateIntf(nextProps, prevState, nextState interface{}) bool {
+type ContainerElem struct {
+	react.Element
+}
+
+func (c ContainerDef) ShouldComponentUpdateIntf(nextProps react.Props, prevState, nextState react.State) bool {
 	res := false
 
 	v := prevState.(ContainerState)
@@ -12,16 +16,26 @@ func (c *ContainerDef) ShouldComponentUpdateIntf(nextProps, prevState, nextState
 	return res
 }
 
+func buildContainer(cd react.ComponentDef) react.Component {
+	return ContainerDef{ComponentDef: cd}
+}
+
+func buildContainerElem(children ...react.Element) *ContainerElem {
+	return &ContainerElem{
+		Element: react.CreateElement(buildContainer, nil),
+	}
+}
+
 // SetState is an auto-generated proxy proxy to update the state for the
 // Container component.  SetState does not immediately mutate c.State()
 // but creates a pending state transition.
-func (c *ContainerDef) SetState(state ContainerState) {
+func (c ContainerDef) SetState(state ContainerState) {
 	c.ComponentDef.SetState(state)
 }
 
 // State is an auto-generated proxy to return the current state in use for the
 // render of the Container component
-func (c *ContainerDef) State() ContainerState {
+func (c ContainerDef) State() ContainerState {
 	return c.ComponentDef.State().(ContainerState)
 }
 
@@ -32,10 +46,10 @@ func (c ContainerState) IsState() {}
 var _ react.State = ContainerState{}
 
 // GetInitialStateIntf is an auto-generated proxy to GetInitialState
-func (c *ContainerDef) GetInitialStateIntf() react.State {
+func (c ContainerDef) GetInitialStateIntf() react.State {
 	return c.GetInitialState()
 }
 
-func (c ContainerState) EqualsIntf(val interface{}) bool {
+func (c ContainerState) EqualsIntf(val react.State) bool {
 	return c == val.(ContainerState)
 }
