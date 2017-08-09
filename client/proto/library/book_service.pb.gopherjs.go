@@ -2,19 +2,19 @@
 // source: proto/library/book_service.proto
 
 /*
-Package library is a generated protocol buffer package.
+	Package library is a generated protocol buffer package.
 
-Package library exposes a list of books
-over a gRPC API.
+	Package library exposes a list of books
+	over a gRPC API.
 
-It is generated from these files:
-	proto/library/book_service.proto
+	It is generated from these files:
+		proto/library/book_service.proto
 
-It has these top-level messages:
-	Publisher
-	Book
-	GetBookRequest
-	QueryBooksRequest
+	It has these top-level messages:
+		Publisher
+		Book
+		GetBookRequest
+		QueryBooksRequest
 */
 package library
 
@@ -66,7 +66,10 @@ type Publisher struct {
 
 // GetName gets the Name of the Publisher.
 // Name is the name of the Publisher.
-func (m *Publisher) GetName() string {
+func (m *Publisher) GetName() (x string) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getName").String()
 }
 
@@ -163,7 +166,10 @@ func (m *Book) SetPublishingMethod(publishing_method isBook_PublishingMethod) {
 
 // GetIsbn gets the Isbn of the Book.
 // Isbn is the ISBN number of the book.
-func (m *Book) GetIsbn() int64 {
+func (m *Book) GetIsbn() (x int64) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getIsbn").Int64()
 }
 
@@ -175,7 +181,10 @@ func (m *Book) SetIsbn(v int64) {
 
 // GetTitle gets the Title of the Book.
 // Title is the title of the book.
-func (m *Book) GetTitle() string {
+func (m *Book) GetTitle() (x string) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getTitle").String()
 }
 
@@ -187,7 +196,10 @@ func (m *Book) SetTitle(v string) {
 
 // GetAuthor gets the Author of the Book.
 // Author is the author of the book.
-func (m *Book) GetAuthor() string {
+func (m *Book) GetAuthor() (x string) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getAuthor").String()
 }
 
@@ -199,7 +211,10 @@ func (m *Book) SetAuthor(v string) {
 
 // GetBookType gets the BookType of the Book.
 // BookType is the type of the book.
-func (m *Book) GetBookType() BookType {
+func (m *Book) GetBookType() (x BookType) {
+	if m == nil {
+		return x
+	}
 	return BookType(m.Call("getBookType").Int())
 }
 
@@ -212,7 +227,10 @@ func (m *Book) SetBookType(v BookType) {
 // GetSelfPublished gets the SelfPublished of the Book.
 // SelfPublished means this book was
 // self published.
-func (m *Book) GetSelfPublished() bool {
+func (m *Book) GetSelfPublished() (x bool) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getSelfPublished").Bool()
 }
 
@@ -227,6 +245,9 @@ func (m *Book) SetSelfPublished(v bool) {
 // SelfPublished means this book was
 // self published.
 func (m *Book) HasSelfPublished() bool {
+	if m == nil {
+		return false
+	}
 	return m.Call("hasSelfPublished").Bool()
 }
 
@@ -240,7 +261,10 @@ func (m *Book) ClearSelfPublished() {
 // GetPublisher gets the Publisher of the Book.
 // Publisher means this book was published
 // through a Publisher.
-func (m *Book) GetPublisher() *Publisher {
+func (m *Book) GetPublisher() (x *Publisher) {
+	if m == nil {
+		return x
+	}
 	return &Publisher{Object: m.Call("getPublisher")}
 }
 
@@ -248,13 +272,20 @@ func (m *Book) GetPublisher() *Publisher {
 // Publisher means this book was published
 // through a Publisher.
 func (m *Book) SetPublisher(v *Publisher) {
-	m.Call("setPublisher", v.Call("toArray"))
+	if v != nil {
+		m.Call("setPublisher", v)
+	} else {
+		m.ClearPublisher()
+	}
 }
 
 // HasPublisher indicates whether the Publisher of the Book is set.
 // Publisher means this book was published
 // through a Publisher.
 func (m *Book) HasPublisher() bool {
+	if m == nil {
+		return false
+	}
 	return m.Call("hasPublisher").Bool()
 }
 
@@ -267,19 +298,29 @@ func (m *Book) ClearPublisher() {
 
 // GetPublicationDate gets the PublicationDate of the Book.
 // PublicationDate is the time of publication of the book.
-func (m *Book) GetPublicationDate() *google_protobuf.Timestamp {
+func (m *Book) GetPublicationDate() (x *google_protobuf.Timestamp) {
+	if m == nil {
+		return x
+	}
 	return &google_protobuf.Timestamp{Object: m.Call("getPublicationDate")}
 }
 
 // SetPublicationDate sets the PublicationDate of the Book.
 // PublicationDate is the time of publication of the book.
 func (m *Book) SetPublicationDate(v *google_protobuf.Timestamp) {
-	m.Call("setPublicationDate", v.Call("toArray"))
+	if v != nil {
+		m.Call("setPublicationDate", v)
+	} else {
+		m.ClearPublicationDate()
+	}
 }
 
 // HasPublicationDate indicates whether the PublicationDate of the Book is set.
 // PublicationDate is the time of publication of the book.
 func (m *Book) HasPublicationDate() bool {
+	if m == nil {
+		return false
+	}
 	return m.Call("hasPublicationDate").Bool()
 }
 
@@ -306,11 +347,13 @@ func (m *Book) New(isbn int64, title string, author string, bookType BookType, p
 			bookType,
 			js.Undefined,
 			js.Undefined,
-			publicationDate.Call("toArray"),
+			js.Undefined,
 		}),
 	}
 
 	m.SetPublishingMethod(publishing_method)
+
+	m.SetPublicationDate(publicationDate)
 
 	return m
 }
@@ -340,7 +383,10 @@ type GetBookRequest struct {
 // GetIsbn gets the Isbn of the GetBookRequest.
 // Isbn is the ISBN with which
 // to match against the ISBN of a book in the library.
-func (m *GetBookRequest) GetIsbn() int64 {
+func (m *GetBookRequest) GetIsbn() (x int64) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getIsbn").Int64()
 }
 
@@ -389,7 +435,10 @@ type QueryBooksRequest struct {
 // GetAuthorPrefix gets the AuthorPrefix of the QueryBooksRequest.
 // AuthorPrefix is the prefix with which
 // to match against the author of a book in the library.
-func (m *QueryBooksRequest) GetAuthorPrefix() string {
+func (m *QueryBooksRequest) GetAuthorPrefix() (x string) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getAuthorPrefix").String()
 }
 
