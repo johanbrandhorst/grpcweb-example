@@ -1315,6 +1315,7 @@ func (g *Generator) generateMessage(message *Descriptor) {
 	}
 	fieldGetterNames := make(map[*descriptor.FieldDescriptorProto]string)
 	fieldSetterNames := make(map[*descriptor.FieldDescriptorProto]string)
+	fieldAdderNames := make(map[*descriptor.FieldDescriptorProto]string)
 	fieldHaserNames := make(map[*descriptor.FieldDescriptorProto]string)
 	fieldClearerNames := make(map[*descriptor.FieldDescriptorProto]string)
 	fieldTypes := make(map[*descriptor.FieldDescriptorProto]string)
@@ -1366,6 +1367,10 @@ func (g *Generator) generateMessage(message *Descriptor) {
 
 		fieldGetterNames[field] = fieldGetterName
 		fieldSetterNames[field] = fieldSetterName
+
+		if isRepeated(field) && g.getMapDescriptor(field) == nil {
+			fieldAdderNames[field] = allocNames("Add" + base)[0]
+		}
 
 		haser := field.OneofIndex != nil ||
 			(*field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE &&
@@ -1577,11 +1582,16 @@ func (g *Generator) generateMessage(message *Descriptor) {
 			g.P(`// Warning: mutating the returned slice will not be reflected in the message.`)
 			g.P(`// Use the setter to make changes to the slice in the message.`)
 		}
-		g.P("func (m *", ccTypeName, ") ", getterName, "() ", typename, ` {`)
+		g.P("func (m *", ccTypeName, ") ", getterName, "() (x ", typename, `) {`)
 		g.In()
+		g.P(`if m == nil {`)
+		g.In()
+		g.P(`return x`)
+		g.Out()
+		g.P(`}`)
 		if d := g.getMapDescriptor(field); d != nil {
 			// Special case for maps
-			g.P(`x := `, mapFieldTypes[field], `{}`)
+			g.P(`x = `, mapFieldTypes[field], `{}`)
 			g.P(`mapFunc := func(value *js.Object, key *js.Object) {`)
 			g.In()
 			// Figure out the key and value types
@@ -1635,7 +1645,6 @@ func (g *Generator) generateMessage(message *Descriptor) {
 			default:
 				valueConversion = fmt.Sprintf(`value.%s`, typeFunc)
 			}
-			g.P(`x := `, typename, `{}`)
 			g.P(`arrFunc := func(value *js.Object) {`)
 			g.In()
 			g.P(`x = append(x, `, valueConversion, `)`)
@@ -1689,13 +1698,39 @@ func (g *Generator) generateMessage(message *Descriptor) {
 			g.P(`}`)
 			g.P(`m.Call("set`, fname, `List", arr)`)
 		} else if *field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
-			g.P(`m.Call("set` + fname + `", v.Call("toArray"))`)
+			g.P(`if v != nil {`)
+			g.In()
+			g.P(`m.Call("set` + fname + `", v)`)
+			g.Out()
+			g.P(`} else {`)
+			g.In()
+			g.P(`m.`, fieldClearerNames[field], `()`)
+			g.Out()
+			g.P(`}`)
 		} else {
 			g.P(`m.Call("set` + fname + `", v)`)
 		}
 		g.Out()
 		g.P(`}`)
 		g.P()
+
+		// Generate Adder (Only for repeated types)
+		if isRepeated(field) && g.getMapDescriptor(field) == nil {
+			adderName := fieldAdderNames[field]
+			g.P(`// `, adderName, ` adds an entry to the `, fname, ` slice of the `, ccTypeName)
+			g.P(`// at the specified index. If index is negative, inserts the element`)
+			g.P(`// at the index counted from the end of the slice, with origin 1.`)
+			g.PrintComments(fmt.Sprintf("%s,%d,%d", message.path, messageFieldPath, i))
+			// Spent a good 30 minutes trying to figure out how to turn a repeated field
+			// into a non-repeated field for g.GoType before realising this little hack.
+			nonRepeatedTypeName := strings.TrimPrefix(typename, "[]")
+			g.P(`func (m *`+ccTypeName+`) `+adderName+`(v `, nonRepeatedTypeName, `, index int) {`)
+			g.In()
+			g.P(`m.Call("add` + fname + `", v, index)`)
+			g.Out()
+			g.P(`}`)
+			g.P()
+		}
 
 		// Generate Haser (Only for oneof and message fields)
 		if field.OneofIndex != nil ||
@@ -1707,6 +1742,12 @@ func (g *Generator) generateMessage(message *Descriptor) {
 			g.PrintComments(fmt.Sprintf("%s,%d,%d", message.path, messageFieldPath, i))
 			g.P(`func (m *` + ccTypeName + `) ` + haserName + `() bool {`)
 			g.In()
+			g.In()
+			g.P(`if m == nil {`)
+			g.In()
+			g.P(`return false`)
+			g.Out()
+			g.P(`}`)
 			g.P(`return m.Call("has`, fname, `").Bool()`)
 			g.Out()
 			g.P(`}`)
@@ -1779,8 +1820,8 @@ func (g *Generator) generateMessage(message *Descriptor) {
 			// Handle slice values separately
 			g.P(`js.Undefined,`)
 		} else if *field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
-			// Convert messages to array type
-			g.P(sanitiseIdentifier(field.GetJsonName()), `.Call("toArray"),`)
+			// Handle messages separately
+			g.P(`js.Undefined,`)
 		} else {
 			g.P(sanitiseIdentifier(field.GetJsonName()), `,`)
 		}
@@ -1799,7 +1840,7 @@ func (g *Generator) generateMessage(message *Descriptor) {
 		g.P()
 	}
 
-	// Special handling for map and slice fields
+	// Special handling for map, slice and message fields
 	locallyUsedNames := make(map[string]bool)
 	for _, field := range message.GetField() {
 		if d := g.getMapDescriptor(field); d != nil {
@@ -1828,6 +1869,9 @@ func (g *Generator) generateMessage(message *Descriptor) {
 			g.Out()
 			g.P(`}`)
 			g.P(`m.Call("set`, CamelCase(field.GetName()), `List", `, varName, `)`)
+			g.P()
+		} else if *field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE && field.OneofIndex == nil {
+			g.P(`m.Set`, CamelCase(field.GetName()), `(`, sanitiseIdentifier(field.GetJsonName()), `)`)
 			g.P()
 		}
 	}

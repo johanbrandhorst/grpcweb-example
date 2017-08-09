@@ -116,7 +116,10 @@ type Any struct {
 // Schemes other than `http`, `https` (or the empty scheme) might be
 // used with implementation specific semantics.
 //
-func (m *Any) GetTypeUrl() string {
+func (m *Any) GetTypeUrl() (x string) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getTypeUrl").String()
 }
 
@@ -149,7 +152,10 @@ func (m *Any) SetTypeUrl(v string) {
 
 // GetValue gets the Value of the Any.
 // Must be a valid serialized protocol buffer of the above specified type.
-func (m *Any) GetValue() []byte {
+func (m *Any) GetValue() (x []byte) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getValue_asU8").Interface().([]byte)
 }
 

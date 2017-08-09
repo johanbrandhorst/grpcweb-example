@@ -2,15 +2,15 @@
 // source: struct/struct.proto
 
 /*
-Package structpb is a generated protocol buffer package.
+	Package structpb is a generated protocol buffer package.
 
-It is generated from these files:
-	struct/struct.proto
+	It is generated from these files:
+		struct/struct.proto
 
-It has these top-level messages:
-	Struct
-	Value
-	ListValue
+	It has these top-level messages:
+		Struct
+		Value
+		ListValue
 */
 package structpb
 
@@ -57,8 +57,11 @@ type Struct struct {
 
 // GetFields gets the Fields of the Struct.
 // Unordered map of dynamically typed values.
-func (m *Struct) GetFields() map[string]*Value {
-	x := map[string]*Value{}
+func (m *Struct) GetFields() (x map[string]*Value) {
+	if m == nil {
+		return x
+	}
+	x = map[string]*Value{}
 	mapFunc := func(value *js.Object, key *js.Object) {
 		x[key.String()] = &Value{Object: value}
 	}
@@ -224,7 +227,10 @@ func (m *Value) SetKind(kind isValue_Kind) {
 
 // GetNullValue gets the NullValue of the Value.
 // Represents a null value.
-func (m *Value) GetNullValue() NullValue {
+func (m *Value) GetNullValue() (x NullValue) {
+	if m == nil {
+		return x
+	}
 	return NullValue(m.Call("getNullValue").Int())
 }
 
@@ -237,6 +243,9 @@ func (m *Value) SetNullValue(v NullValue) {
 // HasNullValue indicates whether the NullValue of the Value is set.
 // Represents a null value.
 func (m *Value) HasNullValue() bool {
+	if m == nil {
+		return false
+	}
 	return m.Call("hasNullValue").Bool()
 }
 
@@ -248,7 +257,10 @@ func (m *Value) ClearNullValue() {
 
 // GetNumberValue gets the NumberValue of the Value.
 // Represents a double value.
-func (m *Value) GetNumberValue() float64 {
+func (m *Value) GetNumberValue() (x float64) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getNumberValue").Float()
 }
 
@@ -261,6 +273,9 @@ func (m *Value) SetNumberValue(v float64) {
 // HasNumberValue indicates whether the NumberValue of the Value is set.
 // Represents a double value.
 func (m *Value) HasNumberValue() bool {
+	if m == nil {
+		return false
+	}
 	return m.Call("hasNumberValue").Bool()
 }
 
@@ -272,7 +287,10 @@ func (m *Value) ClearNumberValue() {
 
 // GetStringValue gets the StringValue of the Value.
 // Represents a string value.
-func (m *Value) GetStringValue() string {
+func (m *Value) GetStringValue() (x string) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getStringValue").String()
 }
 
@@ -285,6 +303,9 @@ func (m *Value) SetStringValue(v string) {
 // HasStringValue indicates whether the StringValue of the Value is set.
 // Represents a string value.
 func (m *Value) HasStringValue() bool {
+	if m == nil {
+		return false
+	}
 	return m.Call("hasStringValue").Bool()
 }
 
@@ -296,7 +317,10 @@ func (m *Value) ClearStringValue() {
 
 // GetBoolValue gets the BoolValue of the Value.
 // Represents a boolean value.
-func (m *Value) GetBoolValue() bool {
+func (m *Value) GetBoolValue() (x bool) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getBoolValue").Bool()
 }
 
@@ -309,6 +333,9 @@ func (m *Value) SetBoolValue(v bool) {
 // HasBoolValue indicates whether the BoolValue of the Value is set.
 // Represents a boolean value.
 func (m *Value) HasBoolValue() bool {
+	if m == nil {
+		return false
+	}
 	return m.Call("hasBoolValue").Bool()
 }
 
@@ -320,19 +347,29 @@ func (m *Value) ClearBoolValue() {
 
 // GetStructValue gets the StructValue of the Value.
 // Represents a structured value.
-func (m *Value) GetStructValue() *Struct {
+func (m *Value) GetStructValue() (x *Struct) {
+	if m == nil {
+		return x
+	}
 	return &Struct{Object: m.Call("getStructValue")}
 }
 
 // SetStructValue sets the StructValue of the Value.
 // Represents a structured value.
 func (m *Value) SetStructValue(v *Struct) {
-	m.Call("setStructValue", v.Call("toArray"))
+	if v != nil {
+		m.Call("setStructValue", v)
+	} else {
+		m.ClearStructValue()
+	}
 }
 
 // HasStructValue indicates whether the StructValue of the Value is set.
 // Represents a structured value.
 func (m *Value) HasStructValue() bool {
+	if m == nil {
+		return false
+	}
 	return m.Call("hasStructValue").Bool()
 }
 
@@ -344,19 +381,29 @@ func (m *Value) ClearStructValue() {
 
 // GetListValue gets the ListValue of the Value.
 // Represents a repeated `Value`.
-func (m *Value) GetListValue() *ListValue {
+func (m *Value) GetListValue() (x *ListValue) {
+	if m == nil {
+		return x
+	}
 	return &ListValue{Object: m.Call("getListValue")}
 }
 
 // SetListValue sets the ListValue of the Value.
 // Represents a repeated `Value`.
 func (m *Value) SetListValue(v *ListValue) {
-	m.Call("setListValue", v.Call("toArray"))
+	if v != nil {
+		m.Call("setListValue", v)
+	} else {
+		m.ClearListValue()
+	}
 }
 
 // HasListValue indicates whether the ListValue of the Value is set.
 // Represents a repeated `Value`.
 func (m *Value) HasListValue() bool {
+	if m == nil {
+		return false
+	}
 	return m.Call("hasListValue").Bool()
 }
 
@@ -413,8 +460,10 @@ type ListValue struct {
 // Repeated field of dynamically typed values.
 // Warning: mutating the returned slice will not be reflected in the message.
 // Use the setter to make changes to the slice in the message.
-func (m *ListValue) GetValues() []*Value {
-	x := []*Value{}
+func (m *ListValue) GetValues() (x []*Value) {
+	if m == nil {
+		return x
+	}
 	arrFunc := func(value *js.Object) {
 		x = append(x, &Value{Object: value})
 	}
@@ -430,6 +479,14 @@ func (m *ListValue) SetValues(v []*Value) {
 		arr.SetIndex(i, value)
 	}
 	m.Call("setValuesList", arr)
+}
+
+// AddValues adds an entry to the Values slice of the ListValue
+// at the specified index. If index is negative, inserts the element
+// at the index counted from the end of the slice, with origin 1.
+// Repeated field of dynamically typed values.
+func (m *ListValue) AddValues(v *Value, index int) {
+	m.Call("addValues", v, index)
 }
 
 // ClearValues clears the Values of the ListValue.

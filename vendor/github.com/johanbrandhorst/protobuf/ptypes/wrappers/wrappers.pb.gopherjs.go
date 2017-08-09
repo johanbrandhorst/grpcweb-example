@@ -36,7 +36,10 @@ type DoubleValue struct {
 
 // GetValue gets the Value of the DoubleValue.
 // The double value.
-func (m *DoubleValue) GetValue() float64 {
+func (m *DoubleValue) GetValue() (x float64) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getValue").Float()
 }
 
@@ -84,7 +87,10 @@ type FloatValue struct {
 
 // GetValue gets the Value of the FloatValue.
 // The float value.
-func (m *FloatValue) GetValue() float32 {
+func (m *FloatValue) GetValue() (x float32) {
+	if m == nil {
+		return x
+	}
 	return float32(m.Call("getValue").Float())
 }
 
@@ -132,7 +138,10 @@ type Int64Value struct {
 
 // GetValue gets the Value of the Int64Value.
 // The int64 value.
-func (m *Int64Value) GetValue() int64 {
+func (m *Int64Value) GetValue() (x int64) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getValue").Int64()
 }
 
@@ -180,7 +189,10 @@ type UInt64Value struct {
 
 // GetValue gets the Value of the UInt64Value.
 // The uint64 value.
-func (m *UInt64Value) GetValue() uint64 {
+func (m *UInt64Value) GetValue() (x uint64) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getValue").Uint64()
 }
 
@@ -228,7 +240,10 @@ type Int32Value struct {
 
 // GetValue gets the Value of the Int32Value.
 // The int32 value.
-func (m *Int32Value) GetValue() int32 {
+func (m *Int32Value) GetValue() (x int32) {
+	if m == nil {
+		return x
+	}
 	return int32(m.Call("getValue").Int())
 }
 
@@ -276,7 +291,10 @@ type UInt32Value struct {
 
 // GetValue gets the Value of the UInt32Value.
 // The uint32 value.
-func (m *UInt32Value) GetValue() uint32 {
+func (m *UInt32Value) GetValue() (x uint32) {
+	if m == nil {
+		return x
+	}
 	return uint32(m.Call("getValue").Int())
 }
 
@@ -324,7 +342,10 @@ type BoolValue struct {
 
 // GetValue gets the Value of the BoolValue.
 // The bool value.
-func (m *BoolValue) GetValue() bool {
+func (m *BoolValue) GetValue() (x bool) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getValue").Bool()
 }
 
@@ -372,7 +393,10 @@ type StringValue struct {
 
 // GetValue gets the Value of the StringValue.
 // The string value.
-func (m *StringValue) GetValue() string {
+func (m *StringValue) GetValue() (x string) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getValue").String()
 }
 
@@ -420,7 +444,10 @@ type BytesValue struct {
 
 // GetValue gets the Value of the BytesValue.
 // The bytes value.
-func (m *BytesValue) GetValue() []byte {
+func (m *BytesValue) GetValue() (x []byte) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getValue_asU8").Interface().([]byte)
 }
 

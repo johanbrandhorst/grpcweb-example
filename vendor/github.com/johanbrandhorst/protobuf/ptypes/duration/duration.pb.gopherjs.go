@@ -87,7 +87,10 @@ type Duration struct {
 // Signed seconds of the span of time. Must be from -315,576,000,000
 // to +315,576,000,000 inclusive. Note: these bounds are computed from:
 // 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years
-func (m *Duration) GetSeconds() int64 {
+func (m *Duration) GetSeconds() (x int64) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getSeconds").Int64()
 }
 
@@ -106,7 +109,10 @@ func (m *Duration) SetSeconds(v int64) {
 // of one second or more, a non-zero value for the `nanos` field must be
 // of the same sign as the `seconds` field. Must be from -999,999,999
 // to +999,999,999 inclusive.
-func (m *Duration) GetNanos() int32 {
+func (m *Duration) GetNanos() (x int32) {
+	if m == nil {
+		return x
+	}
 	return int32(m.Call("getNanos").Int())
 }
 

@@ -16,52 +16,21 @@ update:
 	sed -i "s;golang/protobuf;johanbrandhorst/protobuf;g" wrappers/wrappers.proto
 
 regenerate:
-
 	protoc --gopherjs_out=:${GOPATH}/src --js_out=import_style=commonjs,binary:. ./empty/empty.proto
-	# Replace imports and exports in ProtobufJS file
-	sed -i "s/require('google-protobuf')/\$$global/g" ./empty/empty_pb.js
-	sed -i -E "s/goog\.object\.extend\(exports, proto\..*\);$$//g" ./empty/empty_pb.js
-	# Rename file
-	mv ./empty/empty_pb.js ./empty/empty_pb.inc.js
-
 	protoc --gopherjs_out=:${GOPATH}/src --js_out=import_style=commonjs,binary:. ./timestamp/timestamp.proto
-	# Replace imports and exports in ProtobufJS file
-	sed -i "s/require('google-protobuf')/\$$global/g" ./timestamp/timestamp_pb.js
-	sed -i -E "s/goog\.object\.extend\(exports, proto\..*\);$$//g" ./timestamp/timestamp_pb.js
-	# Rename file
-	mv ./timestamp/timestamp_pb.js ./timestamp/timestamp_pb.inc.js
-
-
 	protoc --gopherjs_out=:${GOPATH}/src --js_out=import_style=commonjs,binary:. ./struct/struct.proto
-	# Replace imports and exports in ProtobufJS file
-	sed -i "s/require('google-protobuf')/\$$global/g" ./struct/struct_pb.js
-	sed -i -E "s/goog\.object\.extend\(exports, proto\..*\);$$//g" ./struct/struct_pb.js
-	# Rename file
-	mv ./struct/struct_pb.js ./struct/struct_pb.inc.js
-
-
 	protoc --gopherjs_out=:${GOPATH}/src --js_out=import_style=commonjs,binary:. ./any/any.proto
-	# Replace imports and exports in ProtobufJS file
-	sed -i "s/require('google-protobuf')/\$$global/g" ./any/any_pb.js
-	sed -i -E "s/goog\.object\.extend\(exports, proto\..*\);$$//g" ./any/any_pb.js
-	# Rename file
-	mv ./any/any_pb.js ./any/any_pb.inc.js
-
-
 	protoc --gopherjs_out=:${GOPATH}/src --js_out=import_style=commonjs,binary:. ./duration/duration.proto
-	# Replace imports and exports in ProtobufJS file
-	sed -i "s/require('google-protobuf')/\$$global/g" ./duration/duration_pb.js
-	sed -i -E "s/goog\.object\.extend\(exports, proto\..*\);$$//g" ./duration/duration_pb.js
-	# Rename file
-	mv ./duration/duration_pb.js ./duration/duration_pb.inc.js
-
-
 	protoc --gopherjs_out=:${GOPATH}/src --js_out=import_style=commonjs,binary:. ./wrappers/wrappers.proto
-	# Replace imports and exports in ProtobufJS file
-	sed -i "s/require('google-protobuf')/\$$global/g" ./wrappers/wrappers_pb.js
-	sed -i -E "s/goog\.object\.extend\(exports, proto\..*\);$$//g" ./wrappers/wrappers_pb.js
-	# Rename file
-	mv ./wrappers/wrappers_pb.js ./wrappers/wrappers_pb.inc.js
+
+	webpack
+
+	rm ./empty/empty_pb.js \
+		./timestamp/timestamp_pb.js \
+		./struct/struct_pb.js \
+		./any/any_pb.js \
+		./duration/duration_pb.js \
+		./wrappers/wrappers_pb.js
 
 clean:
 	rm -f empty/*.js empty/*.go

@@ -17,7 +17,7 @@
   branch = "master"
   name = "github.com/golang/protobuf"
   packages = ["proto","ptypes/any","ptypes/timestamp"]
-  revision = "748d386b5c1ea99658fd69fe9f03991ce86a90c1"
+  revision = "1909bc2f63dc92bb931deace8b8312c4db72d12f"
 
 [[projects]]
   branch = "master"
@@ -29,13 +29,13 @@
   branch = "master"
   name = "github.com/improbable-eng/grpc-web"
   packages = ["go/grpcweb"]
-  revision = "821be91cc9a849c728fd80ec57d6f76e2e8c5bec"
+  revision = "d77bb3348c50d37edc7f076adbd5003b34e5c78f"
 
 [[projects]]
   branch = "master"
   name = "github.com/johanbrandhorst/protobuf"
   packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/metadata","grpcweb/status","jspb","ptypes/timestamp"]
-  revision = "3e467d8e7a18dc834f88eb8fe760e3ab8755e4d8"
+  revision = "dda2a88586db5cb6c0d04557bc7490cf4a2385bb"
 
 [[projects]]
   name = "github.com/rs/cors"
@@ -47,19 +47,19 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["acme","acme/autocert"]
-  revision = "42ff06aea7c329876e5a0fe94acc96902accf0ad"
+  revision = "b176d7def5d71bdd214203491f89843ed217f420"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context","http2","http2/hpack","idna","internal/timeseries","lex/httplex","trace"]
-  revision = "f5079bd7f6f74e23c4d65efa0f4ce14cbd6a3c0f"
+  revision = "1c05540f6879653db88113bc4a2b70aec4bd491f"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "d8f5ea21b9295e315e612b4bcf4bedea93454d4d"
+  revision = "e42485b6e20ae7d2304ec72e535b103ed350cc02"
 
 [[projects]]
   branch = "master"

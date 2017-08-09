@@ -38,7 +38,10 @@ type Multi2 struct {
 }
 
 // GetRequiredValue gets the RequiredValue of the Multi2.
-func (m *Multi2) GetRequiredValue() int32 {
+func (m *Multi2) GetRequiredValue() (x int32) {
+	if m == nil {
+		return x
+	}
 	return int32(m.Call("getRequiredValue").Int())
 }
 
@@ -48,7 +51,10 @@ func (m *Multi2) SetRequiredValue(v int32) {
 }
 
 // GetColor gets the Color of the Multi2.
-func (m *Multi2) GetColor() Multi2_Color {
+func (m *Multi2) GetColor() (x Multi2_Color) {
+	if m == nil {
+		return x
+	}
 	return Multi2_Color(m.Call("getColor").Int())
 }
 

@@ -1,15 +1,10 @@
-const webpack = require('webpack');
-const path = require('path');
+const webpack = require("webpack");
 
 module.exports = {
-  entry:  "./node_modules/google-protobuf/google-protobuf.js",
+  entry: "./node_modules/google-protobuf/google-protobuf.js",
   output: {
-    path: path.resolve(__dirname),
-    filename: 'jspb.inc.js',
-    libraryTarget: 'this',
-  },
-  resolve: {
-    extensions: [".js"]
+    filename: "jspb.inc.js",
+    libraryTarget: "this",
   },
   plugins: [
     new webpack.optimize.UglifyJsPlugin()

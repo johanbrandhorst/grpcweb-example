@@ -35,7 +35,10 @@ type Multi3 struct {
 }
 
 // GetHatType gets the HatType of the Multi3.
-func (m *Multi3) GetHatType() Multi3_HatType {
+func (m *Multi3) GetHatType() (x Multi3_HatType) {
+	if m == nil {
+		return x
+	}
 	return Multi3_HatType(m.Call("getHatType").Int())
 }
 

@@ -105,7 +105,10 @@ type Timestamp struct {
 // Represents seconds of UTC time since Unix epoch
 // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
 // 9999-12-31T23:59:59Z inclusive.
-func (m *Timestamp) GetSeconds() int64 {
+func (m *Timestamp) GetSeconds() (x int64) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getSeconds").Int64()
 }
 
@@ -122,7 +125,10 @@ func (m *Timestamp) SetSeconds(v int64) {
 // second values with fractions must still have non-negative nanos values
 // that count forward in time. Must be from 0 to 999,999,999
 // inclusive.
-func (m *Timestamp) GetNanos() int32 {
+func (m *Timestamp) GetNanos() (x int32) {
+	if m == nil {
+		return x
+	}
 	return int32(m.Call("getNanos").Int())
 }
 

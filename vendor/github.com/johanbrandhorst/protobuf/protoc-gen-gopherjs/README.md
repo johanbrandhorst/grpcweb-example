@@ -54,34 +54,35 @@ The ProtobufJS must be run with the following parameters: `import_style=commonjs
 ```
 
 The generated files will be suffixed `.pb.gopherjs.go` and `pb.js`.
-The generated JS file must be manually edited to be compatible;
+The generated JS file must be either manually edited or processed with a tool like
+[webpack](https://webpack.github.io) to be compatible. I highly recommend using
+webpack for this processing. Here's an example webpack.config.js file:
 
-  1. Each instance of `require('google-protobuf')` replaced with `$global`
-  1. Each instance of `require('google-protobuf/.*')` replace with `$global.proto.google.protobuf`
-  1. Any other `require()` instances must be modified to include correct objects.
-  This will depend on the configuration of the proto files that were used when generating.
-  This can get pretty complicated, see the [test files](test/multi/multi1_pb.inc.js)
-  and the [test Makefile](test/Makefile) for examples.
-  1. The `export` statements at the end of the files must be removed.
-  1. The generated JS file must be renamed `*.inc.js` to be properly included by GopherJS.
-
-The reason for these modifications is because the `$global` object binds together all the
-definitions to one root object, without the need for `require`
-(this is subject to improval if someone with better JS knowledge than I knows a better way).
-
-Here's a couple of handy `sed` snippets to accomplish this:
-
-```bash
-# Replace top level import with global reference
-$ sed -i "s;require('google-protobuf');\$global;g" <generated_js_file_pb.js>
-# Replace any well known type imports with correct namespace
-$ sed -i -E "s;require\('google-protobuf/.*'\);\$global.proto.google.protobuf;g" <generated_js_file_pb.js>
-# Remove export statement
-$ sed -i -E "s/goog\.object\.extend\(exports, proto\..*\);$//g" <generated_js_file_pb.js>
+```js
+module.exports = {
+    entry: "./types_pb.js",
+    output: {
+        filename: "types_pb.inc.js",
+    },
+    externals: {
+        "google-protobuf": "window",
+        "../multi/multi1_pb.js": "window.proto.multitest",
+    }
+};
 ```
 
+This one is used in the [tests](./test/types/webpack.config.js).
+Any imports in your protofiles will need
+to be added to `externals` to prevent duplicate code in your final JS file.
+`google-protobuf` should always be included like so, and for other imports
+we have to find the export target used, it'll typically be
+`window.proto.`+<proto package name>. More examples of webpack files can be found
+[in](./test/multi/webpack.config.js)
+[other](./test/grpc_test/webpack.config.js)
+[parts](../ptypes/webpack.config.js) [of](../test/client/proto/test/webpack.config.js) this repo.
+
 ## An example
-Consider file `test.proto`, containing
+Consider the file `test.proto`, containing
 
 ```proto
 syntax="proto3";

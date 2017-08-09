@@ -2,17 +2,17 @@
 // source: multi/multi1.proto
 
 /*
-Package multitest is a generated protocol buffer package.
+	Package multitest is a generated protocol buffer package.
 
-It is generated from these files:
-	multi/multi1.proto
-	multi/multi2.proto
-	multi/multi3.proto
+	It is generated from these files:
+		multi/multi1.proto
+		multi/multi2.proto
+		multi/multi3.proto
 
-It has these top-level messages:
-	Multi1
-	Multi2
-	Multi3
+	It has these top-level messages:
+		Multi1
+		Multi2
+		Multi3
 */
 package multitest
 
@@ -28,17 +28,27 @@ type Multi1 struct {
 }
 
 // GetMulti2 gets the Multi2 of the Multi1.
-func (m *Multi1) GetMulti2() *Multi2 {
+func (m *Multi1) GetMulti2() (x *Multi2) {
+	if m == nil {
+		return x
+	}
 	return &Multi2{Object: m.Call("getMulti2")}
 }
 
 // SetMulti2 sets the Multi2 of the Multi1.
 func (m *Multi1) SetMulti2(v *Multi2) {
-	m.Call("setMulti2", v.Call("toArray"))
+	if v != nil {
+		m.Call("setMulti2", v)
+	} else {
+		m.ClearMulti2()
+	}
 }
 
 // HasMulti2 indicates whether the Multi2 of the Multi1 is set.
 func (m *Multi1) HasMulti2() bool {
+	if m == nil {
+		return false
+	}
 	return m.Call("hasMulti2").Bool()
 }
 
@@ -48,7 +58,10 @@ func (m *Multi1) ClearMulti2() {
 }
 
 // GetColor gets the Color of the Multi1.
-func (m *Multi1) GetColor() Multi2_Color {
+func (m *Multi1) GetColor() (x Multi2_Color) {
+	if m == nil {
+		return x
+	}
 	return Multi2_Color(m.Call("getColor").Int())
 }
 
@@ -58,7 +71,10 @@ func (m *Multi1) SetColor(v Multi2_Color) {
 }
 
 // GetHatType gets the HatType of the Multi1.
-func (m *Multi1) GetHatType() Multi3_HatType {
+func (m *Multi1) GetHatType() (x Multi3_HatType) {
+	if m == nil {
+		return x
+	}
 	return Multi3_HatType(m.Call("getHatType").Int())
 }
 
@@ -71,11 +87,13 @@ func (m *Multi1) SetHatType(v Multi3_HatType) {
 func (m *Multi1) New(multi2 *Multi2, color Multi2_Color, hatType Multi3_HatType) *Multi1 {
 	m = &Multi1{
 		Object: js.Global.Get("proto").Get("multitest").Get("Multi1").New([]interface{}{
-			multi2.Call("toArray"),
+			js.Undefined,
 			color,
 			hatType,
 		}),
 	}
+
+	m.SetMulti2(multi2)
 
 	return m
 }

@@ -5,15 +5,8 @@ regenerate:
 		--gopherjs_out=plugins=grpc,Mgoogle/protobuf/empty.proto=github.com/johanbrandhorst/protobuf/ptypes/empty:./client/ \
 		--go_out=plugins=grpc:./server/
 
-	# Replace top level import with global reference
-	sed -i "s;require('google-protobuf');\$$global;g" ./client/proto/test/test_pb.js
-	# Replace any well known type imports with correct namespace
-	sed -i -E "s;require\('google-protobuf/.*'\);\$$global.proto.google.protobuf;g" ./client/proto/test/test_pb.js
-	# Remove export statement
-	sed -i -E "s/goog\.object\.extend\(exports, proto\..*\);\$$//g" ./client/proto/test/test_pb.js
 
-	# Move original file
-	mv ./client/proto/test/test_pb.js ./client/proto/test/test_pb.inc.js
+	(cd ./client/proto/test && webpack && rm test_pb.js)
 
 	# Regenerate dependencies
 	(cd ../protoc-gen-gopherjs/test && make regenerate)

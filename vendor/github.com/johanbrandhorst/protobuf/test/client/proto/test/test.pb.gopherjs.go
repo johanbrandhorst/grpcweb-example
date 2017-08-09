@@ -2,15 +2,15 @@
 // source: proto/test/test.proto
 
 /*
-Package test is a generated protocol buffer package.
+	Package test is a generated protocol buffer package.
 
-It is generated from these files:
-	proto/test/test.proto
+	It is generated from these files:
+		proto/test/test.proto
 
-It has these top-level messages:
-	ExtraStuff
-	PingRequest
-	PingResponse
+	It has these top-level messages:
+		ExtraStuff
+		PingRequest
+		PingResponse
 */
 package test
 
@@ -99,8 +99,11 @@ func (m *ExtraStuff) SetTitle(title isExtraStuff_Title) {
 }
 
 // GetAddresses gets the Addresses of the ExtraStuff.
-func (m *ExtraStuff) GetAddresses() map[int32]string {
-	x := map[int32]string{}
+func (m *ExtraStuff) GetAddresses() (x map[int32]string) {
+	if m == nil {
+		return x
+	}
+	x = map[int32]string{}
 	mapFunc := func(value *js.Object, key *js.Object) {
 		x[int32(key.Int())] = value.String()
 	}
@@ -123,7 +126,10 @@ func (m *ExtraStuff) ClearAddresses() {
 }
 
 // GetFirstName gets the FirstName of the ExtraStuff.
-func (m *ExtraStuff) GetFirstName() string {
+func (m *ExtraStuff) GetFirstName() (x string) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getFirstName").String()
 }
 
@@ -134,6 +140,9 @@ func (m *ExtraStuff) SetFirstName(v string) {
 
 // HasFirstName indicates whether the FirstName of the ExtraStuff is set.
 func (m *ExtraStuff) HasFirstName() bool {
+	if m == nil {
+		return false
+	}
 	return m.Call("hasFirstName").Bool()
 }
 
@@ -143,7 +152,10 @@ func (m *ExtraStuff) ClearFirstName() {
 }
 
 // GetIdNumber gets the IdNumber of the ExtraStuff.
-func (m *ExtraStuff) GetIdNumber() int32 {
+func (m *ExtraStuff) GetIdNumber() (x int32) {
+	if m == nil {
+		return x
+	}
 	return int32(m.Call("getIdNumber").Int())
 }
 
@@ -154,6 +166,9 @@ func (m *ExtraStuff) SetIdNumber(v int32) {
 
 // HasIdNumber indicates whether the IdNumber of the ExtraStuff is set.
 func (m *ExtraStuff) HasIdNumber() bool {
+	if m == nil {
+		return false
+	}
 	return m.Call("hasIdNumber").Bool()
 }
 
@@ -165,8 +180,10 @@ func (m *ExtraStuff) ClearIdNumber() {
 // GetCardNumbers gets the CardNumbers of the ExtraStuff.
 // Warning: mutating the returned slice will not be reflected in the message.
 // Use the setter to make changes to the slice in the message.
-func (m *ExtraStuff) GetCardNumbers() []uint32 {
-	x := []uint32{}
+func (m *ExtraStuff) GetCardNumbers() (x []uint32) {
+	if m == nil {
+		return x
+	}
 	arrFunc := func(value *js.Object) {
 		x = append(x, uint32(value.Int()))
 	}
@@ -181,6 +198,13 @@ func (m *ExtraStuff) SetCardNumbers(v []uint32) {
 		arr.SetIndex(i, value)
 	}
 	m.Call("setCardNumbersList", arr)
+}
+
+// AddCardNumbers adds an entry to the CardNumbers slice of the ExtraStuff
+// at the specified index. If index is negative, inserts the element
+// at the index counted from the end of the slice, with origin 1.
+func (m *ExtraStuff) AddCardNumbers(v uint32, index int) {
+	m.Call("addCardNumbers", v, index)
 }
 
 // ClearCardNumbers clears the CardNumbers of the ExtraStuff.
@@ -237,7 +261,10 @@ type PingRequest struct {
 }
 
 // GetValue gets the Value of the PingRequest.
-func (m *PingRequest) GetValue() string {
+func (m *PingRequest) GetValue() (x string) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getValue").String()
 }
 
@@ -247,7 +274,10 @@ func (m *PingRequest) SetValue(v string) {
 }
 
 // GetResponseCount gets the ResponseCount of the PingRequest.
-func (m *PingRequest) GetResponseCount() int32 {
+func (m *PingRequest) GetResponseCount() (x int32) {
+	if m == nil {
+		return x
+	}
 	return int32(m.Call("getResponseCount").Int())
 }
 
@@ -257,7 +287,10 @@ func (m *PingRequest) SetResponseCount(v int32) {
 }
 
 // GetErrorCodeReturned gets the ErrorCodeReturned of the PingRequest.
-func (m *PingRequest) GetErrorCodeReturned() uint32 {
+func (m *PingRequest) GetErrorCodeReturned() (x uint32) {
+	if m == nil {
+		return x
+	}
 	return uint32(m.Call("getErrorCodeReturned").Int())
 }
 
@@ -267,7 +300,10 @@ func (m *PingRequest) SetErrorCodeReturned(v uint32) {
 }
 
 // GetFailureType gets the FailureType of the PingRequest.
-func (m *PingRequest) GetFailureType() PingRequest_FailureType {
+func (m *PingRequest) GetFailureType() (x PingRequest_FailureType) {
+	if m == nil {
+		return x
+	}
 	return PingRequest_FailureType(m.Call("getFailureType").Int())
 }
 
@@ -277,7 +313,10 @@ func (m *PingRequest) SetFailureType(v PingRequest_FailureType) {
 }
 
 // GetCheckMetadata gets the CheckMetadata of the PingRequest.
-func (m *PingRequest) GetCheckMetadata() bool {
+func (m *PingRequest) GetCheckMetadata() (x bool) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getCheckMetadata").Bool()
 }
 
@@ -287,7 +326,10 @@ func (m *PingRequest) SetCheckMetadata(v bool) {
 }
 
 // GetSendHeaders gets the SendHeaders of the PingRequest.
-func (m *PingRequest) GetSendHeaders() bool {
+func (m *PingRequest) GetSendHeaders() (x bool) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getSendHeaders").Bool()
 }
 
@@ -297,7 +339,10 @@ func (m *PingRequest) SetSendHeaders(v bool) {
 }
 
 // GetSendTrailers gets the SendTrailers of the PingRequest.
-func (m *PingRequest) GetSendTrailers() bool {
+func (m *PingRequest) GetSendTrailers() (x bool) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getSendTrailers").Bool()
 }
 
@@ -307,7 +352,10 @@ func (m *PingRequest) SetSendTrailers(v bool) {
 }
 
 // GetMessageLatencyMs gets the MessageLatencyMs of the PingRequest.
-func (m *PingRequest) GetMessageLatencyMs() int32 {
+func (m *PingRequest) GetMessageLatencyMs() (x int32) {
+	if m == nil {
+		return x
+	}
 	return int32(m.Call("getMessageLatencyMs").Int())
 }
 
@@ -356,7 +404,10 @@ type PingResponse struct {
 }
 
 // GetValue gets the Value of the PingResponse.
-func (m *PingResponse) GetValue() string {
+func (m *PingResponse) GetValue() (x string) {
+	if m == nil {
+		return x
+	}
 	return m.Call("getValue").String()
 }
 
@@ -366,7 +417,10 @@ func (m *PingResponse) SetValue(v string) {
 }
 
 // GetCounter gets the Counter of the PingResponse.
-func (m *PingResponse) GetCounter() int32 {
+func (m *PingResponse) GetCounter() (x int32) {
+	if m == nil {
+		return x
+	}
 	return int32(m.Call("getCounter").Int())
 }
 
