@@ -108,7 +108,9 @@ func (t triggerGet) OnClick(se *r.SyntheticMouseEvent) {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 
-		bk, err := t.g.Props().Client.GetBook(ctx, new(library.GetBookRequest).New(int64(isbn)))
+		bk, err := t.g.Props().Client.GetBook(ctx, &library.GetBookRequest{
+			Isbn: int64(isbn),
+		})
 		if err != nil {
 			sts := status.FromError(err)
 			newSt.err = sts.Message

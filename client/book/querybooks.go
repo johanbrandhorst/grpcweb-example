@@ -115,7 +115,9 @@ func (t triggerQuery) OnClick(se *r.SyntheticMouseEvent) {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
-		srv, err := t.q.Props().Client.QueryBooks(ctx, new(library.QueryBooksRequest).New(newSt.authorInput))
+		srv, err := t.q.Props().Client.QueryBooks(ctx, &library.QueryBooksRequest{
+			AuthorPrefix: newSt.authorInput,
+		})
 		if err != nil {
 			sts := status.FromError(err)
 			newSt.err = sts.Message

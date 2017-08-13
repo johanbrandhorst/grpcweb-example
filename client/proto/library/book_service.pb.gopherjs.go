@@ -18,18 +18,18 @@
 */
 package library
 
-import js "github.com/gopherjs/gopherjs/js"
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 import google_protobuf "github.com/johanbrandhorst/protobuf/ptypes/timestamp"
 
 import (
 	context "context"
+
 	grpcweb "github.com/johanbrandhorst/protobuf/grpcweb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the jspb package it is being compiled against.
-const _ = jspb.JspbPackageIsVersion1
+const _ = jspb.JspbPackageIsVersion2
 
 // BookType describes the different types
 // a book in the library can be.
@@ -61,73 +61,107 @@ func (x BookType) String() string {
 
 // Publisher describes a Book Publisher.
 type Publisher struct {
-	*js.Object
+	// Name is the name of the Publisher.
+	Name string
 }
 
 // GetName gets the Name of the Publisher.
-// Name is the name of the Publisher.
 func (m *Publisher) GetName() (x string) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getName").String()
+	return m.Name
 }
 
-// SetName sets the Name of the Publisher.
-// Name is the name of the Publisher.
-func (m *Publisher) SetName(v string) {
-	m.Call("setName", v)
+// MarshalToWriter marshals Publisher to the provided writer.
+func (m *Publisher) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	if len(m.Name) > 0 {
+		writer.WriteString(1, m.Name)
+	}
+
+	return
 }
 
-// New creates a new Publisher.
-// Name is the name of the Publisher.
-func (m *Publisher) New(name string) *Publisher {
-	m = &Publisher{
-		Object: js.Global.Get("proto").Get("library").Get("Publisher").New([]interface{}{
-			name,
-		}),
+// Marshal marshals Publisher to a slice of bytes.
+func (m *Publisher) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Publisher from the provided reader.
+func (m *Publisher) UnmarshalFromReader(reader jspb.Reader) *Publisher {
+	for reader.Next() {
+		if m == nil {
+			m = &Publisher{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.Name = reader.ReadString()
+		default:
+			reader.SkipField()
+		}
 	}
 
 	return m
 }
 
-// Serialize marshals Publisher to a slice of bytes.
-func (m *Publisher) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a Publisher from a slice of bytes.
+func (m *Publisher) Unmarshal(rawBytes []byte) (*Publisher, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a Publisher from a slice of bytes.
-func (m *Publisher) Deserialize(rawBytes []byte) (*Publisher, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("library").Get("Publisher"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &Publisher{
-		Object: obj,
-	}, nil
+	return m, nil
 }
 
 // Book represents a book in the library.
 type Book struct {
-	*js.Object
+	// Isbn is the ISBN number of the book.
+	Isbn int64
+	// Title is the title of the book.
+	Title string
+	// Author is the author of the book.
+	Author string
+	// BookType is the type of the book.
+	BookType BookType
+	// SelfPublished means this book was
+	// self published.
+	// PublishingMethod is the publishing method
+	// used for this Book.
+	//
+	// Types that are valid to be assigned to PublishingMethod:
+	//	*Book_SelfPublished
+	//	*Book_Publisher
+	PublishingMethod isBook_PublishingMethod
+	// Publisher means this book was published
+	// through a Publisher.
+	// PublicationDate is the time of publication of the book.
+	PublicationDate *google_protobuf.Timestamp
 }
 
-// PublishingMethod is the publishing method
-// used for this Book.
-//
-// Types that are valid to be assigned to PublishingMethod:
-//	*Book_SelfPublished
-//	*Book_Publisher
+// isBook_PublishingMethod is used to distinguish types assignable to PublishingMethod
 type isBook_PublishingMethod interface {
 	isBook_PublishingMethod()
 }
 
+// Book_SelfPublished is assignable to PublishingMethod
 type Book_SelfPublished struct {
 	// SelfPublished means this book was
 	// self published.
 	SelfPublished bool
 }
+
+// Book_Publisher is assignable to PublishingMethod
 type Book_Publisher struct {
 	// Publisher means this book was published
 	// through a Publisher.
@@ -139,344 +173,300 @@ func (*Book_Publisher) isBook_PublishingMethod()     {}
 
 // GetPublishingMethod gets the PublishingMethod of the Book.
 func (m *Book) GetPublishingMethod() (x isBook_PublishingMethod) {
-	switch m.Call("getPublishingMethodCase").Int() {
-	case 5:
-		x = &Book_SelfPublished{
-			SelfPublished: m.GetSelfPublished(),
-		}
-	case 6:
-		x = &Book_Publisher{
-			Publisher: m.GetPublisher(),
-		}
+	if m == nil {
+		return x
 	}
-
-	return x
-}
-
-// SetPublishingMethod sets the PublishingMethod of theBook.
-// If the input is nil, SetPublishingMethod does nothing.
-func (m *Book) SetPublishingMethod(publishing_method isBook_PublishingMethod) {
-	switch x := publishing_method.(type) {
-	case *Book_SelfPublished:
-		m.SetSelfPublished(x.SelfPublished)
-	case *Book_Publisher:
-		m.SetPublisher(x.Publisher)
-	}
+	return m.PublishingMethod
 }
 
 // GetIsbn gets the Isbn of the Book.
-// Isbn is the ISBN number of the book.
 func (m *Book) GetIsbn() (x int64) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getIsbn").Int64()
-}
-
-// SetIsbn sets the Isbn of the Book.
-// Isbn is the ISBN number of the book.
-func (m *Book) SetIsbn(v int64) {
-	m.Call("setIsbn", v)
+	return m.Isbn
 }
 
 // GetTitle gets the Title of the Book.
-// Title is the title of the book.
 func (m *Book) GetTitle() (x string) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getTitle").String()
-}
-
-// SetTitle sets the Title of the Book.
-// Title is the title of the book.
-func (m *Book) SetTitle(v string) {
-	m.Call("setTitle", v)
+	return m.Title
 }
 
 // GetAuthor gets the Author of the Book.
-// Author is the author of the book.
 func (m *Book) GetAuthor() (x string) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getAuthor").String()
-}
-
-// SetAuthor sets the Author of the Book.
-// Author is the author of the book.
-func (m *Book) SetAuthor(v string) {
-	m.Call("setAuthor", v)
+	return m.Author
 }
 
 // GetBookType gets the BookType of the Book.
-// BookType is the type of the book.
 func (m *Book) GetBookType() (x BookType) {
 	if m == nil {
 		return x
 	}
-	return BookType(m.Call("getBookType").Int())
-}
-
-// SetBookType sets the BookType of the Book.
-// BookType is the type of the book.
-func (m *Book) SetBookType(v BookType) {
-	m.Call("setBookType", v)
+	return m.BookType
 }
 
 // GetSelfPublished gets the SelfPublished of the Book.
-// SelfPublished means this book was
-// self published.
 func (m *Book) GetSelfPublished() (x bool) {
-	if m == nil {
-		return x
+	if v, ok := m.GetPublishingMethod().(*Book_SelfPublished); ok {
+		return v.SelfPublished
 	}
-	return m.Call("getSelfPublished").Bool()
-}
-
-// SetSelfPublished sets the SelfPublished of the Book.
-// SelfPublished means this book was
-// self published.
-func (m *Book) SetSelfPublished(v bool) {
-	m.Call("setSelfPublished", v)
-}
-
-// HasSelfPublished indicates whether the SelfPublished of the Book is set.
-// SelfPublished means this book was
-// self published.
-func (m *Book) HasSelfPublished() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasSelfPublished").Bool()
-}
-
-// ClearSelfPublished clears the SelfPublished of the Book.
-// SelfPublished means this book was
-// self published.
-func (m *Book) ClearSelfPublished() {
-	m.Call("clearSelfPublished")
+	return x
 }
 
 // GetPublisher gets the Publisher of the Book.
-// Publisher means this book was published
-// through a Publisher.
 func (m *Book) GetPublisher() (x *Publisher) {
-	if m == nil {
-		return x
+	if v, ok := m.GetPublishingMethod().(*Book_Publisher); ok {
+		return v.Publisher
 	}
-	return &Publisher{Object: m.Call("getPublisher")}
-}
-
-// SetPublisher sets the Publisher of the Book.
-// Publisher means this book was published
-// through a Publisher.
-func (m *Book) SetPublisher(v *Publisher) {
-	if v != nil {
-		m.Call("setPublisher", v)
-	} else {
-		m.ClearPublisher()
-	}
-}
-
-// HasPublisher indicates whether the Publisher of the Book is set.
-// Publisher means this book was published
-// through a Publisher.
-func (m *Book) HasPublisher() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasPublisher").Bool()
-}
-
-// ClearPublisher clears the Publisher of the Book.
-// Publisher means this book was published
-// through a Publisher.
-func (m *Book) ClearPublisher() {
-	m.Call("clearPublisher")
+	return x
 }
 
 // GetPublicationDate gets the PublicationDate of the Book.
-// PublicationDate is the time of publication of the book.
 func (m *Book) GetPublicationDate() (x *google_protobuf.Timestamp) {
 	if m == nil {
 		return x
 	}
-	return &google_protobuf.Timestamp{Object: m.Call("getPublicationDate")}
+	return m.PublicationDate
 }
 
-// SetPublicationDate sets the PublicationDate of the Book.
-// PublicationDate is the time of publication of the book.
-func (m *Book) SetPublicationDate(v *google_protobuf.Timestamp) {
-	if v != nil {
-		m.Call("setPublicationDate", v)
-	} else {
-		m.ClearPublicationDate()
-	}
-}
-
-// HasPublicationDate indicates whether the PublicationDate of the Book is set.
-// PublicationDate is the time of publication of the book.
-func (m *Book) HasPublicationDate() bool {
+// MarshalToWriter marshals Book to the provided writer.
+func (m *Book) MarshalToWriter(writer jspb.Writer) {
 	if m == nil {
-		return false
-	}
-	return m.Call("hasPublicationDate").Bool()
-}
-
-// ClearPublicationDate clears the PublicationDate of the Book.
-// PublicationDate is the time of publication of the book.
-func (m *Book) ClearPublicationDate() {
-	m.Call("clearPublicationDate")
-}
-
-// New creates a new Book.
-// Isbn is the ISBN number of the book.
-// Title is the title of the book.
-// Author is the author of the book.
-// BookType is the type of the book.
-// SelfPublished means this book was
-// self published.
-// PublicationDate is the time of publication of the book.
-func (m *Book) New(isbn int64, title string, author string, bookType BookType, publishing_method isBook_PublishingMethod, publicationDate *google_protobuf.Timestamp) *Book {
-	m = &Book{
-		Object: js.Global.Get("proto").Get("library").Get("Book").New([]interface{}{
-			isbn,
-			title,
-			author,
-			bookType,
-			js.Undefined,
-			js.Undefined,
-			js.Undefined,
-		}),
+		return
 	}
 
-	m.SetPublishingMethod(publishing_method)
+	switch t := m.PublishingMethod.(type) {
+	case *Book_SelfPublished:
+		if t.SelfPublished {
+			writer.WriteBool(5, t.SelfPublished)
+		}
+	case *Book_Publisher:
+		if t.Publisher != nil {
+			writer.WriteMessage(6, func() {
+				t.Publisher.MarshalToWriter(writer)
+			})
+		}
+	}
 
-	m.SetPublicationDate(publicationDate)
+	if m.Isbn != 0 {
+		writer.WriteInt64(1, m.Isbn)
+	}
+
+	if len(m.Title) > 0 {
+		writer.WriteString(2, m.Title)
+	}
+
+	if len(m.Author) > 0 {
+		writer.WriteString(3, m.Author)
+	}
+
+	if int(m.BookType) != 0 {
+		writer.WriteEnum(4, int(m.BookType))
+	}
+
+	if m.PublicationDate != nil {
+		writer.WriteMessage(7, func() {
+			m.PublicationDate.MarshalToWriter(writer)
+		})
+	}
+
+	return
+}
+
+// Marshal marshals Book to a slice of bytes.
+func (m *Book) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Book from the provided reader.
+func (m *Book) UnmarshalFromReader(reader jspb.Reader) *Book {
+	for reader.Next() {
+		if m == nil {
+			m = &Book{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.Isbn = reader.ReadInt64()
+		case 2:
+			m.Title = reader.ReadString()
+		case 3:
+			m.Author = reader.ReadString()
+		case 4:
+			m.BookType = BookType(reader.ReadEnum())
+		case 5:
+			m.PublishingMethod = &Book_SelfPublished{
+				SelfPublished: reader.ReadBool(),
+			}
+		case 6:
+			reader.ReadMessage(func() {
+				m.PublishingMethod = &Book_Publisher{
+					Publisher: new(Publisher).UnmarshalFromReader(reader),
+				}
+			})
+		case 7:
+			reader.ReadMessage(func() {
+				m.PublicationDate = m.PublicationDate.UnmarshalFromReader(reader)
+			})
+		default:
+			reader.SkipField()
+		}
+	}
 
 	return m
 }
 
-// Serialize marshals Book to a slice of bytes.
-func (m *Book) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a Book from a slice of bytes.
+func (m *Book) Unmarshal(rawBytes []byte) (*Book, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a Book from a slice of bytes.
-func (m *Book) Deserialize(rawBytes []byte) (*Book, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("library").Get("Book"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &Book{
-		Object: obj,
-	}, nil
+	return m, nil
 }
 
 // GetBookRequest is the input to the GetBook method.
 type GetBookRequest struct {
-	*js.Object
+	// Isbn is the ISBN with which
+	// to match against the ISBN of a book in the library.
+	Isbn int64
 }
 
 // GetIsbn gets the Isbn of the GetBookRequest.
-// Isbn is the ISBN with which
-// to match against the ISBN of a book in the library.
 func (m *GetBookRequest) GetIsbn() (x int64) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getIsbn").Int64()
+	return m.Isbn
 }
 
-// SetIsbn sets the Isbn of the GetBookRequest.
-// Isbn is the ISBN with which
-// to match against the ISBN of a book in the library.
-func (m *GetBookRequest) SetIsbn(v int64) {
-	m.Call("setIsbn", v)
+// MarshalToWriter marshals GetBookRequest to the provided writer.
+func (m *GetBookRequest) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	if m.Isbn != 0 {
+		writer.WriteInt64(1, m.Isbn)
+	}
+
+	return
 }
 
-// New creates a new GetBookRequest.
-// Isbn is the ISBN with which
-// to match against the ISBN of a book in the library.
-func (m *GetBookRequest) New(isbn int64) *GetBookRequest {
-	m = &GetBookRequest{
-		Object: js.Global.Get("proto").Get("library").Get("GetBookRequest").New([]interface{}{
-			isbn,
-		}),
+// Marshal marshals GetBookRequest to a slice of bytes.
+func (m *GetBookRequest) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a GetBookRequest from the provided reader.
+func (m *GetBookRequest) UnmarshalFromReader(reader jspb.Reader) *GetBookRequest {
+	for reader.Next() {
+		if m == nil {
+			m = &GetBookRequest{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.Isbn = reader.ReadInt64()
+		default:
+			reader.SkipField()
+		}
 	}
 
 	return m
 }
 
-// Serialize marshals GetBookRequest to a slice of bytes.
-func (m *GetBookRequest) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a GetBookRequest from a slice of bytes.
+func (m *GetBookRequest) Unmarshal(rawBytes []byte) (*GetBookRequest, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a GetBookRequest from a slice of bytes.
-func (m *GetBookRequest) Deserialize(rawBytes []byte) (*GetBookRequest, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("library").Get("GetBookRequest"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &GetBookRequest{
-		Object: obj,
-	}, nil
+	return m, nil
 }
 
 // QueryBooksRequest is the input to the QueryBooks method.
 type QueryBooksRequest struct {
-	*js.Object
+	// AuthorPrefix is the prefix with which
+	// to match against the author of a book in the library.
+	AuthorPrefix string
 }
 
 // GetAuthorPrefix gets the AuthorPrefix of the QueryBooksRequest.
-// AuthorPrefix is the prefix with which
-// to match against the author of a book in the library.
 func (m *QueryBooksRequest) GetAuthorPrefix() (x string) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getAuthorPrefix").String()
+	return m.AuthorPrefix
 }
 
-// SetAuthorPrefix sets the AuthorPrefix of the QueryBooksRequest.
-// AuthorPrefix is the prefix with which
-// to match against the author of a book in the library.
-func (m *QueryBooksRequest) SetAuthorPrefix(v string) {
-	m.Call("setAuthorPrefix", v)
+// MarshalToWriter marshals QueryBooksRequest to the provided writer.
+func (m *QueryBooksRequest) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	if len(m.AuthorPrefix) > 0 {
+		writer.WriteString(1, m.AuthorPrefix)
+	}
+
+	return
 }
 
-// New creates a new QueryBooksRequest.
-// AuthorPrefix is the prefix with which
-// to match against the author of a book in the library.
-func (m *QueryBooksRequest) New(authorPrefix string) *QueryBooksRequest {
-	m = &QueryBooksRequest{
-		Object: js.Global.Get("proto").Get("library").Get("QueryBooksRequest").New([]interface{}{
-			authorPrefix,
-		}),
+// Marshal marshals QueryBooksRequest to a slice of bytes.
+func (m *QueryBooksRequest) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a QueryBooksRequest from the provided reader.
+func (m *QueryBooksRequest) UnmarshalFromReader(reader jspb.Reader) *QueryBooksRequest {
+	for reader.Next() {
+		if m == nil {
+			m = &QueryBooksRequest{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.AuthorPrefix = reader.ReadString()
+		default:
+			reader.SkipField()
+		}
 	}
 
 	return m
 }
 
-// Serialize marshals QueryBooksRequest to a slice of bytes.
-func (m *QueryBooksRequest) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a QueryBooksRequest from a slice of bytes.
+func (m *QueryBooksRequest) Unmarshal(rawBytes []byte) (*QueryBooksRequest, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a QueryBooksRequest from a slice of bytes.
-func (m *QueryBooksRequest) Deserialize(rawBytes []byte) (*QueryBooksRequest, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("library").Get("QueryBooksRequest"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &QueryBooksRequest{
-		Object: obj,
-	}, nil
+	return m, nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -514,18 +504,18 @@ func NewBookServiceClient(hostname string, opts ...grpcweb.DialOption) BookServi
 }
 
 func (c *bookServiceClient) GetBook(ctx context.Context, in *GetBookRequest, opts ...grpcweb.CallOption) (*Book, error) {
-	req := in.Serialize()
+	req := in.Marshal()
 
 	resp, err := c.client.RPCCall(ctx, "GetBook", req, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	return new(Book).Deserialize(resp)
+	return new(Book).Unmarshal(resp)
 }
 
 func (c *bookServiceClient) QueryBooks(ctx context.Context, in *QueryBooksRequest, opts ...grpcweb.CallOption) (BookService_QueryBooksClient, error) {
-	req := in.Serialize()
+	req := in.Marshal()
 
 	srv, err := c.client.Stream(ctx, "QueryBooks", req, opts...)
 	if err != nil {
@@ -551,5 +541,5 @@ func (x *bookServiceQueryBooksClient) Recv() (*Book, error) {
 		return nil, err
 	}
 
-	return new(Book).Deserialize(resp)
+	return new(Book).Unmarshal(resp)
 }
