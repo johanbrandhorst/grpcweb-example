@@ -16,26 +16,17 @@ update:
 	sed -i "s;golang/protobuf;johanbrandhorst/protobuf;g" wrappers/wrappers.proto
 
 regenerate:
-	protoc --gopherjs_out=:${GOPATH}/src --js_out=import_style=commonjs,binary:. ./empty/empty.proto
-	protoc --gopherjs_out=:${GOPATH}/src --js_out=import_style=commonjs,binary:. ./timestamp/timestamp.proto
-	protoc --gopherjs_out=:${GOPATH}/src --js_out=import_style=commonjs,binary:. ./struct/struct.proto
-	protoc --gopherjs_out=:${GOPATH}/src --js_out=import_style=commonjs,binary:. ./any/any.proto
-	protoc --gopherjs_out=:${GOPATH}/src --js_out=import_style=commonjs,binary:. ./duration/duration.proto
-	protoc --gopherjs_out=:${GOPATH}/src --js_out=import_style=commonjs,binary:. ./wrappers/wrappers.proto
-
-	webpack
-
-	rm ./empty/empty_pb.js \
-		./timestamp/timestamp_pb.js \
-		./struct/struct_pb.js \
-		./any/any_pb.js \
-		./duration/duration_pb.js \
-		./wrappers/wrappers_pb.js
+	protoc --gopherjs_out=:${GOPATH}/src ./empty/empty.proto
+	protoc --gopherjs_out=:${GOPATH}/src ./timestamp/timestamp.proto
+	protoc --gopherjs_out=:${GOPATH}/src ./struct/struct.proto
+	protoc --gopherjs_out=:${GOPATH}/src ./any/any.proto
+	protoc --gopherjs_out=:${GOPATH}/src ./duration/duration.proto
+	protoc --gopherjs_out=:${GOPATH}/src ./wrappers/wrappers.proto
 
 clean:
-	rm -f empty/*.js empty/*.go
-	rm -f timestamp/*.js timestamp/*.go
-	rm -f struct/*.js struct/*.go
-	rm -f any/*.js any/*.go
-	rm -f duration/*.js duration/*.go
-	rm -f wrappers/*.js wrappers/*.go
+	rm -f empty/*.go
+	rm -f timestamp/*.go
+	rm -f struct/*.go
+	rm -f any/*.go
+	rm -f duration/*.go
+	rm -f wrappers/*.go

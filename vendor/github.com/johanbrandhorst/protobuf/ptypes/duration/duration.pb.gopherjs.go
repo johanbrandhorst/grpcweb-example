@@ -2,22 +2,21 @@
 // source: duration/duration.proto
 
 /*
-Package duration is a generated protocol buffer package.
+	Package duration is a generated protocol buffer package.
 
-It is generated from these files:
-	duration/duration.proto
+	It is generated from these files:
+		duration/duration.proto
 
-It has these top-level messages:
-	Duration
+	It has these top-level messages:
+		Duration
 */
 package duration
 
-import js "github.com/gopherjs/gopherjs/js"
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the jspb package it is being compiled against.
-const _ = jspb.JspbPackageIsVersion1
+const _ = jspb.JspbPackageIsVersion2
 
 // A Duration represents a signed, fixed-length span of time represented
 // as a count of seconds and fractions of seconds at nanosecond
@@ -80,87 +79,88 @@ const _ = jspb.JspbPackageIsVersion1
 //
 //
 type Duration struct {
-	*js.Object
+	// Signed seconds of the span of time. Must be from -315,576,000,000
+	// to +315,576,000,000 inclusive. Note: these bounds are computed from:
+	// 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years
+	Seconds int64
+	// Signed fractions of a second at nanosecond resolution of the span
+	// of time. Durations less than one second are represented with a 0
+	// `seconds` field and a positive or negative `nanos` field. For durations
+	// of one second or more, a non-zero value for the `nanos` field must be
+	// of the same sign as the `seconds` field. Must be from -999,999,999
+	// to +999,999,999 inclusive.
+	Nanos int32
 }
 
 // GetSeconds gets the Seconds of the Duration.
-// Signed seconds of the span of time. Must be from -315,576,000,000
-// to +315,576,000,000 inclusive. Note: these bounds are computed from:
-// 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years
 func (m *Duration) GetSeconds() (x int64) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getSeconds").Int64()
-}
-
-// SetSeconds sets the Seconds of the Duration.
-// Signed seconds of the span of time. Must be from -315,576,000,000
-// to +315,576,000,000 inclusive. Note: these bounds are computed from:
-// 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years
-func (m *Duration) SetSeconds(v int64) {
-	m.Call("setSeconds", v)
+	return m.Seconds
 }
 
 // GetNanos gets the Nanos of the Duration.
-// Signed fractions of a second at nanosecond resolution of the span
-// of time. Durations less than one second are represented with a 0
-// `seconds` field and a positive or negative `nanos` field. For durations
-// of one second or more, a non-zero value for the `nanos` field must be
-// of the same sign as the `seconds` field. Must be from -999,999,999
-// to +999,999,999 inclusive.
 func (m *Duration) GetNanos() (x int32) {
 	if m == nil {
 		return x
 	}
-	return int32(m.Call("getNanos").Int())
+	return m.Nanos
 }
 
-// SetNanos sets the Nanos of the Duration.
-// Signed fractions of a second at nanosecond resolution of the span
-// of time. Durations less than one second are represented with a 0
-// `seconds` field and a positive or negative `nanos` field. For durations
-// of one second or more, a non-zero value for the `nanos` field must be
-// of the same sign as the `seconds` field. Must be from -999,999,999
-// to +999,999,999 inclusive.
-func (m *Duration) SetNanos(v int32) {
-	m.Call("setNanos", v)
+// MarshalToWriter marshals Duration to the provided writer.
+func (m *Duration) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	if m.Seconds != 0 {
+		writer.WriteInt64(1, m.Seconds)
+	}
+
+	if m.Nanos != 0 {
+		writer.WriteInt32(2, m.Nanos)
+	}
+
+	return
 }
 
-// New creates a new Duration.
-// Signed seconds of the span of time. Must be from -315,576,000,000
-// to +315,576,000,000 inclusive. Note: these bounds are computed from:
-// 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years
-// Signed fractions of a second at nanosecond resolution of the span
-// of time. Durations less than one second are represented with a 0
-// `seconds` field and a positive or negative `nanos` field. For durations
-// of one second or more, a non-zero value for the `nanos` field must be
-// of the same sign as the `seconds` field. Must be from -999,999,999
-// to +999,999,999 inclusive.
-func (m *Duration) New(seconds int64, nanos int32) *Duration {
-	m = &Duration{
-		Object: js.Global.Get("proto").Get("google").Get("protobuf").Get("Duration").New([]interface{}{
-			seconds,
-			nanos,
-		}),
+// Marshal marshals Duration to a slice of bytes.
+func (m *Duration) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Duration from the provided reader.
+func (m *Duration) UnmarshalFromReader(reader jspb.Reader) *Duration {
+	for reader.Next() {
+		if m == nil {
+			m = &Duration{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.Seconds = reader.ReadInt64()
+		case 2:
+			m.Nanos = reader.ReadInt32()
+		default:
+			reader.SkipField()
+		}
 	}
 
 	return m
 }
 
-// Serialize marshals Duration to a slice of bytes.
-func (m *Duration) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a Duration from a slice of bytes.
+func (m *Duration) Unmarshal(rawBytes []byte) (*Duration, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a Duration from a slice of bytes.
-func (m *Duration) Deserialize(rawBytes []byte) (*Duration, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("google").Get("protobuf").Get("Duration"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &Duration{
-		Object: obj,
-	}, nil
+	return m, nil
 }

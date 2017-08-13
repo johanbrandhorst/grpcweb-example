@@ -14,18 +14,18 @@
 */
 package test
 
-import js "github.com/gopherjs/gopherjs/js"
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 import google_protobuf "github.com/johanbrandhorst/protobuf/ptypes/empty"
 
 import (
 	context "context"
+
 	grpcweb "github.com/johanbrandhorst/protobuf/grpcweb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the jspb package it is being compiled against.
-const _ = jspb.JspbPackageIsVersion1
+const _ = jspb.JspbPackageIsVersion2
 
 type PingRequest_FailureType int
 
@@ -51,19 +51,25 @@ func (x PingRequest_FailureType) String() string {
 }
 
 type ExtraStuff struct {
-	*js.Object
+	Addresses map[int32]string
+	// Types that are valid to be assigned to Title:
+	//	*ExtraStuff_FirstName
+	//	*ExtraStuff_IdNumber
+	Title       isExtraStuff_Title
+	CardNumbers []uint32
 }
 
-// Types that are valid to be assigned to Title:
-//	*ExtraStuff_FirstName
-//	*ExtraStuff_IdNumber
+// isExtraStuff_Title is used to distinguish types assignable to Title
 type isExtraStuff_Title interface {
 	isExtraStuff_Title()
 }
 
+// ExtraStuff_FirstName is assignable to Title
 type ExtraStuff_FirstName struct {
 	FirstName string
 }
+
+// ExtraStuff_IdNumber is assignable to Title
 type ExtraStuff_IdNumber struct {
 	IdNumber int32
 }
@@ -73,29 +79,10 @@ func (*ExtraStuff_IdNumber) isExtraStuff_Title()  {}
 
 // GetTitle gets the Title of the ExtraStuff.
 func (m *ExtraStuff) GetTitle() (x isExtraStuff_Title) {
-	switch m.Call("getTitleCase").Int() {
-	case 2:
-		x = &ExtraStuff_FirstName{
-			FirstName: m.GetFirstName(),
-		}
-	case 3:
-		x = &ExtraStuff_IdNumber{
-			IdNumber: m.GetIdNumber(),
-		}
+	if m == nil {
+		return x
 	}
-
-	return x
-}
-
-// SetTitle sets the Title of theExtraStuff.
-// If the input is nil, SetTitle does nothing.
-func (m *ExtraStuff) SetTitle(title isExtraStuff_Title) {
-	switch x := title.(type) {
-	case *ExtraStuff_FirstName:
-		m.SetFirstName(x.FirstName)
-	case *ExtraStuff_IdNumber:
-		m.SetIdNumber(x.IdNumber)
-	}
+	return m.Title
 }
 
 // GetAddresses gets the Addresses of the ExtraStuff.
@@ -103,161 +90,138 @@ func (m *ExtraStuff) GetAddresses() (x map[int32]string) {
 	if m == nil {
 		return x
 	}
-	x = map[int32]string{}
-	mapFunc := func(value *js.Object, key *js.Object) {
-		x[int32(key.Int())] = value.String()
-	}
-	m.Call("getAddressesMap").Call("forEach", mapFunc)
-	return x
-}
-
-// SetAddresses sets the Addresses of the ExtraStuff.
-func (m *ExtraStuff) SetAddresses(v map[int32]string) {
-	m.Call("clearAddressesMap")
-	mp := m.Call("getAddressesMap")
-	for key, value := range v {
-		mp.Call("set", key, value)
-	}
-}
-
-// ClearAddresses clears the Addresses of the ExtraStuff.
-func (m *ExtraStuff) ClearAddresses() {
-	m.Call("clearAddressesMap")
+	return m.Addresses
 }
 
 // GetFirstName gets the FirstName of the ExtraStuff.
 func (m *ExtraStuff) GetFirstName() (x string) {
-	if m == nil {
-		return x
+	if v, ok := m.GetTitle().(*ExtraStuff_FirstName); ok {
+		return v.FirstName
 	}
-	return m.Call("getFirstName").String()
-}
-
-// SetFirstName sets the FirstName of the ExtraStuff.
-func (m *ExtraStuff) SetFirstName(v string) {
-	m.Call("setFirstName", v)
-}
-
-// HasFirstName indicates whether the FirstName of the ExtraStuff is set.
-func (m *ExtraStuff) HasFirstName() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasFirstName").Bool()
-}
-
-// ClearFirstName clears the FirstName of the ExtraStuff.
-func (m *ExtraStuff) ClearFirstName() {
-	m.Call("clearFirstName")
+	return x
 }
 
 // GetIdNumber gets the IdNumber of the ExtraStuff.
 func (m *ExtraStuff) GetIdNumber() (x int32) {
-	if m == nil {
-		return x
+	if v, ok := m.GetTitle().(*ExtraStuff_IdNumber); ok {
+		return v.IdNumber
 	}
-	return int32(m.Call("getIdNumber").Int())
-}
-
-// SetIdNumber sets the IdNumber of the ExtraStuff.
-func (m *ExtraStuff) SetIdNumber(v int32) {
-	m.Call("setIdNumber", v)
-}
-
-// HasIdNumber indicates whether the IdNumber of the ExtraStuff is set.
-func (m *ExtraStuff) HasIdNumber() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasIdNumber").Bool()
-}
-
-// ClearIdNumber clears the IdNumber of the ExtraStuff.
-func (m *ExtraStuff) ClearIdNumber() {
-	m.Call("clearIdNumber")
+	return x
 }
 
 // GetCardNumbers gets the CardNumbers of the ExtraStuff.
-// Warning: mutating the returned slice will not be reflected in the message.
-// Use the setter to make changes to the slice in the message.
 func (m *ExtraStuff) GetCardNumbers() (x []uint32) {
 	if m == nil {
 		return x
 	}
-	arrFunc := func(value *js.Object) {
-		x = append(x, uint32(value.Int()))
-	}
-	m.Call("getCardNumbersList").Call("forEach", arrFunc)
-	return x
+	return m.CardNumbers
 }
 
-// SetCardNumbers sets the CardNumbers of the ExtraStuff.
-func (m *ExtraStuff) SetCardNumbers(v []uint32) {
-	arr := js.Global.Get("Array").New(len(v))
-	for i, value := range v {
-		arr.SetIndex(i, value)
+// MarshalToWriter marshals ExtraStuff to the provided writer.
+func (m *ExtraStuff) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
 	}
-	m.Call("setCardNumbersList", arr)
+
+	switch t := m.Title.(type) {
+	case *ExtraStuff_FirstName:
+		if len(t.FirstName) > 0 {
+			writer.WriteString(2, t.FirstName)
+		}
+	case *ExtraStuff_IdNumber:
+		if t.IdNumber != 0 {
+			writer.WriteInt32(3, t.IdNumber)
+		}
+	}
+
+	if len(m.Addresses) > 0 {
+		for key, value := range m.Addresses {
+			writer.WriteMessage(1, func() {
+				writer.WriteInt32(1, key)
+				writer.WriteString(2, value)
+			})
+		}
+	}
+
+	if len(m.CardNumbers) > 0 {
+		writer.WriteUint32Slice(4, m.CardNumbers)
+	}
+
+	return
 }
 
-// AddCardNumbers adds an entry to the CardNumbers slice of the ExtraStuff
-// at the specified index. If index is negative, inserts the element
-// at the index counted from the end of the slice, with origin 1.
-func (m *ExtraStuff) AddCardNumbers(v uint32, index int) {
-	m.Call("addCardNumbers", v, index)
+// Marshal marshals ExtraStuff to a slice of bytes.
+func (m *ExtraStuff) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
 }
 
-// ClearCardNumbers clears the CardNumbers of the ExtraStuff.
-func (m *ExtraStuff) ClearCardNumbers() {
-	m.Call("clearCardNumbersList")
-}
+// UnmarshalFromReader unmarshals a ExtraStuff from the provided reader.
+func (m *ExtraStuff) UnmarshalFromReader(reader jspb.Reader) *ExtraStuff {
+	for reader.Next() {
+		if m == nil {
+			m = &ExtraStuff{}
+		}
 
-// New creates a new ExtraStuff.
-func (m *ExtraStuff) New(addresses map[int32]string, title isExtraStuff_Title, cardNumbers []uint32) *ExtraStuff {
-	m = &ExtraStuff{
-		Object: js.Global.Get("proto").Get("test").Get("ExtraStuff").New([]interface{}{
-			js.Undefined,
-			js.Undefined,
-			js.Undefined,
-			js.Undefined,
-		}),
+		switch reader.GetFieldNumber() {
+		case 1:
+			if m.Addresses == nil {
+				m.Addresses = map[int32]string{}
+			}
+			reader.ReadMessage(func() {
+				var key int32
+				var value string
+				for reader.Next() {
+					switch reader.GetFieldNumber() {
+					case 1:
+						key = reader.ReadInt32()
+					case 2:
+						value = reader.ReadString()
+					}
+					m.Addresses[key] = value
+				}
+			})
+		case 2:
+			m.Title = &ExtraStuff_FirstName{
+				FirstName: reader.ReadString(),
+			}
+		case 3:
+			m.Title = &ExtraStuff_IdNumber{
+				IdNumber: reader.ReadInt32(),
+			}
+		case 4:
+			m.CardNumbers = reader.ReadUint32Slice()
+		default:
+			reader.SkipField()
+		}
 	}
-
-	m.SetTitle(title)
-
-	mp := m.Call("getAddressesMap")
-	for key, value := range addresses {
-		mp.Call("set", key, value)
-	}
-
-	arr := js.Global.Get("Array").New(len(cardNumbers))
-	for i, value := range cardNumbers {
-		arr.SetIndex(i, value)
-	}
-	m.Call("setCardNumbersList", arr)
 
 	return m
 }
 
-// Serialize marshals ExtraStuff to a slice of bytes.
-func (m *ExtraStuff) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a ExtraStuff from a slice of bytes.
+func (m *ExtraStuff) Unmarshal(rawBytes []byte) (*ExtraStuff, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a ExtraStuff from a slice of bytes.
-func (m *ExtraStuff) Deserialize(rawBytes []byte) (*ExtraStuff, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("test").Get("ExtraStuff"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &ExtraStuff{
-		Object: obj,
-	}, nil
+	return m, nil
 }
 
 type PingRequest struct {
-	*js.Object
+	Value             string
+	ResponseCount     int32
+	ErrorCodeReturned uint32
+	FailureType       PingRequest_FailureType
+	CheckMetadata     bool
+	SendHeaders       bool
+	SendTrailers      bool
+	MessageLatencyMs  int32
 }
 
 // GetValue gets the Value of the PingRequest.
@@ -265,12 +229,7 @@ func (m *PingRequest) GetValue() (x string) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getValue").String()
-}
-
-// SetValue sets the Value of the PingRequest.
-func (m *PingRequest) SetValue(v string) {
-	m.Call("setValue", v)
+	return m.Value
 }
 
 // GetResponseCount gets the ResponseCount of the PingRequest.
@@ -278,12 +237,7 @@ func (m *PingRequest) GetResponseCount() (x int32) {
 	if m == nil {
 		return x
 	}
-	return int32(m.Call("getResponseCount").Int())
-}
-
-// SetResponseCount sets the ResponseCount of the PingRequest.
-func (m *PingRequest) SetResponseCount(v int32) {
-	m.Call("setResponseCount", v)
+	return m.ResponseCount
 }
 
 // GetErrorCodeReturned gets the ErrorCodeReturned of the PingRequest.
@@ -291,12 +245,7 @@ func (m *PingRequest) GetErrorCodeReturned() (x uint32) {
 	if m == nil {
 		return x
 	}
-	return uint32(m.Call("getErrorCodeReturned").Int())
-}
-
-// SetErrorCodeReturned sets the ErrorCodeReturned of the PingRequest.
-func (m *PingRequest) SetErrorCodeReturned(v uint32) {
-	m.Call("setErrorCodeReturned", v)
+	return m.ErrorCodeReturned
 }
 
 // GetFailureType gets the FailureType of the PingRequest.
@@ -304,12 +253,7 @@ func (m *PingRequest) GetFailureType() (x PingRequest_FailureType) {
 	if m == nil {
 		return x
 	}
-	return PingRequest_FailureType(m.Call("getFailureType").Int())
-}
-
-// SetFailureType sets the FailureType of the PingRequest.
-func (m *PingRequest) SetFailureType(v PingRequest_FailureType) {
-	m.Call("setFailureType", v)
+	return m.FailureType
 }
 
 // GetCheckMetadata gets the CheckMetadata of the PingRequest.
@@ -317,12 +261,7 @@ func (m *PingRequest) GetCheckMetadata() (x bool) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getCheckMetadata").Bool()
-}
-
-// SetCheckMetadata sets the CheckMetadata of the PingRequest.
-func (m *PingRequest) SetCheckMetadata(v bool) {
-	m.Call("setCheckMetadata", v)
+	return m.CheckMetadata
 }
 
 // GetSendHeaders gets the SendHeaders of the PingRequest.
@@ -330,12 +269,7 @@ func (m *PingRequest) GetSendHeaders() (x bool) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getSendHeaders").Bool()
-}
-
-// SetSendHeaders sets the SendHeaders of the PingRequest.
-func (m *PingRequest) SetSendHeaders(v bool) {
-	m.Call("setSendHeaders", v)
+	return m.SendHeaders
 }
 
 // GetSendTrailers gets the SendTrailers of the PingRequest.
@@ -343,12 +277,7 @@ func (m *PingRequest) GetSendTrailers() (x bool) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getSendTrailers").Bool()
-}
-
-// SetSendTrailers sets the SendTrailers of the PingRequest.
-func (m *PingRequest) SetSendTrailers(v bool) {
-	m.Call("setSendTrailers", v)
+	return m.SendTrailers
 }
 
 // GetMessageLatencyMs gets the MessageLatencyMs of the PingRequest.
@@ -356,51 +285,105 @@ func (m *PingRequest) GetMessageLatencyMs() (x int32) {
 	if m == nil {
 		return x
 	}
-	return int32(m.Call("getMessageLatencyMs").Int())
+	return m.MessageLatencyMs
 }
 
-// SetMessageLatencyMs sets the MessageLatencyMs of the PingRequest.
-func (m *PingRequest) SetMessageLatencyMs(v int32) {
-	m.Call("setMessageLatencyMs", v)
+// MarshalToWriter marshals PingRequest to the provided writer.
+func (m *PingRequest) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	if len(m.Value) > 0 {
+		writer.WriteString(1, m.Value)
+	}
+
+	if m.ResponseCount != 0 {
+		writer.WriteInt32(2, m.ResponseCount)
+	}
+
+	if m.ErrorCodeReturned != 0 {
+		writer.WriteUint32(3, m.ErrorCodeReturned)
+	}
+
+	if int(m.FailureType) != 0 {
+		writer.WriteEnum(4, int(m.FailureType))
+	}
+
+	if m.CheckMetadata {
+		writer.WriteBool(5, m.CheckMetadata)
+	}
+
+	if m.SendHeaders {
+		writer.WriteBool(6, m.SendHeaders)
+	}
+
+	if m.SendTrailers {
+		writer.WriteBool(7, m.SendTrailers)
+	}
+
+	if m.MessageLatencyMs != 0 {
+		writer.WriteInt32(8, m.MessageLatencyMs)
+	}
+
+	return
 }
 
-// New creates a new PingRequest.
-func (m *PingRequest) New(value string, responseCount int32, errorCodeReturned uint32, failureType PingRequest_FailureType, checkMetadata bool, sendHeaders bool, sendTrailers bool, messageLatencyMs int32) *PingRequest {
-	m = &PingRequest{
-		Object: js.Global.Get("proto").Get("test").Get("PingRequest").New([]interface{}{
-			value,
-			responseCount,
-			errorCodeReturned,
-			failureType,
-			checkMetadata,
-			sendHeaders,
-			sendTrailers,
-			messageLatencyMs,
-		}),
+// Marshal marshals PingRequest to a slice of bytes.
+func (m *PingRequest) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a PingRequest from the provided reader.
+func (m *PingRequest) UnmarshalFromReader(reader jspb.Reader) *PingRequest {
+	for reader.Next() {
+		if m == nil {
+			m = &PingRequest{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.Value = reader.ReadString()
+		case 2:
+			m.ResponseCount = reader.ReadInt32()
+		case 3:
+			m.ErrorCodeReturned = reader.ReadUint32()
+		case 4:
+			m.FailureType = PingRequest_FailureType(reader.ReadEnum())
+		case 5:
+			m.CheckMetadata = reader.ReadBool()
+		case 6:
+			m.SendHeaders = reader.ReadBool()
+		case 7:
+			m.SendTrailers = reader.ReadBool()
+		case 8:
+			m.MessageLatencyMs = reader.ReadInt32()
+		default:
+			reader.SkipField()
+		}
 	}
 
 	return m
 }
 
-// Serialize marshals PingRequest to a slice of bytes.
-func (m *PingRequest) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a PingRequest from a slice of bytes.
+func (m *PingRequest) Unmarshal(rawBytes []byte) (*PingRequest, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a PingRequest from a slice of bytes.
-func (m *PingRequest) Deserialize(rawBytes []byte) (*PingRequest, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("test").Get("PingRequest"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &PingRequest{
-		Object: obj,
-	}, nil
+	return m, nil
 }
 
 type PingResponse struct {
-	*js.Object
+	Value   string
+	Counter int32
 }
 
 // GetValue gets the Value of the PingResponse.
@@ -408,12 +391,7 @@ func (m *PingResponse) GetValue() (x string) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getValue").String()
-}
-
-// SetValue sets the Value of the PingResponse.
-func (m *PingResponse) SetValue(v string) {
-	m.Call("setValue", v)
+	return m.Value
 }
 
 // GetCounter gets the Counter of the PingResponse.
@@ -421,41 +399,64 @@ func (m *PingResponse) GetCounter() (x int32) {
 	if m == nil {
 		return x
 	}
-	return int32(m.Call("getCounter").Int())
+	return m.Counter
 }
 
-// SetCounter sets the Counter of the PingResponse.
-func (m *PingResponse) SetCounter(v int32) {
-	m.Call("setCounter", v)
+// MarshalToWriter marshals PingResponse to the provided writer.
+func (m *PingResponse) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	if len(m.Value) > 0 {
+		writer.WriteString(1, m.Value)
+	}
+
+	if m.Counter != 0 {
+		writer.WriteInt32(2, m.Counter)
+	}
+
+	return
 }
 
-// New creates a new PingResponse.
-func (m *PingResponse) New(Value string, counter int32) *PingResponse {
-	m = &PingResponse{
-		Object: js.Global.Get("proto").Get("test").Get("PingResponse").New([]interface{}{
-			Value,
-			counter,
-		}),
+// Marshal marshals PingResponse to a slice of bytes.
+func (m *PingResponse) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a PingResponse from the provided reader.
+func (m *PingResponse) UnmarshalFromReader(reader jspb.Reader) *PingResponse {
+	for reader.Next() {
+		if m == nil {
+			m = &PingResponse{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.Value = reader.ReadString()
+		case 2:
+			m.Counter = reader.ReadInt32()
+		default:
+			reader.SkipField()
+		}
 	}
 
 	return m
 }
 
-// Serialize marshals PingResponse to a slice of bytes.
-func (m *PingResponse) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a PingResponse from a slice of bytes.
+func (m *PingResponse) Unmarshal(rawBytes []byte) (*PingResponse, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a PingResponse from a slice of bytes.
-func (m *PingResponse) Deserialize(rawBytes []byte) (*PingResponse, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("test").Get("PingResponse"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &PingResponse{
-		Object: obj,
-	}, nil
+	return m, nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -487,40 +488,40 @@ func NewTestServiceClient(hostname string, opts ...grpcweb.DialOption) TestServi
 }
 
 func (c *testServiceClient) PingEmpty(ctx context.Context, in *google_protobuf.Empty, opts ...grpcweb.CallOption) (*PingResponse, error) {
-	req := in.Serialize()
+	req := in.Marshal()
 
 	resp, err := c.client.RPCCall(ctx, "PingEmpty", req, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	return new(PingResponse).Deserialize(resp)
+	return new(PingResponse).Unmarshal(resp)
 }
 
 func (c *testServiceClient) Ping(ctx context.Context, in *PingRequest, opts ...grpcweb.CallOption) (*PingResponse, error) {
-	req := in.Serialize()
+	req := in.Marshal()
 
 	resp, err := c.client.RPCCall(ctx, "Ping", req, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	return new(PingResponse).Deserialize(resp)
+	return new(PingResponse).Unmarshal(resp)
 }
 
 func (c *testServiceClient) PingError(ctx context.Context, in *PingRequest, opts ...grpcweb.CallOption) (*google_protobuf.Empty, error) {
-	req := in.Serialize()
+	req := in.Marshal()
 
 	resp, err := c.client.RPCCall(ctx, "PingError", req, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	return new(google_protobuf.Empty).Deserialize(resp)
+	return new(google_protobuf.Empty).Unmarshal(resp)
 }
 
 func (c *testServiceClient) PingList(ctx context.Context, in *PingRequest, opts ...grpcweb.CallOption) (TestService_PingListClient, error) {
-	req := in.Serialize()
+	req := in.Marshal()
 
 	srv, err := c.client.Stream(ctx, "PingList", req, opts...)
 	if err != nil {
@@ -546,5 +547,5 @@ func (x *testServicePingListClient) Recv() (*PingResponse, error) {
 		return nil, err
 	}
 
-	return new(PingResponse).Deserialize(resp)
+	return new(PingResponse).Unmarshal(resp)
 }

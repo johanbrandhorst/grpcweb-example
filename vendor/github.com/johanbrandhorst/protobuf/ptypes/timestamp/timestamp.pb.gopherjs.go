@@ -2,22 +2,21 @@
 // source: timestamp/timestamp.proto
 
 /*
-Package timestamp is a generated protocol buffer package.
+	Package timestamp is a generated protocol buffer package.
 
-It is generated from these files:
-	timestamp/timestamp.proto
+	It is generated from these files:
+		timestamp/timestamp.proto
 
-It has these top-level messages:
-	Timestamp
+	It has these top-level messages:
+		Timestamp
 */
 package timestamp
 
-import js "github.com/gopherjs/gopherjs/js"
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the jspb package it is being compiled against.
-const _ = jspb.JspbPackageIsVersion1
+const _ = jspb.JspbPackageIsVersion2
 
 // A Timestamp represents a point in time independent of any time zone
 // or calendar, represented as seconds and fractions of seconds at
@@ -98,81 +97,86 @@ const _ = jspb.JspbPackageIsVersion1
 //
 //
 type Timestamp struct {
-	*js.Object
+	// Represents seconds of UTC time since Unix epoch
+	// 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+	// 9999-12-31T23:59:59Z inclusive.
+	Seconds int64
+	// Non-negative fractions of a second at nanosecond resolution. Negative
+	// second values with fractions must still have non-negative nanos values
+	// that count forward in time. Must be from 0 to 999,999,999
+	// inclusive.
+	Nanos int32
 }
 
 // GetSeconds gets the Seconds of the Timestamp.
-// Represents seconds of UTC time since Unix epoch
-// 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
-// 9999-12-31T23:59:59Z inclusive.
 func (m *Timestamp) GetSeconds() (x int64) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getSeconds").Int64()
-}
-
-// SetSeconds sets the Seconds of the Timestamp.
-// Represents seconds of UTC time since Unix epoch
-// 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
-// 9999-12-31T23:59:59Z inclusive.
-func (m *Timestamp) SetSeconds(v int64) {
-	m.Call("setSeconds", v)
+	return m.Seconds
 }
 
 // GetNanos gets the Nanos of the Timestamp.
-// Non-negative fractions of a second at nanosecond resolution. Negative
-// second values with fractions must still have non-negative nanos values
-// that count forward in time. Must be from 0 to 999,999,999
-// inclusive.
 func (m *Timestamp) GetNanos() (x int32) {
 	if m == nil {
 		return x
 	}
-	return int32(m.Call("getNanos").Int())
+	return m.Nanos
 }
 
-// SetNanos sets the Nanos of the Timestamp.
-// Non-negative fractions of a second at nanosecond resolution. Negative
-// second values with fractions must still have non-negative nanos values
-// that count forward in time. Must be from 0 to 999,999,999
-// inclusive.
-func (m *Timestamp) SetNanos(v int32) {
-	m.Call("setNanos", v)
+// MarshalToWriter marshals Timestamp to the provided writer.
+func (m *Timestamp) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	if m.Seconds != 0 {
+		writer.WriteInt64(1, m.Seconds)
+	}
+
+	if m.Nanos != 0 {
+		writer.WriteInt32(2, m.Nanos)
+	}
+
+	return
 }
 
-// New creates a new Timestamp.
-// Represents seconds of UTC time since Unix epoch
-// 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
-// 9999-12-31T23:59:59Z inclusive.
-// Non-negative fractions of a second at nanosecond resolution. Negative
-// second values with fractions must still have non-negative nanos values
-// that count forward in time. Must be from 0 to 999,999,999
-// inclusive.
-func (m *Timestamp) New(seconds int64, nanos int32) *Timestamp {
-	m = &Timestamp{
-		Object: js.Global.Get("proto").Get("google").Get("protobuf").Get("Timestamp").New([]interface{}{
-			seconds,
-			nanos,
-		}),
+// Marshal marshals Timestamp to a slice of bytes.
+func (m *Timestamp) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Timestamp from the provided reader.
+func (m *Timestamp) UnmarshalFromReader(reader jspb.Reader) *Timestamp {
+	for reader.Next() {
+		if m == nil {
+			m = &Timestamp{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.Seconds = reader.ReadInt64()
+		case 2:
+			m.Nanos = reader.ReadInt32()
+		default:
+			reader.SkipField()
+		}
 	}
 
 	return m
 }
 
-// Serialize marshals Timestamp to a slice of bytes.
-func (m *Timestamp) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a Timestamp from a slice of bytes.
+func (m *Timestamp) Unmarshal(rawBytes []byte) (*Timestamp, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a Timestamp from a slice of bytes.
-func (m *Timestamp) Deserialize(rawBytes []byte) (*Timestamp, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("google").Get("protobuf").Get("Timestamp"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &Timestamp{
-		Object: obj,
-	}, nil
+	return m, nil
 }

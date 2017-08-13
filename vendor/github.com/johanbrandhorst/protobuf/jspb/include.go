@@ -20,6 +20,6 @@
 
 package jspb
 
-// JspbPackageIsVersion1 is referenced from generated protocol buffer files
+// JspbPackageIsVersion2 is referenced from generated protocol buffer files
 // to assert that that code is compatible with this version of the package.
-const JspbPackageIsVersion1 = true
+const JspbPackageIsVersion2 = true

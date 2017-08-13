@@ -32,10 +32,10 @@
   revision = "d77bb3348c50d37edc7f076adbd5003b34e5c78f"
 
 [[projects]]
-  branch = "master"
   name = "github.com/johanbrandhorst/protobuf"
   packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/metadata","grpcweb/status","jspb","ptypes/timestamp"]
-  revision = "dda2a88586db5cb6c0d04557bc7490cf4a2385bb"
+  revision = "7f84a5b4a9909a88aa0e4b4b1bbf109d52608630"
+  version = "v0.3.0-alpha"
 
 [[projects]]
   name = "github.com/rs/cors"

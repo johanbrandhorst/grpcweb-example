@@ -136,8 +136,9 @@ func (g *grpc) GenerateImports(file *generator.FileDescriptor) {
 		return
 	}
 	g.P("import (")
-	g.P(contextPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, contextPkgPath)))
 	g.In()
+	g.P(contextPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, contextPkgPath)))
+	g.P()
 	g.P(grpcPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, grpcPkgPath)))
 	g.Out()
 	g.P(")")
@@ -245,10 +246,10 @@ func (g *grpc) generateClientMethod(servName, fullServName, serviceDescVar strin
 
 	g.P("func (c *", unexport(servName), "Client) ", g.generateClientSignature(servName, method), "{")
 	g.In()
+	g.P("req := in.Marshal()")
+	g.P()
 	switch {
 	case !method.GetServerStreaming() && !method.GetClientStreaming():
-		g.P("req := in.Serialize()")
-		g.P()
 		g.P(`resp, err := c.client.RPCCall(ctx, "`, method.GetName(), `", req, opts...)`)
 		g.P("if err != nil {")
 		g.In()
@@ -256,14 +257,12 @@ func (g *grpc) generateClientMethod(servName, fullServName, serviceDescVar strin
 		g.Out()
 		g.P("}")
 		g.P()
-		g.P("return new(", outType, ").Deserialize(resp)")
+		g.P("return new(", outType, ").Unmarshal(resp)")
 		g.Out()
 		g.P("}")
 		g.P()
 		return
 	case method.GetServerStreaming():
-		g.P("req := in.Serialize()")
-		g.P()
 		g.P(`srv, err := c.client.Stream(ctx, "`, method.GetName(), `", req, opts...)`)
 		g.P("if err != nil {")
 		g.In()
@@ -312,7 +311,7 @@ func (g *grpc) generateClientMethod(servName, fullServName, serviceDescVar strin
 		g.Out()
 		g.P("}")
 		g.P()
-		g.P("return new(", outType, ").Deserialize(resp)")
+		g.P("return new(", outType, ").Unmarshal(resp)")
 		g.Out()
 		g.P("}")
 		g.P()

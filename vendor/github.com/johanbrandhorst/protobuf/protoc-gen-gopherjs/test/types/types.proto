@@ -162,3 +162,8 @@ enum MapEnum {
   MAP_ENUM_BAR = 1;
   MAP_ENUM_BAZ = 2;
 }
+
+service EchoService {
+  rpc EchoAllTypes(TestAllTypes) returns (TestAllTypes) {}
+  rpc EchoMaps(TestMap) returns (TestMap) {}
+}

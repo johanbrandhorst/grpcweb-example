@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net/url"
+	"reflect"
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
@@ -17,176 +19,69 @@ import (
 	"github.com/johanbrandhorst/protobuf/grpcweb/status"
 	grpctest "github.com/johanbrandhorst/protobuf/grpcweb/test"
 	gentest "github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/test"
+	"github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/test/multi"
+	"github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/test/types"
 	"github.com/johanbrandhorst/protobuf/ptypes/empty"
 	"github.com/johanbrandhorst/protobuf/test/client/proto/test"
 	"github.com/johanbrandhorst/protobuf/test/recoverer"
 	"github.com/johanbrandhorst/protobuf/test/shared"
 )
 
-//go:generate gopherjs build main.go -m -o html/index.js
+//go:generate gopherjs build main.go -o html/index.js
 
-var uri = strings.TrimSuffix(dom.GetWindow().Document().BaseURI(), shared.GopherJSServer+"/")
+var uri string
+
+func init() {
+	u, err := url.Parse(dom.GetWindow().Document().BaseURI())
+	if err != nil {
+		panic(err)
+	}
+	uri = u.Scheme + "://" + u.Hostname()
+}
 
 func typeTests() {
 	qunit.Module("Integration Types tests")
 
-	qunit.Test("Simple type factory", func(assert qunit.QUnitAssert) {
-		qunit.Expect(8)
-
-		req := new(test.PingRequest).New("1234", 10, 1, test.PingRequest_CODE, true, true, true, 100)
-		assert.Equal(req.GetValue(), "1234", "Value is set as expected")
-		assert.Equal(req.GetResponseCount(), 10, "ResponseCount is set as expected")
-		assert.Equal(req.GetErrorCodeReturned(), 1, "ErrorCodeReturned is set as expected")
-		assert.Equal(req.GetFailureType(), test.PingRequest_CODE, "ErrorCodeReturned is set as expected")
-		assert.Equal(req.GetCheckMetadata(), true, "CheckMetadata is set as expected")
-		assert.Equal(req.GetSendHeaders(), true, "SendHeaders is set as expected")
-		assert.Equal(req.GetSendTrailers(), true, "SendTrailers is set as expected")
-		assert.Equal(req.GetMessageLatencyMs(), 100, "MessageLatencyMs is set as expected")
-	})
-
-	qunit.Test("Complex type factory", func(assert qunit.QUnitAssert) {
-		qunit.Expect(7)
-
-		es := new(test.ExtraStuff).New(
-			map[int32]string{1234: "The White House", 5678: "The Empire State Building"},
-			&test.ExtraStuff_FirstName{FirstName: "Allison"},
-			[]uint32{1234, 5678})
-		addrs := es.GetAddresses()
-		assert.Equal(addrs[1234], "The White House", "Address 1234 is set as expected")
-		assert.Equal(addrs[5678], "The Empire State Building", "Address 5678 is set as expected")
-		crdnrs := es.GetCardNumbers()
-		assert.Equal(crdnrs[0], 1234, "CardNumber #1 is set as expected")
-		assert.Equal(crdnrs[1], 5678, "CardNumber #2 is set as expected")
-		assert.Equal(es.GetFirstName(), "Allison", "FirstName is set as expected")
-		assert.Equal(es.GetIdNumber(), 0, "IdNumber is not set, as expected")
-		if _, ok := es.GetTitle().(*test.ExtraStuff_FirstName); !ok {
-			assert.Ok(false, "GetTitle did not return a struct of type *test.ExtraStuff_FirstName as expected")
-		} else {
-			assert.Ok(true, "GetTitle did return a struct of type *test.ExtraStuff_FirstName as expected")
-		}
-	})
-
-	qunit.Test("Simple setters and getters", func(assert qunit.QUnitAssert) {
-		qunit.Expect(16)
-
+	qunit.Test("PingRequest Marshal and Unmarshal", func(assert qunit.QUnitAssert) {
 		req := &test.PingRequest{
-			Object: js.Global.Get("proto").Get("test").Get("PingRequest").New(),
+			Value:             "1234",
+			ResponseCount:     10,
+			ErrorCodeReturned: 1,
+			FailureType:       test.PingRequest_CODE,
+			CheckMetadata:     true,
+			SendHeaders:       true,
+			SendTrailers:      true,
+			MessageLatencyMs:  100,
 		}
-		assert.Equal(req.GetCheckMetadata(), false, "CheckMetadata was unset")
-		req.SetCheckMetadata(true)
-		assert.Equal(req.GetCheckMetadata(), true, "CheckMetadata was set correctly")
 
-		assert.Equal(req.GetErrorCodeReturned(), 0, "ErrorCodeReturned was unset")
-		req.SetErrorCodeReturned(1)
-		assert.Equal(req.GetErrorCodeReturned(), 1, "ErrorCodeReturned was set correctly")
-
-		assert.Equal(req.GetFailureType(), test.PingRequest_NONE, "FailureType was unset")
-		req.SetFailureType(test.PingRequest_DROP)
-		assert.Equal(req.GetFailureType(), test.PingRequest_DROP, "FailureType was set correctly")
-
-		assert.Equal(req.GetMessageLatencyMs(), 0, "MessageLatencyMs was unset")
-		req.SetMessageLatencyMs(1)
-		assert.Equal(req.GetMessageLatencyMs(), 1, "MessageLatencyMs was set correctly")
-
-		assert.Equal(req.GetResponseCount(), 0, "ResponseCount was unset")
-		req.SetResponseCount(1)
-		assert.Equal(req.GetResponseCount(), 1, "ResponseCount was set correctly")
-
-		assert.Equal(req.GetSendHeaders(), false, "SendHeaders was unset")
-		req.SetSendHeaders(true)
-		assert.Equal(req.GetSendHeaders(), true, "SendHeaders was set correctly")
-
-		assert.Equal(req.GetSendTrailers(), false, "SendTrailers was unset")
-		req.SetSendTrailers(true)
-		assert.Equal(req.GetSendTrailers(), true, "SendTrailers was set correctly")
-
-		assert.Equal(req.GetValue(), "", "Value was unset")
-		req.SetValue("something")
-		assert.Equal(req.GetValue(), "something", "Value was set correctly")
+		marshalled := req.Marshal()
+		newReq, err := new(test.PingRequest).Unmarshal(marshalled)
+		if err != nil {
+			assert.Ok(false, "Unexpected error returned: "+err.Error()+"\n"+err.(*js.Error).Stack())
+		}
+		assert.DeepEqual(req, newReq, "Marshalling and unmarshalling results in the same struct")
 	})
 
-	qunit.Test("Map getters and setters", func(assert qunit.QUnitAssert) {
-		qunit.Expect(5)
-
+	qunit.Test("ExtraStuff Marshal and Unmarshal", func(assert qunit.QUnitAssert) {
 		req := &test.ExtraStuff{
-			Object: js.Global.Get("proto").Get("test").Get("ExtraStuff").New(),
-		}
-		assert.Equal(len(req.GetAddresses()), 0, "Addresses was unset")
-		req.SetAddresses(map[int32]string{
-			1234: "The White House",
-			5678: "The Empire State Building",
-		})
-		addrs := req.GetAddresses()
-		assert.Equal(len(addrs), 2, "Addresses was the correct size")
-		assert.Equal(addrs[1234], "The White House", "Address 1234 was set correctly")
-		assert.Equal(addrs[5678], "The Empire State Building", "Address 5678 was set correctly")
-
-		req.ClearAddresses()
-		assert.Equal(len(req.GetAddresses()), 0, "Addresses aws unset")
-	})
-
-	qunit.Test("Array getters and setters", func(assert qunit.QUnitAssert) {
-		qunit.Expect(5)
-
-		req := &test.ExtraStuff{
-			Object: js.Global.Get("proto").Get("test").Get("ExtraStuff").New(),
-		}
-		assert.Equal(len(req.GetCardNumbers()), 0, "CardNumbers was unset")
-		req.SetCardNumbers([]uint32{
-			1234,
-			5678,
-		})
-		crdnrs := req.GetCardNumbers()
-		assert.Equal(len(crdnrs), 2, "CardNumbers was the correct size")
-		assert.Equal(crdnrs[0], 1234, "CardNumber #1 was set correctly")
-		assert.Equal(crdnrs[1], 5678, "CardNumber #2 was set correctly")
-
-		req.ClearCardNumbers()
-		assert.Equal(len(req.GetCardNumbers()), 0, "CardNumbers was unset")
-	})
-
-	qunit.Test("Oneof getters and setters", func(assert qunit.QUnitAssert) {
-		qunit.Expect(20)
-
-		req := &test.ExtraStuff{
-			Object: js.Global.Get("proto").Get("test").Get("ExtraStuff").New(),
-		}
-		assert.Equal(req.GetTitle(), nil, "Title was unset")
-		assert.Equal(req.GetFirstName(), "", "FirstName was unset")
-		assert.Equal(req.GetIdNumber(), 0, "IdNumber was unset")
-		assert.Equal(req.HasFirstName(), false, "HasFirstName was false")
-		assert.Equal(req.HasIdNumber(), false, "HasIdNumber was false")
-
-		req.SetTitle(&test.ExtraStuff_FirstName{FirstName: "Allison"})
-		fn, ok := req.GetTitle().(*test.ExtraStuff_FirstName)
-		if !ok {
-			assert.Ok(false, "Title was not of type *test.ExtraStuff_FirstName")
-		} else {
-			assert.Ok(true, "Title was of type *test.ExtraStuff_FirstName")
-			assert.Equal(fn.FirstName, "Allison", "Title FirstName was set correctly")
-			assert.Equal(req.GetFirstName(), "Allison", "FirstName was set correctly")
-			assert.Equal(req.GetIdNumber(), 0, "IdNumber was still unset")
-			assert.Equal(req.HasFirstName(), true, "HasFirstName was true")
-			assert.Equal(req.HasIdNumber(), false, "HasIdNumber was false")
+			Addresses: map[int32]string{
+				1234: "The White House",
+				5678: "The Empire State Building",
+			},
+			Title: &test.ExtraStuff_FirstName{
+				FirstName: "Allison",
+			},
+			CardNumbers: []uint32{
+				1234, 5678,
+			},
 		}
 
-		req.SetIdNumber(100)
-		id, ok := req.GetTitle().(*test.ExtraStuff_IdNumber)
-		if !ok {
-			assert.Ok(false, "Title was not of type *test.ExtraStuff_IdNumber")
-		} else {
-			assert.Ok(true, "Title was of type *test.ExtraStuff_IdNumber")
-			assert.Equal(id.IdNumber, 100, "Title IdNumber was set correctly")
-			assert.Equal(req.GetFirstName(), "", "FirstName was unset")
-			assert.Equal(req.GetIdNumber(), 100, "IdNumber was set correctly")
-			assert.Equal(req.HasIdNumber(), true, "HasIdNumber was true")
-			assert.Equal(req.HasFirstName(), false, "HasFirstName was false")
+		marshalled := req.Marshal()
+		newReq, err := new(test.ExtraStuff).Unmarshal(marshalled)
+		if err != nil {
+			assert.Ok(false, "Unexpected error returned: "+err.Error()+"\n"+err.(*js.Error).Stack())
 		}
-
-		req.ClearIdNumber()
-		assert.Equal(req.GetTitle(), nil, "Title was unset")
-		assert.Equal(req.HasFirstName(), false, "HasFirstName was false")
-		assert.Equal(req.HasIdNumber(), false, "HasIdNumber was false")
+		assert.DeepEqual(req, newReq, "Marshalling and unmarshalling results in the same struct")
 	})
 }
 
@@ -200,8 +95,16 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer recoverer.Recover() // recovers any panics and fails tests
 			defer qunit.Start()
 
-			req := new(test.PingRequest).New(
-				"test", 1, 0, test.PingRequest_NONE, false, false, false, 0)
+			req := &test.PingRequest{
+				Value:             "test",
+				ResponseCount:     1,
+				ErrorCodeReturned: 0,
+				FailureType:       test.PingRequest_NONE,
+				CheckMetadata:     false,
+				SendHeaders:       false,
+				SendTrailers:      false,
+				MessageLatencyMs:  0,
+			}
 			resp, err := c.Ping(context.Background(), req)
 			if err != nil {
 				st := status.FromError(err)
@@ -228,8 +131,16 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer recoverer.Recover() // recovers any panics and fails tests
 			defer qunit.Start()
 
-			req := new(test.PingRequest).New(
-				"test", 1, 0, test.PingRequest_NONE, true, false, false, 0)
+			req := &test.PingRequest{
+				Value:             "test",
+				ResponseCount:     1,
+				ErrorCodeReturned: 0,
+				FailureType:       test.PingRequest_NONE,
+				CheckMetadata:     true,
+				SendHeaders:       false,
+				SendTrailers:      false,
+				MessageLatencyMs:  0,
+			}
 			ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs(shared.ClientMDTestKey, shared.ClientMDTestValue))
 			resp, err := c.Ping(ctx, req)
 			if err != nil {
@@ -257,8 +168,16 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer recoverer.Recover() // recovers any panics and fails tests
 			defer qunit.Start()
 
-			req := new(test.PingRequest).New(
-				"test", 1, 0, test.PingRequest_NONE, false, true, true, 0)
+			req := &test.PingRequest{
+				Value:             "test",
+				ResponseCount:     1,
+				ErrorCodeReturned: 0,
+				FailureType:       test.PingRequest_NONE,
+				CheckMetadata:     false,
+				SendHeaders:       true,
+				SendTrailers:      true,
+				MessageLatencyMs:  0,
+			}
 			headers, trailers := metadata.New(nil), metadata.New(nil)
 			resp, err := c.Ping(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
 			if err != nil {
@@ -313,8 +232,16 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer recoverer.Recover() // recovers any panics and fails tests
 			defer qunit.Start()
 
-			req := new(test.PingRequest).New(
-				"test", 1, 0, test.PingRequest_NONE, false, true, false, 0)
+			req := &test.PingRequest{
+				Value:             "test",
+				ResponseCount:     1,
+				ErrorCodeReturned: 0,
+				FailureType:       test.PingRequest_NONE,
+				CheckMetadata:     false,
+				SendHeaders:       true,
+				SendTrailers:      false,
+				MessageLatencyMs:  0,
+			}
 			headers, trailers := metadata.New(nil), metadata.New(nil)
 			resp, err := c.Ping(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
 			if err != nil {
@@ -361,8 +288,16 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer recoverer.Recover() // recovers any panics and fails tests
 			defer qunit.Start()
 
-			req := new(test.PingRequest).New(
-				"test", 1, 0, test.PingRequest_NONE, false, false, true, 0)
+			req := &test.PingRequest{
+				Value:             "test",
+				ResponseCount:     1,
+				ErrorCodeReturned: 0,
+				FailureType:       test.PingRequest_NONE,
+				CheckMetadata:     false,
+				SendHeaders:       false,
+				SendTrailers:      true,
+				MessageLatencyMs:  0,
+			}
 			headers, trailers := metadata.New(nil), metadata.New(nil)
 			resp, err := c.Ping(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
 			if err != nil {
@@ -409,8 +344,16 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer recoverer.Recover() // recovers any panics and fails tests
 			defer qunit.Start()
 
-			req := new(test.PingRequest).New(
-				"", 0, uint32(codes.InvalidArgument), test.PingRequest_CODE, false, false, false, 0)
+			req := &test.PingRequest{
+				Value:             "",
+				ResponseCount:     0,
+				ErrorCodeReturned: uint32(codes.InvalidArgument),
+				FailureType:       test.PingRequest_CODE,
+				CheckMetadata:     false,
+				SendHeaders:       false,
+				SendTrailers:      false,
+				MessageLatencyMs:  0,
+			}
 			_, err := c.PingError(context.Background(), req)
 			if err == nil {
 				qunit.Ok(false, "Expected error, returned nil")
@@ -435,8 +378,16 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer recoverer.Recover() // recovers any panics and fails tests
 			defer qunit.Start()
 
-			req := new(test.PingRequest).New(
-				"", 0, 0, test.PingRequest_DROP, false, false, false, 0)
+			req := &test.PingRequest{
+				Value:             "",
+				ResponseCount:     0,
+				ErrorCodeReturned: 0,
+				FailureType:       test.PingRequest_DROP,
+				CheckMetadata:     false,
+				SendHeaders:       false,
+				SendTrailers:      false,
+				MessageLatencyMs:  0,
+			}
 			_, err := c.PingError(context.Background(), req)
 			if err == nil {
 				qunit.Ok(false, "Expected error, returned nil")
@@ -465,8 +416,16 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer qunit.Start()
 
 			// Send 20 messages with 1ms wait before each
-			req := new(test.PingRequest).New(
-				"test", 20, 0, test.PingRequest_NONE, false, false, false, 1)
+			req := &test.PingRequest{
+				Value:             "test",
+				ResponseCount:     20,
+				ErrorCodeReturned: 0,
+				FailureType:       test.PingRequest_NONE,
+				CheckMetadata:     false,
+				SendHeaders:       false,
+				SendTrailers:      false,
+				MessageLatencyMs:  1,
+			}
 			srv, err := c.PingList(context.Background(), req)
 			if err != nil {
 				st := status.FromError(err)
@@ -517,8 +476,16 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer qunit.Start()
 
 			// Send 20 messages with 1ms wait before each
-			req := new(test.PingRequest).New(
-				"test", 20, 0, test.PingRequest_NONE, true, false, false, 1)
+			req := &test.PingRequest{
+				Value:             "test",
+				ResponseCount:     20,
+				ErrorCodeReturned: 0,
+				FailureType:       test.PingRequest_NONE,
+				CheckMetadata:     true,
+				SendHeaders:       false,
+				SendTrailers:      false,
+				MessageLatencyMs:  1,
+			}
 			ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs(shared.ClientMDTestKey, shared.ClientMDTestValue))
 			srv, err := c.PingList(ctx, req)
 			if err != nil {
@@ -570,8 +537,16 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer qunit.Start()
 
 			// Send 20 messages with 1ms wait before each
-			req := new(test.PingRequest).New(
-				"test", 20, 0, test.PingRequest_NONE, false, true, true, 1)
+			req := &test.PingRequest{
+				Value:             "test",
+				ResponseCount:     20,
+				ErrorCodeReturned: 0,
+				FailureType:       test.PingRequest_NONE,
+				CheckMetadata:     false,
+				SendHeaders:       true,
+				SendTrailers:      true,
+				MessageLatencyMs:  1,
+			}
 			headers, trailers := metadata.New(nil), metadata.New(nil)
 			srv, err := c.PingList(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
 			if err != nil {
@@ -649,8 +624,16 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer qunit.Start()
 
 			// Send 20 messages with 1ms wait before each
-			req := new(test.PingRequest).New(
-				"test", 20, 0, test.PingRequest_NONE, false, true, false, 1)
+			req := &test.PingRequest{
+				Value:             "test",
+				ResponseCount:     20,
+				ErrorCodeReturned: 0,
+				FailureType:       test.PingRequest_NONE,
+				CheckMetadata:     false,
+				SendHeaders:       true,
+				SendTrailers:      false,
+				MessageLatencyMs:  1,
+			}
 			headers, trailers := metadata.New(nil), metadata.New(nil)
 			srv, err := c.PingList(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
 			if err != nil {
@@ -720,8 +703,16 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer qunit.Start()
 
 			// Send 20 messages with 1ms wait before each
-			req := new(test.PingRequest).New(
-				"test", 20, 0, test.PingRequest_NONE, false, false, true, 1)
+			req := &test.PingRequest{
+				Value:             "test",
+				ResponseCount:     20,
+				ErrorCodeReturned: 0,
+				FailureType:       test.PingRequest_NONE,
+				CheckMetadata:     false,
+				SendHeaders:       false,
+				SendTrailers:      true,
+				MessageLatencyMs:  1,
+			}
 			headers, trailers := metadata.New(nil), metadata.New(nil)
 			srv, err := c.PingList(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
 			if err != nil {
@@ -791,8 +782,16 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer qunit.Start()
 
 			// Send 20 messages with 1ms wait before each
-			req := new(test.PingRequest).New(
-				"test", 20, 0, test.PingRequest_DROP, false, false, false, 1)
+			req := &test.PingRequest{
+				Value:             "test",
+				ResponseCount:     20,
+				ErrorCodeReturned: 0,
+				FailureType:       test.PingRequest_DROP,
+				CheckMetadata:     false,
+				SendHeaders:       false,
+				SendTrailers:      false,
+				MessageLatencyMs:  1,
+			}
 			srv, err := c.PingList(context.Background(), req)
 			if err != nil {
 				st := status.FromError(err)
@@ -826,7 +825,7 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer recoverer.Recover() // recovers any panics and fails tests
 			defer qunit.Start()
 
-			_, err := c.PingEmpty(context.Background(), new(empty.Empty).New())
+			_, err := c.PingEmpty(context.Background(), &empty.Empty{})
 			if err == nil {
 				qunit.Ok(false, "Expected error, returned nil")
 				return
@@ -838,6 +837,220 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			}
 
 			qunit.Ok(true, "Error was as expected")
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Unary call to echo server with many types", func() interface{} {
+		c := types.NewEchoServiceClient(uri + serverAddr)
+		req := &types.TestAllTypes{
+			SingleInt32:       1,
+			SingleInt64:       2,
+			SingleUint32:      3,
+			SingleUint64:      4,
+			SingleSint32:      5,
+			SingleSint64:      6,
+			SingleFixed32:     7,
+			SingleFixed64:     8,
+			SingleSfixed32:    9,
+			SingleSfixed64:    10,
+			SingleFloat:       10.5,
+			SingleDouble:      11.5,
+			SingleBool:        true,
+			SingleString:      "Alfred",
+			SingleBytes:       []byte("Megan"),
+			SingleNestedEnum:  types.TestAllTypes_BAR,
+			SingleForeignEnum: types.ForeignEnum_FOREIGN_BAR,
+			SingleImportedMessage: &multitest.Multi1{
+				Color:   multitest.Multi2_GREEN,
+				HatType: multitest.Multi3_FEDORA,
+			},
+			SingleNestedMessage: &types.TestAllTypes_NestedMessage{
+				B: 12,
+			},
+			SingleForeignMessage: &types.ForeignMessage{
+				C: 13,
+			},
+			RepeatedInt32:       []int32{14, 15},
+			RepeatedInt64:       []int64{16, 17},
+			RepeatedUint32:      []uint32{18, 19},
+			RepeatedUint64:      []uint64{20, 21},
+			RepeatedSint32:      []int32{22, 23},
+			RepeatedSint64:      []int64{24, 25},
+			RepeatedFixed32:     []uint32{26, 27},
+			RepeatedFixed64:     []uint64{28, 29},
+			RepeatedSfixed32:    []int32{30, 31},
+			RepeatedSfixed64:    []int64{32, 33},
+			RepeatedFloat:       []float32{34.33, 35.34},
+			RepeatedDouble:      []float64{36.35, 37.36},
+			RepeatedBool:        []bool{true, false, true},
+			RepeatedString:      []string{"Alfred", "Robin", "Simon"},
+			RepeatedBytes:       [][]byte{[]byte("David"), []byte("Henrik")},
+			RepeatedNestedEnum:  []types.TestAllTypes_NestedEnum{types.TestAllTypes_BAR, types.TestAllTypes_BAZ},
+			RepeatedForeignEnum: []types.ForeignEnum{types.ForeignEnum_FOREIGN_BAR, types.ForeignEnum_FOREIGN_BAZ},
+			RepeatedImportedMessage: []*multitest.Multi1{
+				{
+					Color:   multitest.Multi2_RED,
+					HatType: multitest.Multi3_FEZ,
+				},
+				{
+					Color:   multitest.Multi2_GREEN,
+					HatType: multitest.Multi3_FEDORA,
+				},
+			},
+			RepeatedNestedMessage: []*types.TestAllTypes_NestedMessage{
+				{
+					B: 38,
+				},
+				{
+					B: 39,
+				},
+			},
+			RepeatedForeignMessage: []*types.ForeignMessage{
+				{
+					C: 40,
+				},
+				{
+					C: 41,
+				},
+			},
+			OneofField: &types.TestAllTypes_OneofImportedMessage{
+				OneofImportedMessage: &multitest.Multi1{
+					Multi2: &multitest.Multi2{
+						RequiredValue: 42,
+						Color:         multitest.Multi2_BLUE,
+					},
+					Color:   multitest.Multi2_RED,
+					HatType: multitest.Multi3_FEDORA,
+				},
+			},
+		}
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			resp, err := c.EchoAllTypes(context.Background(), req)
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected error:"+st.Error())
+				return
+			}
+			if !reflect.DeepEqual(req, resp) {
+				qunit.Ok(false, fmt.Sprintf("response and request differed: Req:\n%v\nResp:\n%v", req, resp))
+				return
+			}
+
+			qunit.Ok(true, "Request and Response matched")
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Unary call to echo server with many maps", func() interface{} {
+		c := types.NewEchoServiceClient(uri + serverAddr)
+		req := &types.TestMap{
+			MapInt32Int32: map[int32]int32{
+				1: 2,
+				3: 4,
+			},
+			MapInt64Int64: map[int64]int64{
+				5: 6,
+				7: 8,
+			},
+			MapUint32Uint32: map[uint32]uint32{
+				9:  10,
+				11: 12,
+			},
+			MapUint64Uint64: map[uint64]uint64{
+				13: 14,
+				15: 16,
+			},
+			MapSint32Sint32: map[int32]int32{
+				17: 18,
+				19: 20,
+			},
+			MapSint64Sint64: map[int64]int64{
+				21: 22,
+				23: 24,
+			},
+			MapFixed32Fixed32: map[uint32]uint32{
+				25: 26,
+				27: 28,
+			},
+			MapFixed64Fixed64: map[uint64]uint64{
+				29: 30,
+				31: 32,
+			},
+			MapSfixed32Sfixed32: map[int32]int32{
+				33: 34,
+				35: 36,
+			},
+			MapSfixed64Sfixed64: map[int64]int64{
+				37: 38,
+				39: 40,
+			},
+			MapInt32Float: map[int32]float32{
+				41:  42.41,
+				432: 44.43,
+			},
+			MapInt32Double: map[int32]float64{
+				45: 46.45,
+				47: 48.47,
+			},
+			MapBoolBool: map[bool]bool{
+				true:  false,
+				false: false,
+			},
+			MapStringString: map[string]string{
+				"Henrik": "David",
+				"Simon":  "Robin",
+			},
+			MapInt32Bytes: map[int32][]byte{
+				49: []byte("Astrid"),
+				50: []byte("Ebba"),
+			},
+			MapInt32Enum: map[int32]types.MapEnum{
+				51: types.MapEnum_MAP_ENUM_BAR,
+				52: types.MapEnum_MAP_ENUM_BAZ,
+			},
+			MapInt32ForeignMessage: map[int32]*types.ForeignMessage{
+				53: {C: 54},
+				55: {C: 56},
+			},
+			MapInt32ImportedMessage: map[int32]*multitest.Multi1{
+				57: {
+					Multi2: &multitest.Multi2{
+						RequiredValue: 58,
+						Color:         multitest.Multi2_RED,
+					},
+					Color:   multitest.Multi2_GREEN,
+					HatType: multitest.Multi3_FEZ,
+				},
+				59: {
+					Color:   multitest.Multi2_BLUE,
+					HatType: multitest.Multi3_FEDORA,
+				},
+			},
+		}
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			resp, err := c.EchoMaps(context.Background(), req)
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected error:"+st.Error())
+				return
+			}
+			if !reflect.DeepEqual(req, resp) {
+				qunit.Ok(false, fmt.Sprintf("response and request differed: Req:\n%v\nResp:\n%v", req, resp))
+				return
+			}
+
+			qunit.Ok(true, "Request and Response matched")
 		}()
 
 		return nil

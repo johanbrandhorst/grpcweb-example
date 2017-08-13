@@ -13,18 +13,18 @@
 */
 package my_test
 
-import js "github.com/gopherjs/gopherjs/js"
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 import multitest2 "github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/test/multi"
 
 import (
 	context "context"
+
 	grpcweb "github.com/johanbrandhorst/protobuf/grpcweb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the jspb package it is being compiled against.
-const _ = jspb.JspbPackageIsVersion1
+const _ = jspb.JspbPackageIsVersion2
 
 // This enum represents days of the week.
 type Days int
@@ -52,7 +52,10 @@ func (x Days) String() string {
 
 // Simple is a simple message.
 type Simple struct {
-	*js.Object
+	Key      int64
+	Deadline float32
+	Day      Days
+	Name     string
 }
 
 // GetKey gets the Key of the Simple.
@@ -60,12 +63,7 @@ func (m *Simple) GetKey() (x int64) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getKey").Int64()
-}
-
-// SetKey sets the Key of the Simple.
-func (m *Simple) SetKey(v int64) {
-	m.Call("setKey", v)
+	return m.Key
 }
 
 // GetDeadline gets the Deadline of the Simple.
@@ -73,12 +71,7 @@ func (m *Simple) GetDeadline() (x float32) {
 	if m == nil {
 		return x
 	}
-	return float32(m.Call("getDeadline").Float())
-}
-
-// SetDeadline sets the Deadline of the Simple.
-func (m *Simple) SetDeadline(v float32) {
-	m.Call("setDeadline", v)
+	return m.Deadline
 }
 
 // GetDay gets the Day of the Simple.
@@ -86,12 +79,7 @@ func (m *Simple) GetDay() (x Days) {
 	if m == nil {
 		return x
 	}
-	return Days(m.Call("getDay").Int())
-}
-
-// SetDay sets the Day of the Simple.
-func (m *Simple) SetDay(v Days) {
-	m.Call("setDay", v)
+	return m.Day
 }
 
 // GetName gets the Name of the Simple.
@@ -99,83 +87,92 @@ func (m *Simple) GetName() (x string) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getName").String()
+	return m.Name
 }
 
-// SetName sets the Name of the Simple.
-func (m *Simple) SetName(v string) {
-	m.Call("setName", v)
+// MarshalToWriter marshals Simple to the provided writer.
+func (m *Simple) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	if m.Key != 0 {
+		writer.WriteInt64(1, m.Key)
+	}
+
+	if m.Deadline != 0 {
+		writer.WriteFloat32(2, m.Deadline)
+	}
+
+	if int(m.Day) != 0 {
+		writer.WriteEnum(3, int(m.Day))
+	}
+
+	if len(m.Name) > 0 {
+		writer.WriteString(4, m.Name)
+	}
+
+	return
 }
 
-// New creates a new Simple.
-func (m *Simple) New(key int64, deadline float32, day Days, name string) *Simple {
-	m = &Simple{
-		Object: js.Global.Get("proto").Get("my").Get("test").Get("Simple").New([]interface{}{
-			key,
-			deadline,
-			day,
-			name,
-		}),
+// Marshal marshals Simple to a slice of bytes.
+func (m *Simple) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Simple from the provided reader.
+func (m *Simple) UnmarshalFromReader(reader jspb.Reader) *Simple {
+	for reader.Next() {
+		if m == nil {
+			m = &Simple{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.Key = reader.ReadInt64()
+		case 2:
+			m.Deadline = reader.ReadFloat32()
+		case 3:
+			m.Day = Days(reader.ReadEnum())
+		case 4:
+			m.Name = reader.ReadString()
+		default:
+			reader.SkipField()
+		}
 	}
 
 	return m
 }
 
-// Serialize marshals Simple to a slice of bytes.
-func (m *Simple) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a Simple from a slice of bytes.
+func (m *Simple) Unmarshal(rawBytes []byte) (*Simple, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a Simple from a slice of bytes.
-func (m *Simple) Deserialize(rawBytes []byte) (*Simple, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("my").Get("test").Get("Simple"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &Simple{
-		Object: obj,
-	}, nil
+	return m, nil
 }
 
 // Complex is a complicated message
 type Complex struct {
-	*js.Object
+	Communique  []*Complex_Communique
+	CompactKeys map[int32]string
+	// Multi is imported
+	Multi *multitest2.Multi1
 }
 
 // GetCommunique gets the Communique of the Complex.
-// Warning: mutating the returned slice will not be reflected in the message.
-// Use the setter to make changes to the slice in the message.
 func (m *Complex) GetCommunique() (x []*Complex_Communique) {
 	if m == nil {
 		return x
 	}
-	arrFunc := func(value *js.Object) {
-		x = append(x, &Complex_Communique{Object: value})
-	}
-	m.Call("getCommuniqueList").Call("forEach", arrFunc)
-	return x
-}
-
-// SetCommunique sets the Communique of the Complex.
-func (m *Complex) SetCommunique(v []*Complex_Communique) {
-	arr := js.Global.Get("Array").New(len(v))
-	for i, value := range v {
-		arr.SetIndex(i, value)
-	}
-	m.Call("setCommuniqueList", arr)
-}
-
-// AddCommunique adds an entry to the Communique slice of the Complex
-// at the specified index. If index is negative, inserts the element
-// at the index counted from the end of the slice, with origin 1.
-func (m *Complex) AddCommunique(v *Complex_Communique, index int) {
-	m.Call("addCommunique", v, index)
-}
-
-// ClearCommunique clears the Communique of the Complex.
-func (m *Complex) ClearCommunique() {
-	m.Call("clearCommuniqueList")
+	return m.Communique
 }
 
 // GetCompactKeys gets the CompactKeys of the Complex.
@@ -183,146 +180,165 @@ func (m *Complex) GetCompactKeys() (x map[int32]string) {
 	if m == nil {
 		return x
 	}
-	x = map[int32]string{}
-	mapFunc := func(value *js.Object, key *js.Object) {
-		x[int32(key.Int())] = value.String()
-	}
-	m.Call("getCompactKeysMap").Call("forEach", mapFunc)
-	return x
-}
-
-// SetCompactKeys sets the CompactKeys of the Complex.
-func (m *Complex) SetCompactKeys(v map[int32]string) {
-	m.Call("clearCompactKeysMap")
-	mp := m.Call("getCompactKeysMap")
-	for key, value := range v {
-		mp.Call("set", key, value)
-	}
-}
-
-// ClearCompactKeys clears the CompactKeys of the Complex.
-func (m *Complex) ClearCompactKeys() {
-	m.Call("clearCompactKeysMap")
+	return m.CompactKeys
 }
 
 // GetMulti gets the Multi of the Complex.
-// Multi is imported
 func (m *Complex) GetMulti() (x *multitest2.Multi1) {
 	if m == nil {
 		return x
 	}
-	return &multitest2.Multi1{Object: m.Call("getMulti")}
+	return m.Multi
 }
 
-// SetMulti sets the Multi of the Complex.
-// Multi is imported
-func (m *Complex) SetMulti(v *multitest2.Multi1) {
-	if v != nil {
-		m.Call("setMulti", v)
-	} else {
-		m.ClearMulti()
-	}
-}
-
-// HasMulti indicates whether the Multi of the Complex is set.
-// Multi is imported
-func (m *Complex) HasMulti() bool {
+// MarshalToWriter marshals Complex to the provided writer.
+func (m *Complex) MarshalToWriter(writer jspb.Writer) {
 	if m == nil {
-		return false
+		return
 	}
-	return m.Call("hasMulti").Bool()
+
+	for _, msg := range m.Communique {
+		writer.WriteMessage(1, func() {
+			msg.MarshalToWriter(writer)
+		})
+	}
+
+	if len(m.CompactKeys) > 0 {
+		for key, value := range m.CompactKeys {
+			writer.WriteMessage(2, func() {
+				writer.WriteInt32(1, key)
+				writer.WriteString(2, value)
+			})
+		}
+	}
+
+	if m.Multi != nil {
+		writer.WriteMessage(3, func() {
+			m.Multi.MarshalToWriter(writer)
+		})
+	}
+
+	return
 }
 
-// ClearMulti clears the Multi of the Complex.
-// Multi is imported
-func (m *Complex) ClearMulti() {
-	m.Call("clearMulti")
+// Marshal marshals Complex to a slice of bytes.
+func (m *Complex) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
 }
 
-// New creates a new Complex.
-// Multi is imported
-func (m *Complex) New(communique []*Complex_Communique, compactKeys map[int32]string, multi *multitest2.Multi1) *Complex {
-	m = &Complex{
-		Object: js.Global.Get("proto").Get("my").Get("test").Get("Complex").New([]interface{}{
-			js.Undefined,
-			js.Undefined,
-			js.Undefined,
-		}),
-	}
+// UnmarshalFromReader unmarshals a Complex from the provided reader.
+func (m *Complex) UnmarshalFromReader(reader jspb.Reader) *Complex {
+	for reader.Next() {
+		if m == nil {
+			m = &Complex{}
+		}
 
-	arr := js.Global.Get("Array").New(len(communique))
-	for i, value := range communique {
-		arr.SetIndex(i, value)
+		switch reader.GetFieldNumber() {
+		case 1:
+			reader.ReadMessage(func() {
+				m.Communique = append(m.Communique, new(Complex_Communique).UnmarshalFromReader(reader))
+			})
+		case 2:
+			if m.CompactKeys == nil {
+				m.CompactKeys = map[int32]string{}
+			}
+			reader.ReadMessage(func() {
+				var key int32
+				var value string
+				for reader.Next() {
+					switch reader.GetFieldNumber() {
+					case 1:
+						key = reader.ReadInt32()
+					case 2:
+						value = reader.ReadString()
+					}
+					m.CompactKeys[key] = value
+				}
+			})
+		case 3:
+			reader.ReadMessage(func() {
+				m.Multi = m.Multi.UnmarshalFromReader(reader)
+			})
+		default:
+			reader.SkipField()
+		}
 	}
-	m.Call("setCommuniqueList", arr)
-
-	mp := m.Call("getCompactKeysMap")
-	for key, value := range compactKeys {
-		mp.Call("set", key, value)
-	}
-
-	m.SetMulti(multi)
 
 	return m
 }
 
-// Serialize marshals Complex to a slice of bytes.
-func (m *Complex) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a Complex from a slice of bytes.
+func (m *Complex) Unmarshal(rawBytes []byte) (*Complex, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a Complex from a slice of bytes.
-func (m *Complex) Deserialize(rawBytes []byte) (*Complex, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("my").Get("test").Get("Complex"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &Complex{
-		Object: obj,
-	}, nil
+	return m, nil
 }
 
 type Complex_Communique struct {
-	*js.Object
+	MakeMeCry bool
+	// This is a oneof, called "union_thing".
+	//
+	// Types that are valid to be assigned to UnionThing:
+	//	*Complex_Communique_Number
+	//	*Complex_Communique_Name
+	//	*Complex_Communique_Data
+	//	*Complex_Communique_TempC
+	//	*Complex_Communique_Height
+	//	*Complex_Communique_Today
+	//	*Complex_Communique_Maybe
+	//	*Complex_Communique_Delta_
+	UnionThing isComplex_Communique_UnionThing
 }
 
-// This is a oneof, called "union_thing".
-//
-// Types that are valid to be assigned to UnionThing:
-//	*Complex_Communique_Number
-//	*Complex_Communique_Name
-//	*Complex_Communique_Data
-//	*Complex_Communique_TempC
-//	*Complex_Communique_Height
-//	*Complex_Communique_Today
-//	*Complex_Communique_Maybe
-//	*Complex_Communique_Delta_
+// isComplex_Communique_UnionThing is used to distinguish types assignable to UnionThing
 type isComplex_Communique_UnionThing interface {
 	isComplex_Communique_UnionThing()
 }
 
+// Complex_Communique_Number is assignable to UnionThing
 type Complex_Communique_Number struct {
 	Number int32
 }
+
+// Complex_Communique_Name is assignable to UnionThing
 type Complex_Communique_Name struct {
 	Name string
 }
+
+// Complex_Communique_Data is assignable to UnionThing
 type Complex_Communique_Data struct {
 	Data []byte
 }
+
+// Complex_Communique_TempC is assignable to UnionThing
 type Complex_Communique_TempC struct {
 	TempC float64
 }
+
+// Complex_Communique_Height is assignable to UnionThing
 type Complex_Communique_Height struct {
 	Height float32
 }
+
+// Complex_Communique_Today is assignable to UnionThing
 type Complex_Communique_Today struct {
 	Today Days
 }
+
+// Complex_Communique_Maybe is assignable to UnionThing
 type Complex_Communique_Maybe struct {
 	Maybe bool
 }
+
+// Complex_Communique_Delta_ is assignable to UnionThing
 type Complex_Communique_Delta_ struct {
 	Delta int32
 }
@@ -338,65 +354,10 @@ func (*Complex_Communique_Delta_) isComplex_Communique_UnionThing() {}
 
 // GetUnionThing gets the UnionThing of the Complex_Communique.
 func (m *Complex_Communique) GetUnionThing() (x isComplex_Communique_UnionThing) {
-	switch m.Call("getUnionThingCase").Int() {
-	case 2:
-		x = &Complex_Communique_Number{
-			Number: m.GetNumber(),
-		}
-	case 3:
-		x = &Complex_Communique_Name{
-			Name: m.GetName(),
-		}
-	case 4:
-		x = &Complex_Communique_Data{
-			Data: m.GetData(),
-		}
-	case 5:
-		x = &Complex_Communique_TempC{
-			TempC: m.GetTempC(),
-		}
-	case 6:
-		x = &Complex_Communique_Height{
-			Height: m.GetHeight(),
-		}
-	case 7:
-		x = &Complex_Communique_Today{
-			Today: m.GetToday(),
-		}
-	case 8:
-		x = &Complex_Communique_Maybe{
-			Maybe: m.GetMaybe(),
-		}
-	case 9:
-		x = &Complex_Communique_Delta_{
-			Delta: m.GetDelta(),
-		}
+	if m == nil {
+		return x
 	}
-
-	return x
-}
-
-// SetUnionThing sets the UnionThing of theComplex_Communique.
-// If the input is nil, SetUnionThing does nothing.
-func (m *Complex_Communique) SetUnionThing(union_thing isComplex_Communique_UnionThing) {
-	switch x := union_thing.(type) {
-	case *Complex_Communique_Number:
-		m.SetNumber(x.Number)
-	case *Complex_Communique_Name:
-		m.SetName(x.Name)
-	case *Complex_Communique_Data:
-		m.SetData(x.Data)
-	case *Complex_Communique_TempC:
-		m.SetTempC(x.TempC)
-	case *Complex_Communique_Height:
-		m.SetHeight(x.Height)
-	case *Complex_Communique_Today:
-		m.SetToday(x.Today)
-	case *Complex_Communique_Maybe:
-		m.SetMaybe(x.Maybe)
-	case *Complex_Communique_Delta_:
-		m.SetDelta(x.Delta)
-	}
+	return m.UnionThing
 }
 
 // GetMakeMeCry gets the MakeMeCry of the Complex_Communique.
@@ -404,288 +365,237 @@ func (m *Complex_Communique) GetMakeMeCry() (x bool) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getMakeMeCry").Bool()
-}
-
-// SetMakeMeCry sets the MakeMeCry of the Complex_Communique.
-func (m *Complex_Communique) SetMakeMeCry(v bool) {
-	m.Call("setMakeMeCry", v)
+	return m.MakeMeCry
 }
 
 // GetNumber gets the Number of the Complex_Communique.
 func (m *Complex_Communique) GetNumber() (x int32) {
-	if m == nil {
-		return x
+	if v, ok := m.GetUnionThing().(*Complex_Communique_Number); ok {
+		return v.Number
 	}
-	return int32(m.Call("getNumber").Int())
-}
-
-// SetNumber sets the Number of the Complex_Communique.
-func (m *Complex_Communique) SetNumber(v int32) {
-	m.Call("setNumber", v)
-}
-
-// HasNumber indicates whether the Number of the Complex_Communique is set.
-func (m *Complex_Communique) HasNumber() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasNumber").Bool()
-}
-
-// ClearNumber clears the Number of the Complex_Communique.
-func (m *Complex_Communique) ClearNumber() {
-	m.Call("clearNumber")
+	return x
 }
 
 // GetName gets the Name of the Complex_Communique.
 func (m *Complex_Communique) GetName() (x string) {
-	if m == nil {
-		return x
+	if v, ok := m.GetUnionThing().(*Complex_Communique_Name); ok {
+		return v.Name
 	}
-	return m.Call("getName").String()
-}
-
-// SetName sets the Name of the Complex_Communique.
-func (m *Complex_Communique) SetName(v string) {
-	m.Call("setName", v)
-}
-
-// HasName indicates whether the Name of the Complex_Communique is set.
-func (m *Complex_Communique) HasName() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasName").Bool()
-}
-
-// ClearName clears the Name of the Complex_Communique.
-func (m *Complex_Communique) ClearName() {
-	m.Call("clearName")
+	return x
 }
 
 // GetData gets the Data of the Complex_Communique.
 func (m *Complex_Communique) GetData() (x []byte) {
-	if m == nil {
-		return x
+	if v, ok := m.GetUnionThing().(*Complex_Communique_Data); ok {
+		return v.Data
 	}
-	return m.Call("getData_asU8").Interface().([]byte)
-}
-
-// SetData sets the Data of the Complex_Communique.
-func (m *Complex_Communique) SetData(v []byte) {
-	m.Call("setData", v)
-}
-
-// HasData indicates whether the Data of the Complex_Communique is set.
-func (m *Complex_Communique) HasData() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasData").Bool()
-}
-
-// ClearData clears the Data of the Complex_Communique.
-func (m *Complex_Communique) ClearData() {
-	m.Call("clearData")
+	return x
 }
 
 // GetTempC gets the TempC of the Complex_Communique.
 func (m *Complex_Communique) GetTempC() (x float64) {
-	if m == nil {
-		return x
+	if v, ok := m.GetUnionThing().(*Complex_Communique_TempC); ok {
+		return v.TempC
 	}
-	return m.Call("getTempC").Float()
-}
-
-// SetTempC sets the TempC of the Complex_Communique.
-func (m *Complex_Communique) SetTempC(v float64) {
-	m.Call("setTempC", v)
-}
-
-// HasTempC indicates whether the TempC of the Complex_Communique is set.
-func (m *Complex_Communique) HasTempC() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasTempC").Bool()
-}
-
-// ClearTempC clears the TempC of the Complex_Communique.
-func (m *Complex_Communique) ClearTempC() {
-	m.Call("clearTempC")
+	return x
 }
 
 // GetHeight gets the Height of the Complex_Communique.
 func (m *Complex_Communique) GetHeight() (x float32) {
-	if m == nil {
-		return x
+	if v, ok := m.GetUnionThing().(*Complex_Communique_Height); ok {
+		return v.Height
 	}
-	return float32(m.Call("getHeight").Float())
-}
-
-// SetHeight sets the Height of the Complex_Communique.
-func (m *Complex_Communique) SetHeight(v float32) {
-	m.Call("setHeight", v)
-}
-
-// HasHeight indicates whether the Height of the Complex_Communique is set.
-func (m *Complex_Communique) HasHeight() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasHeight").Bool()
-}
-
-// ClearHeight clears the Height of the Complex_Communique.
-func (m *Complex_Communique) ClearHeight() {
-	m.Call("clearHeight")
+	return x
 }
 
 // GetToday gets the Today of the Complex_Communique.
 func (m *Complex_Communique) GetToday() (x Days) {
-	if m == nil {
-		return x
+	if v, ok := m.GetUnionThing().(*Complex_Communique_Today); ok {
+		return v.Today
 	}
-	return Days(m.Call("getToday").Int())
-}
-
-// SetToday sets the Today of the Complex_Communique.
-func (m *Complex_Communique) SetToday(v Days) {
-	m.Call("setToday", v)
-}
-
-// HasToday indicates whether the Today of the Complex_Communique is set.
-func (m *Complex_Communique) HasToday() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasToday").Bool()
-}
-
-// ClearToday clears the Today of the Complex_Communique.
-func (m *Complex_Communique) ClearToday() {
-	m.Call("clearToday")
+	return x
 }
 
 // GetMaybe gets the Maybe of the Complex_Communique.
 func (m *Complex_Communique) GetMaybe() (x bool) {
-	if m == nil {
-		return x
+	if v, ok := m.GetUnionThing().(*Complex_Communique_Maybe); ok {
+		return v.Maybe
 	}
-	return m.Call("getMaybe").Bool()
-}
-
-// SetMaybe sets the Maybe of the Complex_Communique.
-func (m *Complex_Communique) SetMaybe(v bool) {
-	m.Call("setMaybe", v)
-}
-
-// HasMaybe indicates whether the Maybe of the Complex_Communique is set.
-func (m *Complex_Communique) HasMaybe() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasMaybe").Bool()
-}
-
-// ClearMaybe clears the Maybe of the Complex_Communique.
-func (m *Complex_Communique) ClearMaybe() {
-	m.Call("clearMaybe")
+	return x
 }
 
 // GetDelta gets the Delta of the Complex_Communique.
 func (m *Complex_Communique) GetDelta() (x int32) {
+	if v, ok := m.GetUnionThing().(*Complex_Communique_Delta_); ok {
+		return v.Delta
+	}
+	return x
+}
+
+// MarshalToWriter marshals Complex_Communique to the provided writer.
+func (m *Complex_Communique) MarshalToWriter(writer jspb.Writer) {
 	if m == nil {
-		return x
-	}
-	return int32(m.Call("getDelta").Int())
-}
-
-// SetDelta sets the Delta of the Complex_Communique.
-func (m *Complex_Communique) SetDelta(v int32) {
-	m.Call("setDelta", v)
-}
-
-// HasDelta indicates whether the Delta of the Complex_Communique is set.
-func (m *Complex_Communique) HasDelta() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasDelta").Bool()
-}
-
-// ClearDelta clears the Delta of the Complex_Communique.
-func (m *Complex_Communique) ClearDelta() {
-	m.Call("clearDelta")
-}
-
-// New creates a new Complex_Communique.
-func (m *Complex_Communique) New(makeMeCry bool, union_thing isComplex_Communique_UnionThing) *Complex_Communique {
-	m = &Complex_Communique{
-		Object: js.Global.Get("proto").Get("my").Get("test").Get("Complex").Get("Communique").New([]interface{}{
-			makeMeCry,
-			js.Undefined,
-			js.Undefined,
-			js.Undefined,
-			js.Undefined,
-			js.Undefined,
-			js.Undefined,
-			js.Undefined,
-			js.Undefined,
-		}),
+		return
 	}
 
-	m.SetUnionThing(union_thing)
+	switch t := m.UnionThing.(type) {
+	case *Complex_Communique_Number:
+		if t.Number != 0 {
+			writer.WriteInt32(2, t.Number)
+		}
+	case *Complex_Communique_Name:
+		if len(t.Name) > 0 {
+			writer.WriteString(3, t.Name)
+		}
+	case *Complex_Communique_Data:
+		if len(t.Data) > 0 {
+			writer.WriteBytes(4, t.Data)
+		}
+	case *Complex_Communique_TempC:
+		if t.TempC != 0 {
+			writer.WriteFloat64(5, t.TempC)
+		}
+	case *Complex_Communique_Height:
+		if t.Height != 0 {
+			writer.WriteFloat32(6, t.Height)
+		}
+	case *Complex_Communique_Today:
+		if int(t.Today) != 0 {
+			writer.WriteEnum(7, int(t.Today))
+		}
+	case *Complex_Communique_Maybe:
+		if t.Maybe {
+			writer.WriteBool(8, t.Maybe)
+		}
+	case *Complex_Communique_Delta_:
+		if t.Delta != 0 {
+			writer.WriteSint32(9, t.Delta)
+		}
+	}
+
+	if m.MakeMeCry {
+		writer.WriteBool(1, m.MakeMeCry)
+	}
+
+	return
+}
+
+// Marshal marshals Complex_Communique to a slice of bytes.
+func (m *Complex_Communique) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Complex_Communique from the provided reader.
+func (m *Complex_Communique) UnmarshalFromReader(reader jspb.Reader) *Complex_Communique {
+	for reader.Next() {
+		if m == nil {
+			m = &Complex_Communique{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.MakeMeCry = reader.ReadBool()
+		case 2:
+			m.UnionThing = &Complex_Communique_Number{
+				Number: reader.ReadInt32(),
+			}
+		case 3:
+			m.UnionThing = &Complex_Communique_Name{
+				Name: reader.ReadString(),
+			}
+		case 4:
+			m.UnionThing = &Complex_Communique_Data{
+				Data: reader.ReadBytes(),
+			}
+		case 5:
+			m.UnionThing = &Complex_Communique_TempC{
+				TempC: reader.ReadFloat64(),
+			}
+		case 6:
+			m.UnionThing = &Complex_Communique_Height{
+				Height: reader.ReadFloat32(),
+			}
+		case 7:
+			m.UnionThing = &Complex_Communique_Today{
+				Today: Days(reader.ReadEnum()),
+			}
+		case 8:
+			m.UnionThing = &Complex_Communique_Maybe{
+				Maybe: reader.ReadBool(),
+			}
+		case 9:
+			m.UnionThing = &Complex_Communique_Delta_{
+				Delta: reader.ReadSint32(),
+			}
+		default:
+			reader.SkipField()
+		}
+	}
 
 	return m
 }
 
-// Serialize marshals Complex_Communique to a slice of bytes.
-func (m *Complex_Communique) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a Complex_Communique from a slice of bytes.
+func (m *Complex_Communique) Unmarshal(rawBytes []byte) (*Complex_Communique, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a Complex_Communique from a slice of bytes.
-func (m *Complex_Communique) Deserialize(rawBytes []byte) (*Complex_Communique, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("my").Get("test").Get("Complex").Get("Communique"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &Complex_Communique{
-		Object: obj,
-	}, nil
+	return m, nil
 }
 
 type Complex_Communique_Delta struct {
-	*js.Object
 }
 
-// New creates a new Complex_Communique_Delta.
-func (m *Complex_Communique_Delta) New() *Complex_Communique_Delta {
-	m = &Complex_Communique_Delta{
-		Object: js.Global.Get("proto").Get("my").Get("test").Get("Complex").Get("Communique").Get("Delta").New([]interface{}{}),
+// MarshalToWriter marshals Complex_Communique_Delta to the provided writer.
+func (m *Complex_Communique_Delta) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	return
+}
+
+// Marshal marshals Complex_Communique_Delta to a slice of bytes.
+func (m *Complex_Communique_Delta) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Complex_Communique_Delta from the provided reader.
+func (m *Complex_Communique_Delta) UnmarshalFromReader(reader jspb.Reader) *Complex_Communique_Delta {
+	for reader.Next() {
+		if m == nil {
+			m = &Complex_Communique_Delta{}
+		}
+
+		switch reader.GetFieldNumber() {
+		default:
+			reader.SkipField()
+		}
 	}
 
 	return m
 }
 
-// Serialize marshals Complex_Communique_Delta to a slice of bytes.
-func (m *Complex_Communique_Delta) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a Complex_Communique_Delta from a slice of bytes.
+func (m *Complex_Communique_Delta) Unmarshal(rawBytes []byte) (*Complex_Communique_Delta, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a Complex_Communique_Delta from a slice of bytes.
-func (m *Complex_Communique_Delta) Deserialize(rawBytes []byte) (*Complex_Communique_Delta, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("my").Get("test").Get("Complex").Get("Communique").Get("Delta"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &Complex_Communique_Delta{
-		Object: obj,
-	}, nil
+	return m, nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -716,18 +626,18 @@ func NewTestServiceClient(hostname string, opts ...grpcweb.DialOption) TestServi
 }
 
 func (c *testServiceClient) Unary(ctx context.Context, in *Simple, opts ...grpcweb.CallOption) (*Complex, error) {
-	req := in.Serialize()
+	req := in.Marshal()
 
 	resp, err := c.client.RPCCall(ctx, "Unary", req, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	return new(Complex).Deserialize(resp)
+	return new(Complex).Unmarshal(resp)
 }
 
 func (c *testServiceClient) ServerStreaming(ctx context.Context, in *Simple, opts ...grpcweb.CallOption) (TestService_ServerStreamingClient, error) {
-	req := in.Serialize()
+	req := in.Marshal()
 
 	srv, err := c.client.Stream(ctx, "ServerStreaming", req, opts...)
 	if err != nil {
@@ -753,5 +663,5 @@ func (x *testServiceServerStreamingClient) Recv() (*Complex, error) {
 		return nil, err
 	}
 
-	return new(Complex).Deserialize(resp)
+	return new(Complex).Unmarshal(resp)
 }

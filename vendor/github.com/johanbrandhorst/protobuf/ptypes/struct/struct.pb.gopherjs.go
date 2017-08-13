@@ -14,12 +14,11 @@
 */
 package structpb
 
-import js "github.com/gopherjs/gopherjs/js"
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the jspb package it is being compiled against.
-const _ = jspb.JspbPackageIsVersion1
+const _ = jspb.JspbPackageIsVersion2
 
 // `NullValue` is a singleton enumeration to represent the null value for the
 // `Value` type union.
@@ -52,71 +51,91 @@ func (x NullValue) String() string {
 //
 // The JSON representation for `Struct` is JSON object.
 type Struct struct {
-	*js.Object
+	// Unordered map of dynamically typed values.
+	Fields map[string]*Value
 }
 
 // GetFields gets the Fields of the Struct.
-// Unordered map of dynamically typed values.
 func (m *Struct) GetFields() (x map[string]*Value) {
 	if m == nil {
 		return x
 	}
-	x = map[string]*Value{}
-	mapFunc := func(value *js.Object, key *js.Object) {
-		x[key.String()] = &Value{Object: value}
-	}
-	m.Call("getFieldsMap").Call("forEach", mapFunc)
-	return x
+	return m.Fields
 }
 
-// SetFields sets the Fields of the Struct.
-// Unordered map of dynamically typed values.
-func (m *Struct) SetFields(v map[string]*Value) {
-	m.Call("clearFieldsMap")
-	mp := m.Call("getFieldsMap")
-	for key, value := range v {
-		mp.Call("set", key, value)
-	}
-}
-
-// ClearFields clears the Fields of the Struct.
-// Unordered map of dynamically typed values.
-func (m *Struct) ClearFields() {
-	m.Call("clearFieldsMap")
-}
-
-// New creates a new Struct.
-// Unordered map of dynamically typed values.
-func (m *Struct) New(fields map[string]*Value) *Struct {
-	m = &Struct{
-		Object: js.Global.Get("proto").Get("google").Get("protobuf").Get("Struct").New([]interface{}{
-			js.Undefined,
-		}),
+// MarshalToWriter marshals Struct to the provided writer.
+func (m *Struct) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
 	}
 
-	mp := m.Call("getFieldsMap")
-	for key, value := range fields {
-		mp.Call("set", key, value)
+	if len(m.Fields) > 0 {
+		for key, value := range m.Fields {
+			writer.WriteMessage(1, func() {
+				writer.WriteString(1, key)
+				writer.WriteMessage(2, func() {
+					value.MarshalToWriter(writer)
+				})
+			})
+		}
+	}
+
+	return
+}
+
+// Marshal marshals Struct to a slice of bytes.
+func (m *Struct) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Struct from the provided reader.
+func (m *Struct) UnmarshalFromReader(reader jspb.Reader) *Struct {
+	for reader.Next() {
+		if m == nil {
+			m = &Struct{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			if m.Fields == nil {
+				m.Fields = map[string]*Value{}
+			}
+			reader.ReadMessage(func() {
+				var key string
+				var value *Value
+				for reader.Next() {
+					switch reader.GetFieldNumber() {
+					case 1:
+						key = reader.ReadString()
+					case 2:
+						reader.ReadMessage(func() {
+							value = new(Value).UnmarshalFromReader(reader)
+						})
+					}
+					m.Fields[key] = value
+				}
+			})
+		default:
+			reader.SkipField()
+		}
 	}
 
 	return m
 }
 
-// Serialize marshals Struct to a slice of bytes.
-func (m *Struct) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a Struct from a slice of bytes.
+func (m *Struct) Unmarshal(rawBytes []byte) (*Struct, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a Struct from a slice of bytes.
-func (m *Struct) Deserialize(rawBytes []byte) (*Struct, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("google").Get("protobuf").Get("Struct"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &Struct{
-		Object: obj,
-	}, nil
+	return m, nil
 }
 
 // `Value` represents a dynamically typed value which can be either
@@ -126,42 +145,60 @@ func (m *Struct) Deserialize(rawBytes []byte) (*Struct, error) {
 //
 // The JSON representation for `Value` is JSON value.
 type Value struct {
-	*js.Object
+	// Represents a null value.
+	// The kind of value.
+	//
+	// Types that are valid to be assigned to Kind:
+	//	*Value_NullValue
+	//	*Value_NumberValue
+	//	*Value_StringValue
+	//	*Value_BoolValue
+	//	*Value_StructValue
+	//	*Value_ListValue
+	Kind isValue_Kind
+	// Represents a double value.
+	// Represents a string value.
+	// Represents a boolean value.
+	// Represents a structured value.
+	// Represents a repeated `Value`.
 }
 
-// The kind of value.
-//
-// Types that are valid to be assigned to Kind:
-//	*Value_NullValue
-//	*Value_NumberValue
-//	*Value_StringValue
-//	*Value_BoolValue
-//	*Value_StructValue
-//	*Value_ListValue
+// isValue_Kind is used to distinguish types assignable to Kind
 type isValue_Kind interface {
 	isValue_Kind()
 }
 
+// Value_NullValue is assignable to Kind
 type Value_NullValue struct {
 	// Represents a null value.
 	NullValue NullValue
 }
+
+// Value_NumberValue is assignable to Kind
 type Value_NumberValue struct {
 	// Represents a double value.
 	NumberValue float64
 }
+
+// Value_StringValue is assignable to Kind
 type Value_StringValue struct {
 	// Represents a string value.
 	StringValue string
 }
+
+// Value_BoolValue is assignable to Kind
 type Value_BoolValue struct {
 	// Represents a boolean value.
 	BoolValue bool
 }
+
+// Value_StructValue is assignable to Kind
 type Value_StructValue struct {
 	// Represents a structured value.
 	StructValue *Struct
 }
+
+// Value_ListValue is assignable to Kind
 type Value_ListValue struct {
 	// Represents a repeated `Value`.
 	ListValue *ListValue
@@ -176,356 +213,231 @@ func (*Value_ListValue) isValue_Kind()   {}
 
 // GetKind gets the Kind of the Value.
 func (m *Value) GetKind() (x isValue_Kind) {
-	switch m.Call("getKindCase").Int() {
-	case 1:
-		x = &Value_NullValue{
-			NullValue: m.GetNullValue(),
-		}
-	case 2:
-		x = &Value_NumberValue{
-			NumberValue: m.GetNumberValue(),
-		}
-	case 3:
-		x = &Value_StringValue{
-			StringValue: m.GetStringValue(),
-		}
-	case 4:
-		x = &Value_BoolValue{
-			BoolValue: m.GetBoolValue(),
-		}
-	case 5:
-		x = &Value_StructValue{
-			StructValue: m.GetStructValue(),
-		}
-	case 6:
-		x = &Value_ListValue{
-			ListValue: m.GetListValue(),
-		}
+	if m == nil {
+		return x
 	}
-
-	return x
-}
-
-// SetKind sets the Kind of theValue.
-// If the input is nil, SetKind does nothing.
-func (m *Value) SetKind(kind isValue_Kind) {
-	switch x := kind.(type) {
-	case *Value_NullValue:
-		m.SetNullValue(x.NullValue)
-	case *Value_NumberValue:
-		m.SetNumberValue(x.NumberValue)
-	case *Value_StringValue:
-		m.SetStringValue(x.StringValue)
-	case *Value_BoolValue:
-		m.SetBoolValue(x.BoolValue)
-	case *Value_StructValue:
-		m.SetStructValue(x.StructValue)
-	case *Value_ListValue:
-		m.SetListValue(x.ListValue)
-	}
+	return m.Kind
 }
 
 // GetNullValue gets the NullValue of the Value.
-// Represents a null value.
 func (m *Value) GetNullValue() (x NullValue) {
-	if m == nil {
-		return x
+	if v, ok := m.GetKind().(*Value_NullValue); ok {
+		return v.NullValue
 	}
-	return NullValue(m.Call("getNullValue").Int())
-}
-
-// SetNullValue sets the NullValue of the Value.
-// Represents a null value.
-func (m *Value) SetNullValue(v NullValue) {
-	m.Call("setNullValue", v)
-}
-
-// HasNullValue indicates whether the NullValue of the Value is set.
-// Represents a null value.
-func (m *Value) HasNullValue() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasNullValue").Bool()
-}
-
-// ClearNullValue clears the NullValue of the Value.
-// Represents a null value.
-func (m *Value) ClearNullValue() {
-	m.Call("clearNullValue")
+	return x
 }
 
 // GetNumberValue gets the NumberValue of the Value.
-// Represents a double value.
 func (m *Value) GetNumberValue() (x float64) {
-	if m == nil {
-		return x
+	if v, ok := m.GetKind().(*Value_NumberValue); ok {
+		return v.NumberValue
 	}
-	return m.Call("getNumberValue").Float()
-}
-
-// SetNumberValue sets the NumberValue of the Value.
-// Represents a double value.
-func (m *Value) SetNumberValue(v float64) {
-	m.Call("setNumberValue", v)
-}
-
-// HasNumberValue indicates whether the NumberValue of the Value is set.
-// Represents a double value.
-func (m *Value) HasNumberValue() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasNumberValue").Bool()
-}
-
-// ClearNumberValue clears the NumberValue of the Value.
-// Represents a double value.
-func (m *Value) ClearNumberValue() {
-	m.Call("clearNumberValue")
+	return x
 }
 
 // GetStringValue gets the StringValue of the Value.
-// Represents a string value.
 func (m *Value) GetStringValue() (x string) {
-	if m == nil {
-		return x
+	if v, ok := m.GetKind().(*Value_StringValue); ok {
+		return v.StringValue
 	}
-	return m.Call("getStringValue").String()
-}
-
-// SetStringValue sets the StringValue of the Value.
-// Represents a string value.
-func (m *Value) SetStringValue(v string) {
-	m.Call("setStringValue", v)
-}
-
-// HasStringValue indicates whether the StringValue of the Value is set.
-// Represents a string value.
-func (m *Value) HasStringValue() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasStringValue").Bool()
-}
-
-// ClearStringValue clears the StringValue of the Value.
-// Represents a string value.
-func (m *Value) ClearStringValue() {
-	m.Call("clearStringValue")
+	return x
 }
 
 // GetBoolValue gets the BoolValue of the Value.
-// Represents a boolean value.
 func (m *Value) GetBoolValue() (x bool) {
-	if m == nil {
-		return x
+	if v, ok := m.GetKind().(*Value_BoolValue); ok {
+		return v.BoolValue
 	}
-	return m.Call("getBoolValue").Bool()
-}
-
-// SetBoolValue sets the BoolValue of the Value.
-// Represents a boolean value.
-func (m *Value) SetBoolValue(v bool) {
-	m.Call("setBoolValue", v)
-}
-
-// HasBoolValue indicates whether the BoolValue of the Value is set.
-// Represents a boolean value.
-func (m *Value) HasBoolValue() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasBoolValue").Bool()
-}
-
-// ClearBoolValue clears the BoolValue of the Value.
-// Represents a boolean value.
-func (m *Value) ClearBoolValue() {
-	m.Call("clearBoolValue")
+	return x
 }
 
 // GetStructValue gets the StructValue of the Value.
-// Represents a structured value.
 func (m *Value) GetStructValue() (x *Struct) {
-	if m == nil {
-		return x
+	if v, ok := m.GetKind().(*Value_StructValue); ok {
+		return v.StructValue
 	}
-	return &Struct{Object: m.Call("getStructValue")}
-}
-
-// SetStructValue sets the StructValue of the Value.
-// Represents a structured value.
-func (m *Value) SetStructValue(v *Struct) {
-	if v != nil {
-		m.Call("setStructValue", v)
-	} else {
-		m.ClearStructValue()
-	}
-}
-
-// HasStructValue indicates whether the StructValue of the Value is set.
-// Represents a structured value.
-func (m *Value) HasStructValue() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasStructValue").Bool()
-}
-
-// ClearStructValue clears the StructValue of the Value.
-// Represents a structured value.
-func (m *Value) ClearStructValue() {
-	m.Call("clearStructValue")
+	return x
 }
 
 // GetListValue gets the ListValue of the Value.
-// Represents a repeated `Value`.
 func (m *Value) GetListValue() (x *ListValue) {
+	if v, ok := m.GetKind().(*Value_ListValue); ok {
+		return v.ListValue
+	}
+	return x
+}
+
+// MarshalToWriter marshals Value to the provided writer.
+func (m *Value) MarshalToWriter(writer jspb.Writer) {
 	if m == nil {
-		return x
-	}
-	return &ListValue{Object: m.Call("getListValue")}
-}
-
-// SetListValue sets the ListValue of the Value.
-// Represents a repeated `Value`.
-func (m *Value) SetListValue(v *ListValue) {
-	if v != nil {
-		m.Call("setListValue", v)
-	} else {
-		m.ClearListValue()
-	}
-}
-
-// HasListValue indicates whether the ListValue of the Value is set.
-// Represents a repeated `Value`.
-func (m *Value) HasListValue() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasListValue").Bool()
-}
-
-// ClearListValue clears the ListValue of the Value.
-// Represents a repeated `Value`.
-func (m *Value) ClearListValue() {
-	m.Call("clearListValue")
-}
-
-// New creates a new Value.
-// Represents a null value.
-func (m *Value) New(kind isValue_Kind) *Value {
-	m = &Value{
-		Object: js.Global.Get("proto").Get("google").Get("protobuf").Get("Value").New([]interface{}{
-			js.Undefined,
-			js.Undefined,
-			js.Undefined,
-			js.Undefined,
-			js.Undefined,
-			js.Undefined,
-		}),
+		return
 	}
 
-	m.SetKind(kind)
+	switch t := m.Kind.(type) {
+	case *Value_NullValue:
+		if int(t.NullValue) != 0 {
+			writer.WriteEnum(1, int(t.NullValue))
+		}
+	case *Value_NumberValue:
+		if t.NumberValue != 0 {
+			writer.WriteFloat64(2, t.NumberValue)
+		}
+	case *Value_StringValue:
+		if len(t.StringValue) > 0 {
+			writer.WriteString(3, t.StringValue)
+		}
+	case *Value_BoolValue:
+		if t.BoolValue {
+			writer.WriteBool(4, t.BoolValue)
+		}
+	case *Value_StructValue:
+		if t.StructValue != nil {
+			writer.WriteMessage(5, func() {
+				t.StructValue.MarshalToWriter(writer)
+			})
+		}
+	case *Value_ListValue:
+		if t.ListValue != nil {
+			writer.WriteMessage(6, func() {
+				t.ListValue.MarshalToWriter(writer)
+			})
+		}
+	}
+
+	return
+}
+
+// Marshal marshals Value to a slice of bytes.
+func (m *Value) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Value from the provided reader.
+func (m *Value) UnmarshalFromReader(reader jspb.Reader) *Value {
+	for reader.Next() {
+		if m == nil {
+			m = &Value{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.Kind = &Value_NullValue{
+				NullValue: NullValue(reader.ReadEnum()),
+			}
+		case 2:
+			m.Kind = &Value_NumberValue{
+				NumberValue: reader.ReadFloat64(),
+			}
+		case 3:
+			m.Kind = &Value_StringValue{
+				StringValue: reader.ReadString(),
+			}
+		case 4:
+			m.Kind = &Value_BoolValue{
+				BoolValue: reader.ReadBool(),
+			}
+		case 5:
+			reader.ReadMessage(func() {
+				m.Kind = &Value_StructValue{
+					StructValue: new(Struct).UnmarshalFromReader(reader),
+				}
+			})
+		case 6:
+			reader.ReadMessage(func() {
+				m.Kind = &Value_ListValue{
+					ListValue: new(ListValue).UnmarshalFromReader(reader),
+				}
+			})
+		default:
+			reader.SkipField()
+		}
+	}
 
 	return m
 }
 
-// Serialize marshals Value to a slice of bytes.
-func (m *Value) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a Value from a slice of bytes.
+func (m *Value) Unmarshal(rawBytes []byte) (*Value, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a Value from a slice of bytes.
-func (m *Value) Deserialize(rawBytes []byte) (*Value, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("google").Get("protobuf").Get("Value"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &Value{
-		Object: obj,
-	}, nil
+	return m, nil
 }
 
 // `ListValue` is a wrapper around a repeated field of values.
 //
 // The JSON representation for `ListValue` is JSON array.
 type ListValue struct {
-	*js.Object
+	// Repeated field of dynamically typed values.
+	Values []*Value
 }
 
 // GetValues gets the Values of the ListValue.
-// Repeated field of dynamically typed values.
-// Warning: mutating the returned slice will not be reflected in the message.
-// Use the setter to make changes to the slice in the message.
 func (m *ListValue) GetValues() (x []*Value) {
 	if m == nil {
 		return x
 	}
-	arrFunc := func(value *js.Object) {
-		x = append(x, &Value{Object: value})
-	}
-	m.Call("getValuesList").Call("forEach", arrFunc)
-	return x
+	return m.Values
 }
 
-// SetValues sets the Values of the ListValue.
-// Repeated field of dynamically typed values.
-func (m *ListValue) SetValues(v []*Value) {
-	arr := js.Global.Get("Array").New(len(v))
-	for i, value := range v {
-		arr.SetIndex(i, value)
-	}
-	m.Call("setValuesList", arr)
-}
-
-// AddValues adds an entry to the Values slice of the ListValue
-// at the specified index. If index is negative, inserts the element
-// at the index counted from the end of the slice, with origin 1.
-// Repeated field of dynamically typed values.
-func (m *ListValue) AddValues(v *Value, index int) {
-	m.Call("addValues", v, index)
-}
-
-// ClearValues clears the Values of the ListValue.
-// Repeated field of dynamically typed values.
-func (m *ListValue) ClearValues() {
-	m.Call("clearValuesList")
-}
-
-// New creates a new ListValue.
-// Repeated field of dynamically typed values.
-func (m *ListValue) New(values []*Value) *ListValue {
-	m = &ListValue{
-		Object: js.Global.Get("proto").Get("google").Get("protobuf").Get("ListValue").New([]interface{}{
-			js.Undefined,
-		}),
+// MarshalToWriter marshals ListValue to the provided writer.
+func (m *ListValue) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
 	}
 
-	arr := js.Global.Get("Array").New(len(values))
-	for i, value := range values {
-		arr.SetIndex(i, value)
+	for _, msg := range m.Values {
+		writer.WriteMessage(1, func() {
+			msg.MarshalToWriter(writer)
+		})
 	}
-	m.Call("setValuesList", arr)
+
+	return
+}
+
+// Marshal marshals ListValue to a slice of bytes.
+func (m *ListValue) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a ListValue from the provided reader.
+func (m *ListValue) UnmarshalFromReader(reader jspb.Reader) *ListValue {
+	for reader.Next() {
+		if m == nil {
+			m = &ListValue{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			reader.ReadMessage(func() {
+				m.Values = append(m.Values, new(Value).UnmarshalFromReader(reader))
+			})
+		default:
+			reader.SkipField()
+		}
+	}
 
 	return m
 }
 
-// Serialize marshals ListValue to a slice of bytes.
-func (m *ListValue) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a ListValue from a slice of bytes.
+func (m *ListValue) Unmarshal(rawBytes []byte) (*ListValue, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a ListValue from a slice of bytes.
-func (m *ListValue) Deserialize(rawBytes []byte) (*ListValue, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("google").Get("protobuf").Get("ListValue"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &ListValue{
-		Object: obj,
-	}, nil
+	return m, nil
 }

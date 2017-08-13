@@ -16,15 +16,16 @@
 */
 package multitest
 
-import js "github.com/gopherjs/gopherjs/js"
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the jspb package it is being compiled against.
-const _ = jspb.JspbPackageIsVersion1
+const _ = jspb.JspbPackageIsVersion2
 
 type Multi1 struct {
-	*js.Object
+	Multi2  *Multi2
+	Color   Multi2_Color
+	HatType Multi3_HatType
 }
 
 // GetMulti2 gets the Multi2 of the Multi1.
@@ -32,29 +33,7 @@ func (m *Multi1) GetMulti2() (x *Multi2) {
 	if m == nil {
 		return x
 	}
-	return &Multi2{Object: m.Call("getMulti2")}
-}
-
-// SetMulti2 sets the Multi2 of the Multi1.
-func (m *Multi1) SetMulti2(v *Multi2) {
-	if v != nil {
-		m.Call("setMulti2", v)
-	} else {
-		m.ClearMulti2()
-	}
-}
-
-// HasMulti2 indicates whether the Multi2 of the Multi1 is set.
-func (m *Multi1) HasMulti2() bool {
-	if m == nil {
-		return false
-	}
-	return m.Call("hasMulti2").Bool()
-}
-
-// ClearMulti2 clears the Multi2 of the Multi1.
-func (m *Multi1) ClearMulti2() {
-	m.Call("clearMulti2")
+	return m.Multi2
 }
 
 // GetColor gets the Color of the Multi1.
@@ -62,12 +41,7 @@ func (m *Multi1) GetColor() (x Multi2_Color) {
 	if m == nil {
 		return x
 	}
-	return Multi2_Color(m.Call("getColor").Int())
-}
-
-// SetColor sets the Color of the Multi1.
-func (m *Multi1) SetColor(v Multi2_Color) {
-	m.Call("setColor", v)
+	return m.Color
 }
 
 // GetHatType gets the HatType of the Multi1.
@@ -75,42 +49,72 @@ func (m *Multi1) GetHatType() (x Multi3_HatType) {
 	if m == nil {
 		return x
 	}
-	return Multi3_HatType(m.Call("getHatType").Int())
+	return m.HatType
 }
 
-// SetHatType sets the HatType of the Multi1.
-func (m *Multi1) SetHatType(v Multi3_HatType) {
-	m.Call("setHatType", v)
-}
-
-// New creates a new Multi1.
-func (m *Multi1) New(multi2 *Multi2, color Multi2_Color, hatType Multi3_HatType) *Multi1 {
-	m = &Multi1{
-		Object: js.Global.Get("proto").Get("multitest").Get("Multi1").New([]interface{}{
-			js.Undefined,
-			color,
-			hatType,
-		}),
+// MarshalToWriter marshals Multi1 to the provided writer.
+func (m *Multi1) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
 	}
 
-	m.SetMulti2(multi2)
+	if m.Multi2 != nil {
+		writer.WriteMessage(1, func() {
+			m.Multi2.MarshalToWriter(writer)
+		})
+	}
+
+	if int(m.Color) != 0 {
+		writer.WriteEnum(2, int(m.Color))
+	}
+
+	if int(m.HatType) != 0 {
+		writer.WriteEnum(3, int(m.HatType))
+	}
+
+	return
+}
+
+// Marshal marshals Multi1 to a slice of bytes.
+func (m *Multi1) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Multi1 from the provided reader.
+func (m *Multi1) UnmarshalFromReader(reader jspb.Reader) *Multi1 {
+	for reader.Next() {
+		if m == nil {
+			m = &Multi1{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			reader.ReadMessage(func() {
+				m.Multi2 = m.Multi2.UnmarshalFromReader(reader)
+			})
+		case 2:
+			m.Color = Multi2_Color(reader.ReadEnum())
+		case 3:
+			m.HatType = Multi3_HatType(reader.ReadEnum())
+		default:
+			reader.SkipField()
+		}
+	}
 
 	return m
 }
 
-// Serialize marshals Multi1 to a slice of bytes.
-func (m *Multi1) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a Multi1 from a slice of bytes.
+func (m *Multi1) Unmarshal(rawBytes []byte) (*Multi1, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a Multi1 from a slice of bytes.
-func (m *Multi1) Deserialize(rawBytes []byte) (*Multi1, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("multitest").Get("Multi1"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &Multi1{
-		Object: obj,
-	}, nil
+	return m, nil
 }

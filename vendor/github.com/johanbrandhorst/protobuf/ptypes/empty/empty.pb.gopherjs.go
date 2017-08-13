@@ -12,12 +12,11 @@ It has these top-level messages:
 */
 package empty
 
-import js "github.com/gopherjs/gopherjs/js"
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the jspb package it is being compiled against.
-const _ = jspb.JspbPackageIsVersion1
+const _ = jspb.JspbPackageIsVersion2
 
 // A generic empty message that you can re-use to avoid defining duplicated
 // empty messages in your APIs. A typical example is to use it as the request
@@ -29,31 +28,49 @@ const _ = jspb.JspbPackageIsVersion1
 //
 // The JSON representation for `Empty` is empty JSON object `{}`.
 type Empty struct {
-	*js.Object
 }
 
-// New creates a new Empty.
-func (m *Empty) New() *Empty {
-	m = &Empty{
-		Object: js.Global.Get("proto").Get("google").Get("protobuf").Get("Empty").New([]interface{}{}),
+// MarshalToWriter marshals Empty to the provided writer.
+func (m *Empty) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	return
+}
+
+// Marshal marshals Empty to a slice of bytes.
+func (m *Empty) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Empty from the provided reader.
+func (m *Empty) UnmarshalFromReader(reader jspb.Reader) *Empty {
+	for reader.Next() {
+		if m == nil {
+			m = &Empty{}
+		}
+
+		switch reader.GetFieldNumber() {
+		default:
+			reader.SkipField()
+		}
 	}
 
 	return m
 }
 
-// Serialize marshals Empty to a slice of bytes.
-func (m *Empty) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a Empty from a slice of bytes.
+func (m *Empty) Unmarshal(rawBytes []byte) (*Empty, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a Empty from a slice of bytes.
-func (m *Empty) Deserialize(rawBytes []byte) (*Empty, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("google").Get("protobuf").Get("Empty"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &Empty{
-		Object: obj,
-	}, nil
+	return m, nil
 }

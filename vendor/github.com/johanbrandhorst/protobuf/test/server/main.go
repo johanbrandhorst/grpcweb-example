@@ -19,12 +19,14 @@ import (
 	"google.golang.org/grpc/transport"
 
 	testproto "github.com/johanbrandhorst/protobuf/test/server/proto/test"
+	"github.com/johanbrandhorst/protobuf/test/server/proto/types"
 	"github.com/johanbrandhorst/protobuf/test/shared"
 )
 
 func main() {
 	grpcServer := grpc.NewServer()
 	testproto.RegisterTestServiceServer(grpcServer, &testSrv{})
+	types.RegisterEchoServiceServer(grpcServer, &testSrv{})
 	grpclog.SetLogger(log.New(os.Stdout, "testserver: ", log.LstdFlags))
 
 	wrappedServer := grpcweb.WrapServer(grpcServer)
@@ -198,4 +200,12 @@ func (s *testSrv) PingList(ping *testproto.PingRequest, stream testproto.TestSer
 		}
 	}
 	return nil
+}
+
+func (s *testSrv) EchoAllTypes(ctx context.Context, in *types.TestAllTypes) (*types.TestAllTypes, error) {
+	return in, nil
+}
+
+func (s *testSrv) EchoMaps(ctx context.Context, in *types.TestMap) (*types.TestMap, error) {
+	return in, nil
 }

@@ -3,12 +3,11 @@
 
 package multitest
 
-import js "github.com/gopherjs/gopherjs/js"
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the jspb package it is being compiled against.
-const _ = jspb.JspbPackageIsVersion1
+const _ = jspb.JspbPackageIsVersion2
 
 type Multi3_HatType int
 
@@ -31,7 +30,7 @@ func (x Multi3_HatType) String() string {
 }
 
 type Multi3 struct {
-	*js.Object
+	HatType Multi3_HatType
 }
 
 // GetHatType gets the HatType of the Multi3.
@@ -39,38 +38,56 @@ func (m *Multi3) GetHatType() (x Multi3_HatType) {
 	if m == nil {
 		return x
 	}
-	return Multi3_HatType(m.Call("getHatType").Int())
+	return m.HatType
 }
 
-// SetHatType sets the HatType of the Multi3.
-func (m *Multi3) SetHatType(v Multi3_HatType) {
-	m.Call("setHatType", v)
+// MarshalToWriter marshals Multi3 to the provided writer.
+func (m *Multi3) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	if int(m.HatType) != 0 {
+		writer.WriteEnum(1, int(m.HatType))
+	}
+
+	return
 }
 
-// New creates a new Multi3.
-func (m *Multi3) New(hatType Multi3_HatType) *Multi3 {
-	m = &Multi3{
-		Object: js.Global.Get("proto").Get("multitest").Get("Multi3").New([]interface{}{
-			hatType,
-		}),
+// Marshal marshals Multi3 to a slice of bytes.
+func (m *Multi3) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Multi3 from the provided reader.
+func (m *Multi3) UnmarshalFromReader(reader jspb.Reader) *Multi3 {
+	for reader.Next() {
+		if m == nil {
+			m = &Multi3{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.HatType = Multi3_HatType(reader.ReadEnum())
+		default:
+			reader.SkipField()
+		}
 	}
 
 	return m
 }
 
-// Serialize marshals Multi3 to a slice of bytes.
-func (m *Multi3) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a Multi3 from a slice of bytes.
+func (m *Multi3) Unmarshal(rawBytes []byte) (*Multi3, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a Multi3 from a slice of bytes.
-func (m *Multi3) Deserialize(rawBytes []byte) (*Multi3, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("multitest").Get("Multi3"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &Multi3{
-		Object: obj,
-	}, nil
+	return m, nil
 }

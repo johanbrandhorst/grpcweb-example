@@ -2,22 +2,21 @@
 // source: any/any.proto
 
 /*
-Package any is a generated protocol buffer package.
+	Package any is a generated protocol buffer package.
 
-It is generated from these files:
-	any/any.proto
+	It is generated from these files:
+		any/any.proto
 
-It has these top-level messages:
-	Any
+	It has these top-level messages:
+		Any
 */
 package any
 
-import js "github.com/gopherjs/gopherjs/js"
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the jspb package it is being compiled against.
-const _ = jspb.JspbPackageIsVersion1
+const _ = jspb.JspbPackageIsVersion2
 
 // `Any` contains an arbitrary serialized protocol buffer message along with a
 // URL that describes the type of the serialized message.
@@ -90,129 +89,102 @@ const _ = jspb.JspbPackageIsVersion1
 //     }
 //
 type Any struct {
-	*js.Object
+	// A URL/resource name whose content describes the type of the
+	// serialized protocol buffer message.
+	//
+	// For URLs which use the scheme `http`, `https`, or no scheme, the
+	// following restrictions and interpretations apply:
+	//
+	// * If no scheme is provided, `https` is assumed.
+	// * The last segment of the URL's path must represent the fully
+	//   qualified name of the type (as in `path/google.protobuf.Duration`).
+	//   The name should be in a canonical form (e.g., leading "." is
+	//   not accepted).
+	// * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+	//   value in binary format, or produce an error.
+	// * Applications are allowed to cache lookup results based on the
+	//   URL, or have them precompiled into a binary to avoid any
+	//   lookup. Therefore, binary compatibility needs to be preserved
+	//   on changes to types. (Use versioned type names to manage
+	//   breaking changes.)
+	//
+	// Schemes other than `http`, `https` (or the empty scheme) might be
+	// used with implementation specific semantics.
+	//
+	TypeUrl string
+	// Must be a valid serialized protocol buffer of the above specified type.
+	Value []byte
 }
 
 // GetTypeUrl gets the TypeUrl of the Any.
-// A URL/resource name whose content describes the type of the
-// serialized protocol buffer message.
-//
-// For URLs which use the scheme `http`, `https`, or no scheme, the
-// following restrictions and interpretations apply:
-//
-// * If no scheme is provided, `https` is assumed.
-// * The last segment of the URL's path must represent the fully
-//   qualified name of the type (as in `path/google.protobuf.Duration`).
-//   The name should be in a canonical form (e.g., leading "." is
-//   not accepted).
-// * An HTTP GET on the URL must yield a [google.protobuf.Type][]
-//   value in binary format, or produce an error.
-// * Applications are allowed to cache lookup results based on the
-//   URL, or have them precompiled into a binary to avoid any
-//   lookup. Therefore, binary compatibility needs to be preserved
-//   on changes to types. (Use versioned type names to manage
-//   breaking changes.)
-//
-// Schemes other than `http`, `https` (or the empty scheme) might be
-// used with implementation specific semantics.
-//
 func (m *Any) GetTypeUrl() (x string) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getTypeUrl").String()
-}
-
-// SetTypeUrl sets the TypeUrl of the Any.
-// A URL/resource name whose content describes the type of the
-// serialized protocol buffer message.
-//
-// For URLs which use the scheme `http`, `https`, or no scheme, the
-// following restrictions and interpretations apply:
-//
-// * If no scheme is provided, `https` is assumed.
-// * The last segment of the URL's path must represent the fully
-//   qualified name of the type (as in `path/google.protobuf.Duration`).
-//   The name should be in a canonical form (e.g., leading "." is
-//   not accepted).
-// * An HTTP GET on the URL must yield a [google.protobuf.Type][]
-//   value in binary format, or produce an error.
-// * Applications are allowed to cache lookup results based on the
-//   URL, or have them precompiled into a binary to avoid any
-//   lookup. Therefore, binary compatibility needs to be preserved
-//   on changes to types. (Use versioned type names to manage
-//   breaking changes.)
-//
-// Schemes other than `http`, `https` (or the empty scheme) might be
-// used with implementation specific semantics.
-//
-func (m *Any) SetTypeUrl(v string) {
-	m.Call("setTypeUrl", v)
+	return m.TypeUrl
 }
 
 // GetValue gets the Value of the Any.
-// Must be a valid serialized protocol buffer of the above specified type.
 func (m *Any) GetValue() (x []byte) {
 	if m == nil {
 		return x
 	}
-	return m.Call("getValue_asU8").Interface().([]byte)
+	return m.Value
 }
 
-// SetValue sets the Value of the Any.
-// Must be a valid serialized protocol buffer of the above specified type.
-func (m *Any) SetValue(v []byte) {
-	m.Call("setValue", v)
+// MarshalToWriter marshals Any to the provided writer.
+func (m *Any) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	if len(m.TypeUrl) > 0 {
+		writer.WriteString(1, m.TypeUrl)
+	}
+
+	if len(m.Value) > 0 {
+		writer.WriteBytes(2, m.Value)
+	}
+
+	return
 }
 
-// New creates a new Any.
-// A URL/resource name whose content describes the type of the
-// serialized protocol buffer message.
-//
-// For URLs which use the scheme `http`, `https`, or no scheme, the
-// following restrictions and interpretations apply:
-//
-// * If no scheme is provided, `https` is assumed.
-// * The last segment of the URL's path must represent the fully
-//   qualified name of the type (as in `path/google.protobuf.Duration`).
-//   The name should be in a canonical form (e.g., leading "." is
-//   not accepted).
-// * An HTTP GET on the URL must yield a [google.protobuf.Type][]
-//   value in binary format, or produce an error.
-// * Applications are allowed to cache lookup results based on the
-//   URL, or have them precompiled into a binary to avoid any
-//   lookup. Therefore, binary compatibility needs to be preserved
-//   on changes to types. (Use versioned type names to manage
-//   breaking changes.)
-//
-// Schemes other than `http`, `https` (or the empty scheme) might be
-// used with implementation specific semantics.
-//
-// Must be a valid serialized protocol buffer of the above specified type.
-func (m *Any) New(typeUrl string, value []byte) *Any {
-	m = &Any{
-		Object: js.Global.Get("proto").Get("google").Get("protobuf").Get("Any").New([]interface{}{
-			typeUrl,
-			value,
-		}),
+// Marshal marshals Any to a slice of bytes.
+func (m *Any) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Any from the provided reader.
+func (m *Any) UnmarshalFromReader(reader jspb.Reader) *Any {
+	for reader.Next() {
+		if m == nil {
+			m = &Any{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.TypeUrl = reader.ReadString()
+		case 2:
+			m.Value = reader.ReadBytes()
+		default:
+			reader.SkipField()
+		}
 	}
 
 	return m
 }
 
-// Serialize marshals Any to a slice of bytes.
-func (m *Any) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a Any from a slice of bytes.
+func (m *Any) Unmarshal(rawBytes []byte) (*Any, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a Any from a slice of bytes.
-func (m *Any) Deserialize(rawBytes []byte) (*Any, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("google").Get("protobuf").Get("Any"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &Any{
-		Object: obj,
-	}, nil
+	return m, nil
 }

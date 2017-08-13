@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: golang:latest
+      - image: 'golang:latest'
     working_directory: /go/src/github.com/johanbrandhorst/protobuf
     steps:
       - checkout
@@ -10,7 +10,7 @@ jobs:
       - run: make build
   generate:
     docker:
-      - image: golang:latest
+      - image: 'golang:latest'
     working_directory: /go/src/github.com/johanbrandhorst/protobuf
     steps:
       - checkout

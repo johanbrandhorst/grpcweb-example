@@ -3,12 +3,11 @@
 
 package multitest
 
-import js "github.com/gopherjs/gopherjs/js"
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the jspb package it is being compiled against.
-const _ = jspb.JspbPackageIsVersion1
+const _ = jspb.JspbPackageIsVersion2
 
 type Multi2_Color int
 
@@ -34,7 +33,8 @@ func (x Multi2_Color) String() string {
 }
 
 type Multi2 struct {
-	*js.Object
+	RequiredValue int32
+	Color         Multi2_Color
 }
 
 // GetRequiredValue gets the RequiredValue of the Multi2.
@@ -42,12 +42,7 @@ func (m *Multi2) GetRequiredValue() (x int32) {
 	if m == nil {
 		return x
 	}
-	return int32(m.Call("getRequiredValue").Int())
-}
-
-// SetRequiredValue sets the RequiredValue of the Multi2.
-func (m *Multi2) SetRequiredValue(v int32) {
-	m.Call("setRequiredValue", v)
+	return m.RequiredValue
 }
 
 // GetColor gets the Color of the Multi2.
@@ -55,39 +50,62 @@ func (m *Multi2) GetColor() (x Multi2_Color) {
 	if m == nil {
 		return x
 	}
-	return Multi2_Color(m.Call("getColor").Int())
+	return m.Color
 }
 
-// SetColor sets the Color of the Multi2.
-func (m *Multi2) SetColor(v Multi2_Color) {
-	m.Call("setColor", v)
+// MarshalToWriter marshals Multi2 to the provided writer.
+func (m *Multi2) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	if m.RequiredValue != 0 {
+		writer.WriteInt32(1, m.RequiredValue)
+	}
+
+	if int(m.Color) != 0 {
+		writer.WriteEnum(2, int(m.Color))
+	}
+
+	return
 }
 
-// New creates a new Multi2.
-func (m *Multi2) New(requiredValue int32, color Multi2_Color) *Multi2 {
-	m = &Multi2{
-		Object: js.Global.Get("proto").Get("multitest").Get("Multi2").New([]interface{}{
-			requiredValue,
-			color,
-		}),
+// Marshal marshals Multi2 to a slice of bytes.
+func (m *Multi2) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Multi2 from the provided reader.
+func (m *Multi2) UnmarshalFromReader(reader jspb.Reader) *Multi2 {
+	for reader.Next() {
+		if m == nil {
+			m = &Multi2{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.RequiredValue = reader.ReadInt32()
+		case 2:
+			m.Color = Multi2_Color(reader.ReadEnum())
+		default:
+			reader.SkipField()
+		}
 	}
 
 	return m
 }
 
-// Serialize marshals Multi2 to a slice of bytes.
-func (m *Multi2) Serialize() []byte {
-	return jspb.Serialize(m)
-}
+// Unmarshal unmarshals a Multi2 from a slice of bytes.
+func (m *Multi2) Unmarshal(rawBytes []byte) (*Multi2, error) {
+	reader := jspb.NewReader(rawBytes)
 
-// Deserialize unmarshals a Multi2 from a slice of bytes.
-func (m *Multi2) Deserialize(rawBytes []byte) (*Multi2, error) {
-	obj, err := jspb.Deserialize(js.Global.Get("proto").Get("multitest").Get("Multi2"), rawBytes)
-	if err != nil {
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
 		return nil, err
 	}
 
-	return &Multi2{
-		Object: obj,
-	}, nil
+	return m, nil
 }
