@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Sirupsen/logrus"
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/acme/autocert"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
