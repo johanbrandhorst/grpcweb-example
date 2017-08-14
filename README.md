@@ -28,17 +28,12 @@ Then you'll need to also install some vendored generators:
 $ go install ./vendor/myitcv.io/react/cmd/reactGen ./vendor/myitcv.io/immutable/cmd/immutableGen
 ```
 
-After that, any changes you make to the proto file in `./proto/` should be followed by
+After that, any changes you make to the proto file in `./proto/` or the JS client code
+in `./client/` should be followed by
 
 ```
-$ ./protogen.sh
+$ make regenerate
 ```
 
-Any changes made to the GopherJS code in the client should be followed by
-
-```
-$ go generate ./client/...
-```
-
-You made need to generate the client code twice as the first time will run `reactGen` and
+You may need to generate the client code twice as the first time will run `reactGen` and
 `immutableGen` which might be necessary for the subsequent `gopherjs build` to work.
