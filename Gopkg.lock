@@ -2,12 +2,6 @@
 
 
 [[projects]]
-  name = "github.com/Sirupsen/logrus"
-  packages = ["."]
-  revision = "a3f95b5c423586578a4e099b11a46c2479628cac"
-  version = "1.0.2"
-
-[[projects]]
   branch = "master"
   name = "github.com/elazarl/go-bindata-assetfs"
   packages = ["."]
@@ -34,14 +28,20 @@
 [[projects]]
   name = "github.com/johanbrandhorst/protobuf"
   packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/metadata","grpcweb/status","jspb","ptypes/timestamp"]
-  revision = "7f84a5b4a9909a88aa0e4b4b1bbf109d52608630"
-  version = "v0.3.0-alpha"
+  revision = "1062e0eab0800a741d9fb23c391abca067240ad1"
+  version = "v0.3.1-alpha"
 
 [[projects]]
   name = "github.com/rs/cors"
   packages = ["."]
   revision = "7af7a1e09ba336d2ea14b1ce73bf693c6837dbf6"
   version = "v1.2"
+
+[[projects]]
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  revision = "a3f95b5c423586578a4e099b11a46c2479628cac"
+  version = "1.0.2"
 
 [[projects]]
   branch = "master"
@@ -59,13 +59,13 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "e42485b6e20ae7d2304ec72e535b103ed350cc02"
+  revision = "2d3e384235de683634e9080b58f757466840aa48"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/text"
   packages = ["internal/gen","internal/triegen","internal/ucd","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
-  revision = "3bd178b88a8180be2df394a1fbb81313916f0e7b"
+  revision = "e56139fd9c5bc7244c76116c68e500765bb6db6b"
 
 [[projects]]
   branch = "master"
@@ -113,11 +113,11 @@
   branch = "master"
   name = "myitcv.io/react"
   packages = [".","internal/bundle","internal/dev","internal/preact","internal/prod"]
-  revision = "448b987c382b3338a45bb942df7a7b47474b88df"
+  revision = "f912ff47af223a412e52253b2e7908612a573c3c"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4ce766e65b1229710a8b1f931f13d5e08230f7163c9981dbb2560c86d844a1ec"
+  inputs-digest = "410c200ec49c80e08129d8996d135e3e675bf495871981fdf48827c9852332a8"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -1382,7 +1382,10 @@ func (g *Generator) generateMessage(message *Descriptor) {
 		fieldTypes[field] = g.GoType(message, field)
 		fieldNumbers[field] = strconv.Itoa(int(field.GetNumber()))
 
-		g.PrintComments(fmt.Sprintf("%s,%d,%d", message.path, messageFieldPath, i))
+		// Print comment for field if it isn't a oneof field
+		if field.OneofIndex == nil {
+			g.PrintComments(fmt.Sprintf("%s,%d,%d", message.path, messageFieldPath, i))
+		}
 
 		// Populate field oneof metadata maps
 		if field.OneofIndex != nil && oneofFieldName[field.GetOneofIndex()] == "" {

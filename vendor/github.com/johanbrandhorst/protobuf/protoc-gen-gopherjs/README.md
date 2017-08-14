@@ -3,7 +3,7 @@ Generate GopherJS interfaces to ProtobufJS and gRPC Web from your proto files.
 
 ## Attribution
 Most of the code is based on a fork of Googles
-[protoc-gen-go](https://github.com/golang/protobuf/protoc-gen-go) code generator,
+[protoc-gen-go](https://github.com/golang/protobuf/tree/master/protoc-gen-go) code generator,
 with heavy modifications to output GopherJS compatible structs.
 
 ## Compatibility
@@ -26,7 +26,7 @@ To use this software, you must:
 	compiler, `protoc`, to find it.
 
 This package generates files that import the
-[GopherJS ProtobufJS bindings](https://github.com/johanbrandhorst/protobuf/jspb). The
+[GopherJS ProtobufJS bindings](https://github.com/johanbrandhorst/protobuf/tree/master/jspb). The
 generated interface is designed to be as similar as possible to that of files
 generated with `protoc-gen-go`, with one exception:
 
@@ -191,7 +191,7 @@ associated with Go package `quux/shme`.  This is subject to the
 
 ## Generate gRPC-Web bindings
 If a proto file specifies RPC services, `protoc-gen-gopherjs` can be instructed to
-generate code compatible with the [GopherJS gRPC-Web bindings](https://github.com/johanbrandhorst/protobuf/grpcweb).
+generate code compatible with the [GopherJS gRPC-Web bindings](https://github.com/johanbrandhorst/protobuf/tree/master/grpcweb).
 To do this, pass the `plugins` parameter to `protoc-gen-gopherjs`:
 
 ```bash

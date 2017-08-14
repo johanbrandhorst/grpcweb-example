@@ -145,7 +145,6 @@ func (m *Struct) Unmarshal(rawBytes []byte) (*Struct, error) {
 //
 // The JSON representation for `Value` is JSON value.
 type Value struct {
-	// Represents a null value.
 	// The kind of value.
 	//
 	// Types that are valid to be assigned to Kind:
@@ -156,11 +155,6 @@ type Value struct {
 	//	*Value_StructValue
 	//	*Value_ListValue
 	Kind isValue_Kind
-	// Represents a double value.
-	// Represents a string value.
-	// Represents a boolean value.
-	// Represents a structured value.
-	// Represents a repeated `Value`.
 }
 
 // isValue_Kind is used to distinguish types assignable to Kind
