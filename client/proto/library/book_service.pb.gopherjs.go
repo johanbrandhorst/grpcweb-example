@@ -134,8 +134,6 @@ type Book struct {
 	Author string
 	// BookType is the type of the book.
 	BookType BookType
-	// SelfPublished means this book was
-	// self published.
 	// PublishingMethod is the publishing method
 	// used for this Book.
 	//
@@ -143,8 +141,6 @@ type Book struct {
 	//	*Book_SelfPublished
 	//	*Book_Publisher
 	PublishingMethod isBook_PublishingMethod
-	// Publisher means this book was published
-	// through a Publisher.
 	// PublicationDate is the time of publication of the book.
 	PublicationDate *google_protobuf.Timestamp
 }
