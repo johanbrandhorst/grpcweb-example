@@ -3,7 +3,7 @@ An example implementation of a
 [GopherJS React](https://myitcv.io/react)
 client talking to a Go gRPC server using the Improbable gRPC-Web implementation
 through the
-[protoc-gen-gopherjs](https://github.com/johanbrandhorst/protoc-gen-gopherjs)
+[protoc-gen-gopherjs](https://github.com/johanbrandhorst/protobuf/tree/master/protoc-gen-gopherjs)
 bindings generator.
 
 A demo of this application can be found on
