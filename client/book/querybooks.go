@@ -53,7 +53,10 @@ func QueryBooks(p QueryBooksProps) *QueryBooksElem {
 func (q QueryBooksDef) Render() r.Element {
 	st := q.State()
 	content := []r.Element{
-		r.P(nil, r.S("Search for books by author name prefix (for example, George).")),
+		r.P(nil,
+			r.S("Search for books by author name prefix (for example, George). "+
+				"Use an empty string to get all Books in the library."),
+		),
 		r.Form(&r.FormProps{ClassName: "form-inline"},
 			r.Div(
 				&r.DivProps{ClassName: "form-group"},
