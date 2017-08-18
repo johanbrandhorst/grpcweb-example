@@ -15,13 +15,15 @@
 		Book
 		GetBookRequest
 		QueryBooksRequest
+		Collection
+		BookNote
 */
 package library
 
-import jspb "github.com/johanbrandhorst/protobuf/jspb"
-import google_protobuf "github.com/johanbrandhorst/protobuf/ptypes/timestamp"
-
 import (
+	jspb "github.com/johanbrandhorst/protobuf/jspb"
+	google_protobuf "github.com/johanbrandhorst/protobuf/ptypes/timestamp"
+
 	context "context"
 
 	grpcweb "github.com/johanbrandhorst/protobuf/grpcweb"
@@ -465,6 +467,156 @@ func (m *QueryBooksRequest) Unmarshal(rawBytes []byte) (*QueryBooksRequest, erro
 	return m, nil
 }
 
+// Collection is a collection of books
+type Collection struct {
+	// Books is a list of books
+	Books []*Book
+}
+
+// GetBooks gets the Books of the Collection.
+func (m *Collection) GetBooks() (x []*Book) {
+	if m == nil {
+		return x
+	}
+	return m.Books
+}
+
+// MarshalToWriter marshals Collection to the provided writer.
+func (m *Collection) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	for _, msg := range m.Books {
+		writer.WriteMessage(1, func() {
+			msg.MarshalToWriter(writer)
+		})
+	}
+
+	return
+}
+
+// Marshal marshals Collection to a slice of bytes.
+func (m *Collection) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Collection from the provided reader.
+func (m *Collection) UnmarshalFromReader(reader jspb.Reader) *Collection {
+	for reader.Next() {
+		if m == nil {
+			m = &Collection{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			reader.ReadMessage(func() {
+				m.Books = append(m.Books, new(Book).UnmarshalFromReader(reader))
+			})
+		default:
+			reader.SkipField()
+		}
+	}
+
+	return m
+}
+
+// Unmarshal unmarshals a Collection from a slice of bytes.
+func (m *Collection) Unmarshal(rawBytes []byte) (*Collection, error) {
+	reader := jspb.NewReader(rawBytes)
+
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+
+// BookNote is used to discuss books
+type BookNote struct {
+	// Isbn is the ISBN of the book the note relates to
+	Isbn string
+	// Note is a comment on the book referenced by the ISBN.
+	Note string
+}
+
+// GetIsbn gets the Isbn of the BookNote.
+func (m *BookNote) GetIsbn() (x string) {
+	if m == nil {
+		return x
+	}
+	return m.Isbn
+}
+
+// GetNote gets the Note of the BookNote.
+func (m *BookNote) GetNote() (x string) {
+	if m == nil {
+		return x
+	}
+	return m.Note
+}
+
+// MarshalToWriter marshals BookNote to the provided writer.
+func (m *BookNote) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	if len(m.Isbn) > 0 {
+		writer.WriteString(1, m.Isbn)
+	}
+
+	if len(m.Note) > 0 {
+		writer.WriteString(2, m.Note)
+	}
+
+	return
+}
+
+// Marshal marshals BookNote to a slice of bytes.
+func (m *BookNote) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a BookNote from the provided reader.
+func (m *BookNote) UnmarshalFromReader(reader jspb.Reader) *BookNote {
+	for reader.Next() {
+		if m == nil {
+			m = &BookNote{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.Isbn = reader.ReadString()
+		case 2:
+			m.Note = reader.ReadString()
+		default:
+			reader.SkipField()
+		}
+	}
+
+	return m
+}
+
+// Unmarshal unmarshals a BookNote from a slice of bytes.
+func (m *BookNote) Unmarshal(rawBytes []byte) (*BookNote, error) {
+	reader := jspb.NewReader(rawBytes)
+
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
 var _ grpcweb.Client
@@ -486,6 +638,10 @@ type BookServiceClient interface {
 	// matches the author prefix provided, as a stream
 	// of Books.
 	QueryBooks(ctx context.Context, in *QueryBooksRequest, opts ...grpcweb.CallOption) (BookService_QueryBooksClient, error)
+	// MakeCollection takes a stream of books and returns a Book collection.
+	MakeCollection(ctx context.Context, opts ...grpcweb.CallOption) (BookService_MakeCollectionClient, error)
+	// BookChat allows discussion about books
+	BookChat(ctx context.Context, opts ...grpcweb.CallOption) (BookService_BookChatClient, error)
 }
 
 type bookServiceClient struct {
@@ -538,4 +694,46 @@ func (x *bookServiceQueryBooksClient) Recv() (*Book, error) {
 	}
 
 	return new(Book).Unmarshal(resp)
+}
+
+func (c *bookServiceClient) MakeCollection(ctx context.Context, opts ...grpcweb.CallOption) (BookService_MakeCollectionClient, error) {
+	return nil, nil
+}
+
+type BookService_MakeCollectionClient interface {
+	Send(*Book) error
+	CloseAndRecv() (*Collection, error)
+}
+
+type bookServiceMakeCollectionClient struct {
+	stream *grpcweb.StreamClient
+}
+
+func (x *bookServiceMakeCollectionClient) Send(m *Book) error {
+	return nil
+}
+
+func (x *bookServiceMakeCollectionClient) CloseAndRecv() (*Collection, error) {
+	return nil, nil
+}
+
+func (c *bookServiceClient) BookChat(ctx context.Context, opts ...grpcweb.CallOption) (BookService_BookChatClient, error) {
+	return nil, nil
+}
+
+type BookService_BookChatClient interface {
+	Send(*BookNote) error
+	Recv() (*BookNote, error)
+}
+
+type bookServiceBookChatClient struct {
+	stream *grpcweb.StreamClient
+}
+
+func (x *bookServiceBookChatClient) Send(m *BookNote) error {
+	return nil
+}
+
+func (x *bookServiceBookChatClient) Recv() (*BookNote, error) {
+	return nil, nil
 }

@@ -61,6 +61,20 @@ message QueryBooksRequest {
   string author_prefix = 1;
 }
 
+// Collection is a collection of books
+message Collection {
+  // Books is a list of books
+  repeated Book books = 1;
+}
+
+// BookNote is used to discuss books
+message BookNote {
+  // Isbn is the ISBN of the book the note relates to
+  string isbn = 1;
+  // Note is a comment on the book referenced by the ISBN.
+  string note = 2;
+}
+
 // BookService exposes GetBook and QueryBooks,
 // which allow querying of the library.
 service BookService {
@@ -72,4 +86,8 @@ service BookService {
   // matches the author prefix provided, as a stream
   // of Books.
   rpc QueryBooks(QueryBooksRequest) returns (stream Book) {}
+  // MakeCollection takes a stream of books and returns a Book collection.
+  rpc MakeCollection(stream Book) returns (Collection) {}
+  // BookChat allows discussion about books
+  rpc BookChat(stream BookNote) returns (stream BookNote) {}
 }

@@ -4,6 +4,7 @@
 package server
 
 import (
+	"io"
 	"strings"
 	"time"
 
@@ -106,4 +107,39 @@ func (s *BookService) QueryBooks(bookQuery *library.QueryBooksRequest, stream li
 		}
 	}
 	return nil
+}
+
+func (s *BookService) MakeCollection(srv library.BookService_MakeCollectionServer) error {
+	collection := &library.Collection{}
+	for {
+		bk, err := srv.Recv()
+		if err == io.EOF {
+			return srv.SendAndClose(collection)
+		}
+		if err != nil {
+			return err
+		}
+
+		collection.Books = append(collection.Books, bk)
+	}
+}
+
+func (s *BookService) BookChat(srv library.BookService_BookChatServer) error {
+	for {
+		nt, err := srv.Recv()
+		if err == io.EOF {
+			// Done
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+
+		nt.Note = "You said: " + nt.Note
+
+		err = srv.Send(nt)
+		if err != nil {
+			return err
+		}
+	}
 }
