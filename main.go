@@ -19,6 +19,7 @@ import (
 
 	"github.com/johanbrandhorst/grpcweb-example/client/compiled"
 	"github.com/johanbrandhorst/grpcweb-example/server"
+	"github.com/johanbrandhorst/grpcweb-example/server/bidi"
 	"github.com/johanbrandhorst/grpcweb-example/server/proto/library"
 )
 
@@ -27,7 +28,7 @@ var host = flag.String("host", "", "host to get LetsEncrypt certificate for")
 
 func init() {
 	logger = logrus.StandardLogger()
-	logrus.SetLevel(logrus.InfoLevel)
+	logrus.SetLevel(logrus.DebugLevel)
 	logrus.SetFormatter(&logrus.TextFormatter{
 		ForceColors:     true,
 		FullTimestamp:   true,
@@ -44,11 +45,12 @@ func main() {
 	gs := grpc.NewServer()
 	library.RegisterBookServiceServer(gs, &server.BookService{})
 	wrappedServer := grpcweb.WrapServer(gs)
+	bidiproxy := bidi.WrapServer(wrappedServer, logger)
 
 	handler := func(resp http.ResponseWriter, req *http.Request) {
 		// Redirect gRPC and gRPC-Web requests to the gRPC Server
 		if req.ProtoMajor == 2 && strings.Contains(req.Header.Get("Content-Type"), "application/grpc") {
-			wrappedServer.ServeHTTP(resp, req)
+			bidiproxy.ServeHTTP(resp, req)
 		} else {
 			// Serve the GopherJS client
 			http.FileServer(&assetfs.AssetFS{
