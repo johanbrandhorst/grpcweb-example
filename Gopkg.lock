@@ -39,9 +39,9 @@
 
 [[projects]]
   name = "github.com/johanbrandhorst/protobuf"
-  packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/metadata","grpcweb/status","jspb","ptypes/timestamp"]
-  revision = "1062e0eab0800a741d9fb23c391abca067240ad1"
-  version = "v0.3.1-alpha"
+  packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/metadata","grpcweb/status","jspb","ptypes/any","ptypes/timestamp"]
+  revision = "26734123982a971fb6eae8e6885a41cc4df162e7"
+  version = "v0.4.0-alpha"
 
 [[projects]]
   name = "github.com/rs/cors"
@@ -130,6 +130,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c583834970a1fa7166c80b3dd1e6e68a17ff4bb375c61dace01b1ae43e3d9152"
+  inputs-digest = "496e83633e4a63229bf7acfdabadf686b21c12e5d6ff14dc8138808ba7a3c186"
   solver-name = "gps-cdcl"
   solver-version = 1

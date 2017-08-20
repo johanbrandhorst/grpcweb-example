@@ -1,0 +1,9 @@
+syntax = "proto3";
+package gopherjs;
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FileOptions {
+	// Field number is temporary, pending assignment of official number.
+	string gopherjs_package = 69000;
+}

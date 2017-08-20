@@ -2,13 +2,13 @@
 // source: empty/empty.proto
 
 /*
-Package empty is a generated protocol buffer package.
+	Package empty is a generated protocol buffer package.
 
-It is generated from these files:
-	empty/empty.proto
+	It is generated from these files:
+		empty/empty.proto
 
-It has these top-level messages:
-	Empty
+	It has these top-level messages:
+		Empty
 */
 package empty
 

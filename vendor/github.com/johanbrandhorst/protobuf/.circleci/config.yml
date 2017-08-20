@@ -47,7 +47,7 @@ jobs:
             git diff --exit-code
       - run:
           name: Generator tests
-          command: make tests
+          command: make test
   tests:
     docker:
       - image: ypereirareis/docker-compose

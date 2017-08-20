@@ -6,13 +6,14 @@ golden:
 
 regenerate:
 	# Invoke protoc once to generate three independent .pb.go files in the same package.
-	protoc --gopherjs_out=. \
+	protoc -I $$GOPATH/src -I .\
+		--gopherjs_out=$$GOPATH/src \
 		multi/multi1.proto multi/multi2.proto multi/multi3.proto
-	protoc \
-		--gopherjs_out=plugins=grpc,Mmulti/multi1.proto=github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/test/multi:. \
+	protoc -I $$GOPATH/src -I .\
+		--gopherjs_out=plugins=grpc,Mmulti/multi1.proto=github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/test/multi:$$GOPATH/src \
 		grpc_test/test.proto
-	protoc \
-		--gopherjs_out=plugins=grpc,Mmulti/multi1.proto=github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/test/multi:. \
+	protoc -I $$GOPATH/src -I .\
+		--gopherjs_out=plugins=grpc,Mmulti/multi1.proto=github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/test/multi:$$GOPATH/src \
 		types/types.proto
 
 test: regenerate golden

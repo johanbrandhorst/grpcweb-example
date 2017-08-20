@@ -2,7 +2,7 @@
 // source: grpc_test/test.proto
 
 /*
-	Package my_test is a generated protocol buffer package.
+	Package grpc_test is a generated protocol buffer package.
 
 	It is generated from these files:
 		grpc_test/test.proto
@@ -11,7 +11,7 @@
 		Simple
 		Complex
 */
-package my_test
+package grpc_test
 
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 import multitest2 "github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/test/multi"

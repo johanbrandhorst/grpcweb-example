@@ -181,7 +181,7 @@ $ protoc --gopherjs_out=plugins=grpc,import_path=mypackage:. *.proto
 all imports. Useful for things like generating protos in a
 subdirectory, or regenerating vendored protobufs in-place.
 	1. `import_path=foo/bar` - used as the package if no input files
-declare `go_package`. If it contains slashes, everything up to the
+declare `gopherjs_package`. If it contains slashes, everything up to the
 rightmost slash is ignored.
 	1. `plugins=plugin1+plugin2` - specifies the list of sub-plugins to
 load. The only plugin in this repo is `grpc`.

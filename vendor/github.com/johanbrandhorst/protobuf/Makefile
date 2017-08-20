@@ -6,7 +6,8 @@ regenerate:
 install:
 	cd protoc-gen-gopherjs && go install ./
 
-tests:
+.PHONY: test
+test:
 	cd protoc-gen-gopherjs && make tests
 
 build:

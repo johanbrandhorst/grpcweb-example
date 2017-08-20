@@ -862,9 +862,9 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			SingleBytes:       []byte("Megan"),
 			SingleNestedEnum:  types.TestAllTypes_BAR,
 			SingleForeignEnum: types.ForeignEnum_FOREIGN_BAR,
-			SingleImportedMessage: &multitest.Multi1{
-				Color:   multitest.Multi2_GREEN,
-				HatType: multitest.Multi3_FEDORA,
+			SingleImportedMessage: &multi.Multi1{
+				Color:   multi.Multi2_GREEN,
+				HatType: multi.Multi3_FEDORA,
 			},
 			SingleNestedMessage: &types.TestAllTypes_NestedMessage{
 				B: 12,
@@ -889,14 +889,14 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			RepeatedBytes:       [][]byte{[]byte("David"), []byte("Henrik")},
 			RepeatedNestedEnum:  []types.TestAllTypes_NestedEnum{types.TestAllTypes_BAR, types.TestAllTypes_BAZ},
 			RepeatedForeignEnum: []types.ForeignEnum{types.ForeignEnum_FOREIGN_BAR, types.ForeignEnum_FOREIGN_BAZ},
-			RepeatedImportedMessage: []*multitest.Multi1{
+			RepeatedImportedMessage: []*multi.Multi1{
 				{
-					Color:   multitest.Multi2_RED,
-					HatType: multitest.Multi3_FEZ,
+					Color:   multi.Multi2_RED,
+					HatType: multi.Multi3_FEZ,
 				},
 				{
-					Color:   multitest.Multi2_GREEN,
-					HatType: multitest.Multi3_FEDORA,
+					Color:   multi.Multi2_GREEN,
+					HatType: multi.Multi3_FEDORA,
 				},
 			},
 			RepeatedNestedMessage: []*types.TestAllTypes_NestedMessage{
@@ -916,13 +916,13 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 				},
 			},
 			OneofField: &types.TestAllTypes_OneofImportedMessage{
-				OneofImportedMessage: &multitest.Multi1{
-					Multi2: &multitest.Multi2{
+				OneofImportedMessage: &multi.Multi1{
+					Multi2: &multi.Multi2{
 						RequiredValue: 42,
-						Color:         multitest.Multi2_BLUE,
+						Color:         multi.Multi2_BLUE,
 					},
-					Color:   multitest.Multi2_RED,
-					HatType: multitest.Multi3_FEDORA,
+					Color:   multi.Multi2_RED,
+					HatType: multi.Multi3_FEDORA,
 				},
 			},
 		}
@@ -1019,18 +1019,18 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 				53: {C: 54},
 				55: {C: 56},
 			},
-			MapInt32ImportedMessage: map[int32]*multitest.Multi1{
+			MapInt32ImportedMessage: map[int32]*multi.Multi1{
 				57: {
-					Multi2: &multitest.Multi2{
+					Multi2: &multi.Multi2{
 						RequiredValue: 58,
-						Color:         multitest.Multi2_RED,
+						Color:         multi.Multi2_RED,
 					},
-					Color:   multitest.Multi2_GREEN,
-					HatType: multitest.Multi3_FEZ,
+					Color:   multi.Multi2_GREEN,
+					HatType: multi.Multi3_FEZ,
 				},
 				59: {
-					Color:   multitest.Multi2_BLUE,
-					HatType: multitest.Multi3_FEDORA,
+					Color:   multi.Multi2_BLUE,
+					HatType: multi.Multi3_FEDORA,
 				},
 			},
 		}

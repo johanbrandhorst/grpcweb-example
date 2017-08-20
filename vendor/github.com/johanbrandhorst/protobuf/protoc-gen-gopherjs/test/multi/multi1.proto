@@ -36,6 +36,10 @@ import "multi/multi3.proto";
 
 package multitest;
 
+import "github.com/johanbrandhorst/protobuf/proto/gopherjs.proto";
+
+option (gopherjs.gopherjs_package) = "github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/test/multi";
+
 message Multi1 {
   Multi2 multi2 = 1;
   Multi2.Color color = 2;

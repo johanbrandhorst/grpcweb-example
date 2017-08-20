@@ -39,6 +39,10 @@ syntax = "proto3";
 package types;
 
 import "multi/multi1.proto";
+import "github.com/johanbrandhorst/protobuf/proto/gopherjs.proto";
+
+option (gopherjs.gopherjs_package) = "github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/test/types";
+
 
 // This proto includes every type of field in both singular and repeated
 // forms.
