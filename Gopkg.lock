@@ -40,8 +40,8 @@
 [[projects]]
   name = "github.com/johanbrandhorst/protobuf"
   packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/metadata","grpcweb/status","jspb","ptypes/any","ptypes/timestamp"]
-  revision = "26734123982a971fb6eae8e6885a41cc4df162e7"
-  version = "v0.4.0-alpha"
+  revision = "58079236dcd840dcb67b36968a4ac2bc94c4c03b"
+  version = "v0.4.1-alpha"
 
 [[projects]]
   name = "github.com/rs/cors"

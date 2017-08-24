@@ -979,6 +979,7 @@ func (g *Generator) generateHeader() {
 	if g.file.index == 0 {
 		// Generate package docs for the first file in the package.
 		g.P("/*")
+		g.In()
 		g.P("Package ", name, " is a generated protocol buffer package.")
 		g.P()
 		if loc, ok := g.file.comments[strconv.Itoa(packagePath)]; ok {
@@ -994,8 +995,9 @@ func (g *Generator) generateHeader() {
 		}
 		var topMsgs []string
 		g.P("It is generated from these files:")
+		g.In()
 		for _, f := range g.genFiles {
-			g.P("\t", f.Name)
+			g.P(f.Name)
 			for _, msg := range f.desc {
 				if msg.parent != nil {
 					continue
@@ -1003,11 +1005,15 @@ func (g *Generator) generateHeader() {
 				topMsgs = append(topMsgs, CamelCaseSlice(msg.TypeName()))
 			}
 		}
+		g.Out()
 		g.P()
 		g.P("It has these top-level messages:")
+		g.In()
 		for _, msg := range topMsgs {
-			g.P("\t", msg)
+			g.P(msg)
 		}
+		g.Out()
+		g.Out()
 		g.P("*/")
 	}
 

@@ -27,12 +27,12 @@ update:
 	sed -i '/option go_package/aoption (gopherjs.gopherjs_package) = "github.com/johanbrandhorst/protobuf/ptypes/wrappers";' wrappers/wrappers.proto
 
 regenerate:
-	protoc -I. -I$$GOPATH/src --gopherjs_out=:${GOPATH}/src ./empty/empty.proto
-	protoc -I. -I$$GOPATH/src --gopherjs_out=:${GOPATH}/src ./timestamp/timestamp.proto
-	protoc -I. -I$$GOPATH/src --gopherjs_out=:${GOPATH}/src ./struct/struct.proto
-	protoc -I. -I$$GOPATH/src --gopherjs_out=:${GOPATH}/src ./any/any.proto
-	protoc -I. -I$$GOPATH/src --gopherjs_out=:${GOPATH}/src ./duration/duration.proto
-	protoc -I. -I$$GOPATH/src --gopherjs_out=:${GOPATH}/src ./wrappers/wrappers.proto
+	protoc -I. -I${GOPATH}/src --gopherjs_out=:${GOPATH}/src ./empty/empty.proto
+	protoc -I. -I${GOPATH}/src --gopherjs_out=:${GOPATH}/src ./timestamp/timestamp.proto
+	protoc -I. -I${GOPATH}/src --gopherjs_out=:${GOPATH}/src ./struct/struct.proto
+	protoc -I. -I${GOPATH}/src --gopherjs_out=:${GOPATH}/src ./any/any.proto
+	protoc -I. -I${GOPATH}/src --gopherjs_out=:${GOPATH}/src ./duration/duration.proto
+	protoc -I. -I${GOPATH}/src --gopherjs_out=:${GOPATH}/src ./wrappers/wrappers.proto
 
 clean:
 	rm -f empty/*.go

@@ -1,9 +1,14 @@
 syntax = "proto3";
+
 package gopherjs;
 
 import "google/protobuf/descriptor.proto";
 
+option go_package = "github.com/johanbrandhorst/protobuf/proto;gopherjs";
+
 extend google.protobuf.FileOptions {
-	// Field number is temporary, pending assignment of official number.
-	string gopherjs_package = 69000;
+	// The gopherjs_package option can be used
+	// like the go_package option to specify a default
+	// package output and import location.
+	string gopherjs_package = 1039;
 }
