@@ -12,7 +12,9 @@ This is a simple GopherJS binding around the node `google-protobuf` package.
 Importing it into any GopherJS source allows usage of ProtobufJS functionality.
 
 ### [GopherJS gRPC-Web Client Bindings](./grpcweb/README.md)
-This is a GopherJS binding around the Improbable gRPC-Web client.
+This is a GopherJS binding around the Improbable gRPC-Web client and
+the websocket proxy.
+
 
 ## Contributions
 Contributions are very welcome, please submit issues and PRs for review.

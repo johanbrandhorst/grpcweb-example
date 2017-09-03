@@ -189,7 +189,7 @@ load. The only plugin in this repo is `grpc`.
 associated with Go package `quux/shme`.  This is subject to the
 `import_prefix` parameter.
 
-## Generate gRPC-Web bindings
+## Generate gRPC-Web/WsProxy bindings
 If a proto file specifies RPC services, `protoc-gen-gopherjs` can be instructed to
 generate code compatible with the [GopherJS gRPC-Web bindings](https://github.com/johanbrandhorst/protobuf/tree/master/grpcweb).
 To do this, pass the `plugins` parameter to `protoc-gen-gopherjs`:
@@ -197,3 +197,10 @@ To do this, pass the `plugins` parameter to `protoc-gen-gopherjs`:
 ```bash
 $ protoc --gopherjs_out=plugins=grpc:. *.proto
 ```
+
+Use of the gRPC-Web/WsProxy bindings require the target gRPC server
+to be wrapped by
+[the Improbable gRPC-Web proxy](https://github.com/improbable-eng/grpc-web/tree/master/go/grpcweb)
+and
+[the gRPC-Web Websocket proxy](../wsproxy).
+See [the test setup](../test/server/main.go) for an example implementation of this wrapping.

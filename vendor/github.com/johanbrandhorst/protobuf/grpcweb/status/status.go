@@ -44,6 +44,9 @@ func (s Status) Error() string {
 
 // FromError constructs a Status from an error.
 func FromError(err error) *Status {
+	if err == nil {
+		return nil
+	}
 	s, ok := err.(*Status)
 	if !ok {
 		s = &Status{

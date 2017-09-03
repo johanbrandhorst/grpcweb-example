@@ -96,14 +96,8 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer qunit.Start()
 
 			req := &test.PingRequest{
-				Value:             "test",
-				ResponseCount:     1,
-				ErrorCodeReturned: 0,
-				FailureType:       test.PingRequest_NONE,
-				CheckMetadata:     false,
-				SendHeaders:       false,
-				SendTrailers:      false,
-				MessageLatencyMs:  0,
+				Value:         "test",
+				ResponseCount: 1,
 			}
 			resp, err := c.Ping(context.Background(), req)
 			if err != nil {
@@ -132,14 +126,9 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer qunit.Start()
 
 			req := &test.PingRequest{
-				Value:             "test",
-				ResponseCount:     1,
-				ErrorCodeReturned: 0,
-				FailureType:       test.PingRequest_NONE,
-				CheckMetadata:     true,
-				SendHeaders:       false,
-				SendTrailers:      false,
-				MessageLatencyMs:  0,
+				Value:         "test",
+				ResponseCount: 1,
+				CheckMetadata: true,
 			}
 			ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs(shared.ClientMDTestKey, shared.ClientMDTestValue))
 			resp, err := c.Ping(ctx, req)
@@ -169,14 +158,10 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer qunit.Start()
 
 			req := &test.PingRequest{
-				Value:             "test",
-				ResponseCount:     1,
-				ErrorCodeReturned: 0,
-				FailureType:       test.PingRequest_NONE,
-				CheckMetadata:     false,
-				SendHeaders:       true,
-				SendTrailers:      true,
-				MessageLatencyMs:  0,
+				Value:         "test",
+				ResponseCount: 1,
+				SendHeaders:   true,
+				SendTrailers:  true,
 			}
 			headers, trailers := metadata.New(nil), metadata.New(nil)
 			resp, err := c.Ping(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
@@ -233,14 +218,9 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer qunit.Start()
 
 			req := &test.PingRequest{
-				Value:             "test",
-				ResponseCount:     1,
-				ErrorCodeReturned: 0,
-				FailureType:       test.PingRequest_NONE,
-				CheckMetadata:     false,
-				SendHeaders:       true,
-				SendTrailers:      false,
-				MessageLatencyMs:  0,
+				Value:         "test",
+				ResponseCount: 1,
+				SendHeaders:   true,
 			}
 			headers, trailers := metadata.New(nil), metadata.New(nil)
 			resp, err := c.Ping(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
@@ -289,14 +269,9 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer qunit.Start()
 
 			req := &test.PingRequest{
-				Value:             "test",
-				ResponseCount:     1,
-				ErrorCodeReturned: 0,
-				FailureType:       test.PingRequest_NONE,
-				CheckMetadata:     false,
-				SendHeaders:       false,
-				SendTrailers:      true,
-				MessageLatencyMs:  0,
+				Value:         "test",
+				ResponseCount: 1,
+				SendTrailers:  true,
 			}
 			headers, trailers := metadata.New(nil), metadata.New(nil)
 			resp, err := c.Ping(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
@@ -349,10 +324,6 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 				ResponseCount:     0,
 				ErrorCodeReturned: uint32(codes.InvalidArgument),
 				FailureType:       test.PingRequest_CODE,
-				CheckMetadata:     false,
-				SendHeaders:       false,
-				SendTrailers:      false,
-				MessageLatencyMs:  0,
 			}
 			_, err := c.PingError(context.Background(), req)
 			if err == nil {
@@ -379,14 +350,7 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 			defer qunit.Start()
 
 			req := &test.PingRequest{
-				Value:             "",
-				ResponseCount:     0,
-				ErrorCodeReturned: 0,
-				FailureType:       test.PingRequest_DROP,
-				CheckMetadata:     false,
-				SendHeaders:       false,
-				SendTrailers:      false,
-				MessageLatencyMs:  0,
+				FailureType: test.PingRequest_DROP,
 			}
 			_, err := c.PingError(context.Background(), req)
 			if err == nil {
@@ -408,7 +372,7 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 		return nil
 	})
 
-	qunit.AsyncTest("Streaming server call", func() interface{} {
+	qunit.AsyncTest("Server Streaming call", func() interface{} {
 		c := test.NewTestServiceClient(uri + serverAddr)
 
 		go func() {
@@ -417,14 +381,9 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 
 			// Send 20 messages with 1ms wait before each
 			req := &test.PingRequest{
-				Value:             "test",
-				ResponseCount:     20,
-				ErrorCodeReturned: 0,
-				FailureType:       test.PingRequest_NONE,
-				CheckMetadata:     false,
-				SendHeaders:       false,
-				SendTrailers:      false,
-				MessageLatencyMs:  1,
+				Value:            "test",
+				ResponseCount:    20,
+				MessageLatencyMs: 1,
 			}
 			srv, err := c.PingList(context.Background(), req)
 			if err != nil {
@@ -468,7 +427,7 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 		return nil
 	})
 
-	qunit.AsyncTest("Streaming server call with metadata", func() interface{} {
+	qunit.AsyncTest("Server Streaming call with metadata", func() interface{} {
 		c := test.NewTestServiceClient(uri + serverAddr)
 
 		go func() {
@@ -477,14 +436,9 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 
 			// Send 20 messages with 1ms wait before each
 			req := &test.PingRequest{
-				Value:             "test",
-				ResponseCount:     20,
-				ErrorCodeReturned: 0,
-				FailureType:       test.PingRequest_NONE,
-				CheckMetadata:     true,
-				SendHeaders:       false,
-				SendTrailers:      false,
-				MessageLatencyMs:  1,
+				Value:            "test",
+				ResponseCount:    20,
+				MessageLatencyMs: 1,
 			}
 			ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs(shared.ClientMDTestKey, shared.ClientMDTestValue))
 			srv, err := c.PingList(ctx, req)
@@ -529,7 +483,7 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 		return nil
 	})
 
-	qunit.AsyncTest("Streaming server call expecting headers and trailers", func() interface{} {
+	qunit.AsyncTest("Server Streaming call expecting headers and trailers", func() interface{} {
 		c := test.NewTestServiceClient(uri + serverAddr)
 
 		go func() {
@@ -538,14 +492,11 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 
 			// Send 20 messages with 1ms wait before each
 			req := &test.PingRequest{
-				Value:             "test",
-				ResponseCount:     20,
-				ErrorCodeReturned: 0,
-				FailureType:       test.PingRequest_NONE,
-				CheckMetadata:     false,
-				SendHeaders:       true,
-				SendTrailers:      true,
-				MessageLatencyMs:  1,
+				Value:            "test",
+				ResponseCount:    20,
+				SendHeaders:      true,
+				SendTrailers:     true,
+				MessageLatencyMs: 1,
 			}
 			headers, trailers := metadata.New(nil), metadata.New(nil)
 			srv, err := c.PingList(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
@@ -616,7 +567,7 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 		return nil
 	})
 
-	qunit.AsyncTest("Streaming server call expecting only headers", func() interface{} {
+	qunit.AsyncTest("Server Streaming call expecting only headers", func() interface{} {
 		c := test.NewTestServiceClient(uri + serverAddr)
 
 		go func() {
@@ -625,14 +576,10 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 
 			// Send 20 messages with 1ms wait before each
 			req := &test.PingRequest{
-				Value:             "test",
-				ResponseCount:     20,
-				ErrorCodeReturned: 0,
-				FailureType:       test.PingRequest_NONE,
-				CheckMetadata:     false,
-				SendHeaders:       true,
-				SendTrailers:      false,
-				MessageLatencyMs:  1,
+				Value:            "test",
+				ResponseCount:    20,
+				SendHeaders:      true,
+				MessageLatencyMs: 1,
 			}
 			headers, trailers := metadata.New(nil), metadata.New(nil)
 			srv, err := c.PingList(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
@@ -695,7 +642,7 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 		return nil
 	})
 
-	qunit.AsyncTest("Streaming server call expecting only trailers", func() interface{} {
+	qunit.AsyncTest("Server Streaming call expecting only trailers", func() interface{} {
 		c := test.NewTestServiceClient(uri + serverAddr)
 
 		go func() {
@@ -704,14 +651,10 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 
 			// Send 20 messages with 1ms wait before each
 			req := &test.PingRequest{
-				Value:             "test",
-				ResponseCount:     20,
-				ErrorCodeReturned: 0,
-				FailureType:       test.PingRequest_NONE,
-				CheckMetadata:     false,
-				SendHeaders:       false,
-				SendTrailers:      true,
-				MessageLatencyMs:  1,
+				Value:            "test",
+				ResponseCount:    20,
+				SendTrailers:     true,
+				MessageLatencyMs: 1,
 			}
 			headers, trailers := metadata.New(nil), metadata.New(nil)
 			srv, err := c.PingList(context.Background(), req, grpcweb.Header(&headers), grpcweb.Trailer(&trailers))
@@ -774,7 +717,7 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 		return nil
 	})
 
-	qunit.AsyncTest("Streaming server call returning network error", func() interface{} {
+	qunit.AsyncTest("Server Streaming call returning network error", func() interface{} {
 		c := test.NewTestServiceClient(uri + serverAddr)
 
 		go func() {
@@ -783,14 +726,10 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 
 			// Send 20 messages with 1ms wait before each
 			req := &test.PingRequest{
-				Value:             "test",
-				ResponseCount:     20,
-				ErrorCodeReturned: 0,
-				FailureType:       test.PingRequest_DROP,
-				CheckMetadata:     false,
-				SendHeaders:       false,
-				SendTrailers:      false,
-				MessageLatencyMs:  1,
+				Value:            "test",
+				ResponseCount:    20,
+				FailureType:      test.PingRequest_DROP,
+				MessageLatencyMs: 1,
 			}
 			srv, err := c.PingList(context.Background(), req)
 			if err != nil {
@@ -1055,6 +994,331 @@ func serverTests(label, serverAddr, emptyServerAddr string) {
 
 		return nil
 	})
+
+}
+
+func bidiServerTests(serverAddr string) {
+	qunit.Module("Client streaming tests")
+
+	qunit.AsyncTest("Client Streaming call", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			srv, err := c.PingClientStream(context.Background())
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected PingClientStream error seen: "+st.Message)
+				return
+			}
+
+			for i := 0; i < 20; i++ {
+				req := &test.PingRequest{
+					Value:            "test",
+					MessageLatencyMs: 1,
+				}
+				err := srv.Send(req)
+				if err != nil {
+					st := status.FromError(err)
+					qunit.Ok(false, "Unexpected Send error seen:"+st.Message)
+					return
+				}
+			}
+
+			ping, err := srv.CloseAndRecv()
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected CloseAndRecv error seen:"+st.Message)
+				return
+			}
+			if ping.GetValue() != "Closed" {
+				qunit.Ok(false, fmt.Sprintf("Unexpected value in response ping, was %q", ping.GetValue()))
+				return
+			}
+
+			qunit.Ok(true, "Request succeeded")
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Client Streaming call mid send grpc error", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			srv, err := c.PingClientStreamError(context.Background())
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected PingClientStreamError error seen: "+st.Message)
+				return
+			}
+
+			req := &test.PingRequest{
+				Value:            "test",
+				MessageLatencyMs: 1,
+			}
+			err = srv.Send(req)
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected Send error seen:"+st.Message)
+				return
+			}
+
+			// Trigger error
+			req = &test.PingRequest{
+				FailureType:       test.PingRequest_CODE,
+				ErrorCodeReturned: uint32(codes.DataLoss),
+			}
+			err = srv.Send(req)
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected Send error seen:"+st.Message)
+				return
+			}
+
+			// Shouldn't error
+			err = srv.Send(req)
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected Send error seen:"+st.Message)
+				return
+			}
+
+			// Should return the error
+			_, err = srv.CloseAndRecv()
+			if err == nil {
+				qunit.Ok(false, "Unexpected nil error")
+				return
+			}
+
+			st := status.FromError(err)
+			if st.Code != codes.DataLoss {
+				qunit.Ok(false, fmt.Sprintf("Unexpected code in error, was %q, expected %q, error: %v", st.Code, codes.DataLoss, st.Error()))
+				return
+			}
+
+			qunit.Ok(true, "Request succeeded")
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Client Streaming call after send grpc error", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			srv, err := c.PingClientStreamError(context.Background())
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected PingClientStreamError error seen: "+st.Message)
+				return
+			}
+
+			_, err = srv.CloseAndRecv()
+			if err == nil {
+				qunit.Ok(false, "Unexpected nil error")
+				return
+			}
+
+			st := status.FromError(err)
+			if st.Code != codes.Internal {
+				qunit.Ok(false, fmt.Sprintf("Unexpected code in error, was %q, expected %q", st.Code, codes.Internal))
+				return
+			}
+			if st.Message != "error" {
+				qunit.Ok(false, fmt.Sprintf("Unexpected message in error, was %q, expected %q", st.Message, "error"))
+				return
+			}
+
+			qunit.Ok(true, "Request succeeded")
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Bi-directional streaming call", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			srv, err := c.PingBidiStream(context.Background())
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected PingBidiStream error seen: "+st.Message)
+				return
+			}
+
+			for i := 0; i < 10; i++ {
+				req := &test.PingRequest{
+					Value:            "test",
+					MessageLatencyMs: 1,
+				}
+				err := srv.Send(req)
+				if err != nil {
+					st := status.FromError(err)
+					qunit.Ok(false, "Unexpected Send error seen:"+st.Message)
+					return
+				}
+
+				ping, err := srv.Recv()
+				if err != nil {
+					st := status.FromError(err)
+					qunit.Ok(false, "Unexpected Recv error seen: "+st.Message)
+					return
+				}
+				if ping.GetValue() != req.Value {
+					qunit.Ok(false, fmt.Sprintf("Unexpected value in response ping, was %q, expected %q", ping.GetValue(), req.Value))
+					return
+				}
+			}
+
+			err = srv.CloseSend()
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected CloseSend error seen: "+st.Message)
+				return
+			}
+
+			_, err = srv.Recv()
+			if err != io.EOF {
+				qunit.Ok(false, "Recv after CloseSend did not return io.EOF, got: "+err.Error())
+				return
+			}
+
+			qunit.Ok(true, "Request succeeded")
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Bi-directional streaming call mid send grpc error", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			srv, err := c.PingBidiStreamError(context.Background())
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected PingBidiStreamError error seen: "+st.Message)
+				return
+			}
+
+			req1 := &test.PingRequest{
+				Value:            "test",
+				MessageLatencyMs: 1,
+			}
+			err = srv.Send(req1)
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected Send error seen:"+st.Message)
+				return
+			}
+
+			// Trigger error
+			req2 := &test.PingRequest{
+				FailureType:       test.PingRequest_CODE,
+				ErrorCodeReturned: uint32(codes.DataLoss),
+			}
+			err = srv.Send(req2)
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected Send error seen:"+st.Message)
+				return
+			}
+
+			// Shouldn't error
+			err = srv.Send(req2)
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected Send error seen:"+st.Message)
+				return
+			}
+
+			// Shouldn't error
+			ping, err := srv.Recv()
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected Recv error seen:"+st.Message)
+				return
+			}
+			if ping.GetValue() != req1.Value {
+				qunit.Ok(false, fmt.Sprintf("Unexpected value in response ping, was %q, expected %q", ping.GetValue(), req1.Value))
+				return
+			}
+
+			// Should error
+			_, err = srv.Recv()
+			if err == nil {
+				qunit.Ok(false, "Unexpected nil error")
+				return
+			}
+
+			st := status.FromError(err)
+			if st.Code != codes.DataLoss {
+				qunit.Ok(false, fmt.Sprintf("Unexpected code in error, was %q, expected %q", st.Code, codes.DataLoss))
+				return
+			}
+
+			qunit.Ok(true, "Request succeeded")
+		}()
+
+		return nil
+	})
+
+	qunit.AsyncTest("Bi-directional streaming call after send grpc error", func() interface{} {
+		c := test.NewTestServiceClient(uri + serverAddr)
+
+		go func() {
+			defer recoverer.Recover() // recovers any panics and fails tests
+			defer qunit.Start()
+
+			srv, err := c.PingBidiStreamError(context.Background())
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected PingBidiStreamError error seen: "+st.Message)
+				return
+			}
+
+			err = srv.CloseSend()
+			if err != nil {
+				st := status.FromError(err)
+				qunit.Ok(false, "Unexpected Send error seen:"+st.Message)
+				return
+			}
+
+			_, err = srv.Recv()
+			if err == nil {
+				qunit.Ok(false, "Unexpected nil error")
+				return
+			}
+
+			st := status.FromError(err)
+			if st.Code != codes.Internal {
+				qunit.Ok(false, fmt.Sprintf("Unexpected code in error, was %q, expected %q", st.Code, codes.Internal))
+				return
+			}
+			if st.Message != "error" {
+				qunit.Ok(false, fmt.Sprintf("Unexpected message in error, was %q, expected %q", st.Message, "error"))
+				return
+			}
+
+			qunit.Ok(true, "Request succeeded")
+		}()
+
+		return nil
+	})
 }
 
 func main() {
@@ -1063,6 +1327,7 @@ func main() {
 	typeTests()
 	serverTests("HTTP2", shared.HTTP2Server, shared.EmptyHTTP2Server)
 	serverTests("HTTP1", shared.HTTP1Server, shared.EmptyHTTP1Server)
+	bidiServerTests(shared.HTTP2Server)
 
 	// protoc-gen-gopherjs tests
 	gentest.GenTypesTest()

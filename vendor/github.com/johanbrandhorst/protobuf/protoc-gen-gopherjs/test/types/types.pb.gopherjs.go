@@ -1867,7 +1867,7 @@ var _ grpcweb.Client
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpcweb package it is being compiled against.
-const _ = grpcweb.GrpcWebPackageIsVersion1
+const _ = grpcweb.GrpcWebPackageIsVersion2
 
 // Client API for EchoService service
 
@@ -1888,9 +1888,7 @@ func NewEchoServiceClient(hostname string, opts ...grpcweb.DialOption) EchoServi
 }
 
 func (c *echoServiceClient) EchoAllTypes(ctx context.Context, in *TestAllTypes, opts ...grpcweb.CallOption) (*TestAllTypes, error) {
-	req := in.Marshal()
-
-	resp, err := c.client.RPCCall(ctx, "EchoAllTypes", req, opts...)
+	resp, err := c.client.RPCCall(ctx, "EchoAllTypes", in.Marshal(), opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1899,9 +1897,7 @@ func (c *echoServiceClient) EchoAllTypes(ctx context.Context, in *TestAllTypes, 
 }
 
 func (c *echoServiceClient) EchoMaps(ctx context.Context, in *TestMap, opts ...grpcweb.CallOption) (*TestMap, error) {
-	req := in.Marshal()
-
-	resp, err := c.client.RPCCall(ctx, "EchoMaps", req, opts...)
+	resp, err := c.client.RPCCall(ctx, "EchoMaps", in.Marshal(), opts...)
 	if err != nil {
 		return nil, err
 	}

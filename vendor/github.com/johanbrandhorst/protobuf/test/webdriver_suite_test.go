@@ -25,23 +25,28 @@ var (
 			},
 			"browserName": "chrome",
 		}),
-		// Unfortunately headless doesn't seem to work quite yet,
-		// seems lock up loading the page.
-		// (tried Google Chrome 59.0.3071.115)
-		// https://developers.google.com/web/updates/2017/04/headless-chrome#drivers
-		/*agouti.ChromeOptions(
+		agouti.ChromeOptions(
 			"args", []string{
 				"--headless",
 				"--disable-gpu",
+				"--allow-insecure-localhost",
 			},
 		),
 		agouti.ChromeOptions(
-			"binary", "/usr/bin/google-chrome-stable",
-		),*/
+			// Requires Chrome 62
+			"binary", "/usr/bin/google-chrome-unstable",
+		),
 	)
 	seleniumDriver = agouti.Selenium(
 		agouti.Browser("firefox"),
 		agouti.Desired(agouti.NewCapabilities("acceptInsecureCerts")),
+		/* Headless firefox does not yet have a way to accept unknown certificates
+		agouti.Desired(agouti.Capabilities{
+			"moz:firefoxOptions": map[string][]string{
+				"args": []string{"-headless"},
+			},
+		}),
+		*/
 	)
 )
 

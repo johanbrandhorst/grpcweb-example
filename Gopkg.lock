@@ -10,7 +10,7 @@
 [[projects]]
   branch = "master"
   name = "github.com/golang/protobuf"
-  packages = ["proto","ptypes/any","ptypes/timestamp"]
+  packages = ["proto","protoc-gen-go/descriptor","ptypes/any","ptypes/timestamp"]
   revision = "1909bc2f63dc92bb931deace8b8312c4db72d12f"
 
 [[projects]]
@@ -22,7 +22,7 @@
 [[projects]]
   branch = "master"
   name = "github.com/gopherjs/websocket"
-  packages = [".","websocketjs"]
+  packages = ["websocketjs"]
   revision = "87ee47603f137e7f8419765b3621b3c36e715a08"
 
 [[projects]]
@@ -38,10 +38,10 @@
   revision = "d77bb3348c50d37edc7f076adbd5003b34e5c78f"
 
 [[projects]]
+  branch = "master"
   name = "github.com/johanbrandhorst/protobuf"
-  packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/metadata","grpcweb/status","jspb","ptypes/any","ptypes/timestamp"]
-  revision = "58079236dcd840dcb67b36968a4ac2bc94c4c03b"
-  version = "v0.4.1-alpha"
+  packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/metadata","grpcweb/status","internal","jspb","proto","ptypes/timestamp","wsproxy"]
+  revision = "b7774bb99e88622bd6aaa592117f4bf5e50366be"
 
 [[projects]]
   name = "github.com/rs/cors"
@@ -130,6 +130,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "496e83633e4a63229bf7acfdabadf686b21c12e5d6ff14dc8138808ba7a3c186"
+  inputs-digest = "5dd4c2d2496bd52d384d7a857d2bbdbd6fd5355b7de1cd423cac9c061cfcae10"
   solver-name = "gps-cdcl"
   solver-version = 1

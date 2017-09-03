@@ -48,4 +48,12 @@ service TestService {
   rpc PingError(PingRequest) returns (google.protobuf.Empty) {}
 
   rpc PingList(PingRequest) returns (stream PingResponse) {}
+
+  rpc PingClientStream(stream PingRequest) returns (PingResponse) {}
+
+  rpc PingClientStreamError(stream PingRequest) returns (PingResponse) {}
+
+  rpc PingBidiStream(stream PingRequest) returns (stream PingResponse) {}
+
+  rpc PingBidiStreamError(stream PingRequest) returns (stream PingResponse) {}
 }
