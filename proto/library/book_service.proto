@@ -5,6 +5,10 @@ syntax = "proto3";
 package library;
 
 import "google/protobuf/timestamp.proto";
+import "github.com/johanbrandhorst/protobuf/proto/gopherjs.proto";
+
+option (gopherjs.gopherjs_package) = "github.com/johanbrandhorst/grpcweb-example/client/proto/library";
+option go_package = "github.com/johanbrandhorst/grpcweb-example/server/proto/library";
 
 // BookType describes the different types
 // a book in the library can be.
