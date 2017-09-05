@@ -1,6 +1,0 @@
-!*.js
-!*.js.map
-/bin
-/pkg
-vendor/
-_vendor/
