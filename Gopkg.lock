@@ -41,7 +41,7 @@
   branch = "master"
   name = "github.com/johanbrandhorst/protobuf"
   packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/metadata","grpcweb/status","internal","jspb","proto","ptypes/timestamp","wsproxy"]
-  revision = "b7774bb99e88622bd6aaa592117f4bf5e50366be"
+  revision = "0e27bb7537bdd5e9df0977ab09b84f3f6909abf8"
 
 [[projects]]
   name = "github.com/rs/cors"

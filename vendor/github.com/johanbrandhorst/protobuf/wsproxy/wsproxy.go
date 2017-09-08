@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/binary"
 	"io"
+	"net"
 	"net/http"
 	"strings"
 
@@ -108,9 +109,10 @@ func (p *proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx, cancelFn := context.WithCancel(r.Context())
 	defer cancelFn()
 
-	p.logger.Debugln("Creating new transport with addr:", r.Host)
+	host := withPort(r.Host)
+	p.logger.Debugln("Creating new transport with addr:", host)
 	t, err := transport.NewClientTransport(ctx,
-		transport.TargetInfo{Addr: r.Host},
+		transport.TargetInfo{Addr: host},
 		transport.ConnectOptions{
 			TransportCredentials: p.creds,
 		})
@@ -260,4 +262,12 @@ func (p *proxy) sendStatus(conn *websocket.Conn, st *status.Status) {
 
 	p.logger.Debugln("[WRITE] Sent close message")
 	return
+}
+
+// withPort adds ":443" if another port isn't already present.
+func withPort(host string) string {
+	if _, _, err := net.SplitHostPort(host); err != nil {
+		return net.JoinHostPort(host, "443")
+	}
+	return host
 }

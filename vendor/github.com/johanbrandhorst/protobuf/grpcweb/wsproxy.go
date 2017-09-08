@@ -157,7 +157,7 @@ func (c *Client) NewClientStream(ctx context.Context, method string) (ClientStre
 
 	err, ok := <-openCh
 	if ok && err != nil {
-		return nil, err
+		return nil, mapWebsocketError(err)
 	}
 
 	return conn, nil
