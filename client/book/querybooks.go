@@ -3,7 +3,6 @@ package book
 import (
 	"context"
 	"io"
-	"time"
 
 	"github.com/johanbrandhorst/protobuf/grpcweb/status"
 	"honnef.co/go/js/dom"
@@ -111,11 +110,13 @@ func (t triggerQuery) OnClick(se *r.SyntheticMouseEvent) {
 	// Wrapped in goroutine because Recv is blocking
 	go func() {
 		newSt := t.q.State()
+		defer func() {
+			t.q.SetState(newSt)
+		}()
 		newSt.err = ""
-		newSt.books = newBooks()
 
 		// 10 second timeout
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 
 		srv, err := t.q.Props().Client.QueryBooks(ctx, &library.QueryBooksRequest{
@@ -124,9 +125,9 @@ func (t triggerQuery) OnClick(se *r.SyntheticMouseEvent) {
 		if err != nil {
 			sts := status.FromError(err)
 			newSt.err = sts.Message
-			t.q.SetState(newSt)
 			return
 		}
+		newSt.books = newBooks()
 
 		for {
 			// Blocks until book received
@@ -136,19 +137,16 @@ func (t triggerQuery) OnClick(se *r.SyntheticMouseEvent) {
 					// Success!
 					if newSt.books.Len() == 0 {
 						newSt.err = "No books found for that author"
-						t.q.SetState(newSt)
 					}
 
 					return
 				}
 				sts := status.FromError(err)
 				newSt.err = sts.Message
-				t.q.SetState(newSt)
 				return
 			}
 
 			newSt.books = newSt.books.Append(bk)
-			t.q.SetState(newSt)
 		}
 	}()
 

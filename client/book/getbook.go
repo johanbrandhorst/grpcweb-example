@@ -93,14 +93,15 @@ func (t triggerGet) OnClick(se *r.SyntheticMouseEvent) {
 	// Wrapped in goroutine because GetBook is blocking
 	go func() {
 		newSt := t.g.State()
-		// Note: defer t.g.SetState(newSt) doesn't work for some reason?
+		defer func() {
+			t.g.SetState(newSt)
+		}()
 		newSt.err = ""
 		newSt.book = nil
 
 		isbn, err := strconv.Atoi(newSt.isbnInput)
 		if err != nil {
 			newSt.err = "ISBN must not be empty"
-			t.g.SetState(newSt)
 			return
 		}
 
@@ -114,12 +115,10 @@ func (t triggerGet) OnClick(se *r.SyntheticMouseEvent) {
 		if err != nil {
 			sts := status.FromError(err)
 			newSt.err = sts.Message
-			t.g.SetState(newSt)
 			return
 		}
 
 		newSt.book = bk
-		t.g.SetState(newSt)
 	}()
 
 	se.PreventDefault()
