@@ -16,7 +16,8 @@
 		GetBookRequest
 		QueryBooksRequest
 		Collection
-		BookNote
+		BookMessage
+		BookResponse
 */
 package library
 
@@ -536,66 +537,102 @@ func (m *Collection) Unmarshal(rawBytes []byte) (*Collection, error) {
 	return m, nil
 }
 
-// BookNote is used to discuss books
-type BookNote struct {
-	// Isbn is the ISBN of the book the note relates to
-	Isbn string
-	// Note is a comment on the book referenced by the ISBN.
-	Note string
+// BookMessage is used to discuss books
+type BookMessage struct {
+	// Types that are valid to be assigned to Content:
+	//	*BookMessage_Name
+	//	*BookMessage_Message
+	Content isBookMessage_Content
 }
 
-// GetIsbn gets the Isbn of the BookNote.
-func (m *BookNote) GetIsbn() (x string) {
+// isBookMessage_Content is used to distinguish types assignable to Content
+type isBookMessage_Content interface {
+	isBookMessage_Content()
+}
+
+// BookMessage_Name is assignable to Content
+type BookMessage_Name struct {
+	// Name is the name of the person who is sending this message.
+	// It should be sent as the first message on the stream.
+	Name string
+}
+
+// BookMessage_Message is assignable to Content
+type BookMessage_Message struct {
+	// Message is any message the user wishes to send.
+	Message string
+}
+
+func (*BookMessage_Name) isBookMessage_Content()    {}
+func (*BookMessage_Message) isBookMessage_Content() {}
+
+// GetContent gets the Content of the BookMessage.
+func (m *BookMessage) GetContent() (x isBookMessage_Content) {
 	if m == nil {
 		return x
 	}
-	return m.Isbn
+	return m.Content
 }
 
-// GetNote gets the Note of the BookNote.
-func (m *BookNote) GetNote() (x string) {
-	if m == nil {
-		return x
+// GetName gets the Name of the BookMessage.
+func (m *BookMessage) GetName() (x string) {
+	if v, ok := m.GetContent().(*BookMessage_Name); ok {
+		return v.Name
 	}
-	return m.Note
+	return x
 }
 
-// MarshalToWriter marshals BookNote to the provided writer.
-func (m *BookNote) MarshalToWriter(writer jspb.Writer) {
+// GetMessage gets the Message of the BookMessage.
+func (m *BookMessage) GetMessage() (x string) {
+	if v, ok := m.GetContent().(*BookMessage_Message); ok {
+		return v.Message
+	}
+	return x
+}
+
+// MarshalToWriter marshals BookMessage to the provided writer.
+func (m *BookMessage) MarshalToWriter(writer jspb.Writer) {
 	if m == nil {
 		return
 	}
 
-	if len(m.Isbn) > 0 {
-		writer.WriteString(1, m.Isbn)
-	}
-
-	if len(m.Note) > 0 {
-		writer.WriteString(2, m.Note)
+	switch t := m.Content.(type) {
+	case *BookMessage_Name:
+		if len(t.Name) > 0 {
+			writer.WriteString(1, t.Name)
+		}
+	case *BookMessage_Message:
+		if len(t.Message) > 0 {
+			writer.WriteString(2, t.Message)
+		}
 	}
 
 	return
 }
 
-// Marshal marshals BookNote to a slice of bytes.
-func (m *BookNote) Marshal() []byte {
+// Marshal marshals BookMessage to a slice of bytes.
+func (m *BookMessage) Marshal() []byte {
 	writer := jspb.NewWriter()
 	m.MarshalToWriter(writer)
 	return writer.GetResult()
 }
 
-// UnmarshalFromReader unmarshals a BookNote from the provided reader.
-func (m *BookNote) UnmarshalFromReader(reader jspb.Reader) *BookNote {
+// UnmarshalFromReader unmarshals a BookMessage from the provided reader.
+func (m *BookMessage) UnmarshalFromReader(reader jspb.Reader) *BookMessage {
 	for reader.Next() {
 		if m == nil {
-			m = &BookNote{}
+			m = &BookMessage{}
 		}
 
 		switch reader.GetFieldNumber() {
 		case 1:
-			m.Isbn = reader.ReadString()
+			m.Content = &BookMessage_Name{
+				Name: reader.ReadString(),
+			}
 		case 2:
-			m.Note = reader.ReadString()
+			m.Content = &BookMessage_Message{
+				Message: reader.ReadString(),
+			}
 		default:
 			reader.SkipField()
 		}
@@ -604,8 +641,73 @@ func (m *BookNote) UnmarshalFromReader(reader jspb.Reader) *BookNote {
 	return m
 }
 
-// Unmarshal unmarshals a BookNote from a slice of bytes.
-func (m *BookNote) Unmarshal(rawBytes []byte) (*BookNote, error) {
+// Unmarshal unmarshals a BookMessage from a slice of bytes.
+func (m *BookMessage) Unmarshal(rawBytes []byte) (*BookMessage, error) {
+	reader := jspb.NewReader(rawBytes)
+
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+
+// BookResponse is used to discuss books
+type BookResponse struct {
+	// Message is a message from a user.
+	Message string
+}
+
+// GetMessage gets the Message of the BookResponse.
+func (m *BookResponse) GetMessage() (x string) {
+	if m == nil {
+		return x
+	}
+	return m.Message
+}
+
+// MarshalToWriter marshals BookResponse to the provided writer.
+func (m *BookResponse) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	if len(m.Message) > 0 {
+		writer.WriteString(2, m.Message)
+	}
+
+	return
+}
+
+// Marshal marshals BookResponse to a slice of bytes.
+func (m *BookResponse) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a BookResponse from the provided reader.
+func (m *BookResponse) UnmarshalFromReader(reader jspb.Reader) *BookResponse {
+	for reader.Next() {
+		if m == nil {
+			m = &BookResponse{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 2:
+			m.Message = reader.ReadString()
+		default:
+			reader.SkipField()
+		}
+	}
+
+	return m
+}
+
+// Unmarshal unmarshals a BookResponse from a slice of bytes.
+func (m *BookResponse) Unmarshal(rawBytes []byte) (*BookResponse, error) {
 	reader := jspb.NewReader(rawBytes)
 
 	m = m.UnmarshalFromReader(reader)
@@ -743,8 +845,8 @@ func (c *bookServiceClient) BookChat(ctx context.Context, opts ...grpcweb.CallOp
 }
 
 type BookService_BookChatClient interface {
-	Send(*BookNote) error
-	Recv() (*BookNote, error)
+	Send(*BookMessage) error
+	Recv() (*BookResponse, error)
 	CloseSend() error
 	Context() context.Context
 }
@@ -753,17 +855,17 @@ type bookServiceBookChatClient struct {
 	stream grpcweb.ClientStream
 }
 
-func (x *bookServiceBookChatClient) Send(req *BookNote) error {
+func (x *bookServiceBookChatClient) Send(req *BookMessage) error {
 	return x.stream.SendMsg(req.Marshal())
 }
 
-func (x *bookServiceBookChatClient) Recv() (*BookNote, error) {
+func (x *bookServiceBookChatClient) Recv() (*BookResponse, error) {
 	resp, err := x.stream.RecvMsg()
 	if err != nil {
 		return nil, err
 	}
 
-	return new(BookNote).Unmarshal(resp)
+	return new(BookResponse).Unmarshal(resp)
 }
 
 func (x *bookServiceBookChatClient) CloseSend() error {

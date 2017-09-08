@@ -71,12 +71,21 @@ message Collection {
   repeated Book books = 1;
 }
 
-// BookNote is used to discuss books
-message BookNote {
-  // Isbn is the ISBN of the book the note relates to
-  string isbn = 1;
-  // Note is a comment on the book referenced by the ISBN.
-  string note = 2;
+// BookMessage is used to discuss books
+message BookMessage {
+  oneof content {
+    // Name is the name of the person who is sending this message.
+    // It should be sent as the first message on the stream.
+    string name = 1;
+    // Message is any message the user wishes to send.
+    string message = 2;
+  }
+}
+
+// BookResponse is used to discuss books
+message BookResponse {
+  // Message is a message from a user.
+  string message = 2;
 }
 
 // BookService exposes GetBook and QueryBooks,
@@ -93,5 +102,5 @@ service BookService {
   // MakeCollection takes a stream of books and returns a Book collection.
   rpc MakeCollection(stream Book) returns (Collection) {}
   // BookChat allows discussion about books
-  rpc BookChat(stream BookNote) returns (stream BookNote) {}
+  rpc BookChat(stream BookMessage) returns (stream BookResponse) {}
 }
