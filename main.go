@@ -85,8 +85,8 @@ func main() {
 	}
 
 	httpsSrv := &http.Server{
-		ReadTimeout: 5 * time.Second,
-		// This interferes with websocket streams, disable for now
+		// These interfere with websocket streams, disable for now
+		// ReadTimeout: 5 * time.Second,
 		// WriteTimeout: 10 * time.Second,
 		ReadHeaderTimeout: 5 * time.Second,
 		IdleTimeout:       120 * time.Second,
