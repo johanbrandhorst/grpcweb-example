@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -67,8 +68,8 @@ func browserTest(browserName, address string, newPage pageFunc) {
 			})
 
 			By("Finding the number of failures", func() {
-				Eventually(page.FirstByClass("failed"), 2).Should(BeFound())
-				Eventually(page.FindByID("qunit-testresult").FindByClass("failed"), 2).Should(BeFound())
+				Eventually(page.FirstByClass("failed"), 10*time.Second, time.Second).Should(BeFound())
+				Eventually(page.FindByID("qunit-testresult").FindByClass("failed"), 10*time.Second, time.Second).Should(BeFound())
 				numFailures, err := page.FindByID("qunit-testresult").FindByClass("failed").Text()
 				Expect(err).NotTo(HaveOccurred())
 				if numFailures == "0" {

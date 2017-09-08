@@ -1,5 +1,6 @@
 regenerate:
-	protoc proto/library/book_service.proto \
-    	--gopherjs_out=plugins=grpc,Mgoogle/protobuf/timestamp.proto=github.com/johanbrandhorst/protobuf/ptypes/timestamp:./client/ \
-    	--go_out=plugins=grpc:./server/
+
+	protoc -I. -I$$GOPATH/src proto/library/book_service.proto \
+    	--gopherjs_out=plugins=grpc,Mgoogle/protobuf/timestamp.proto=github.com/johanbrandhorst/protobuf/ptypes/timestamp:$$GOPATH/src \
+    	--go_out=plugins=grpc:$$GOPATH/src
 	go generate ./client/...

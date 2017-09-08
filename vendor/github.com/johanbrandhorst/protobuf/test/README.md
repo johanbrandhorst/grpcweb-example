@@ -12,7 +12,7 @@ if it's anything other than 0, the entire test fails.
 
 ### Requirements
 * Chromedriver
-* Google Chrome
+* Google Chrome 62+
 * ginkgo (`govendor install +program,vendor`)
 
 ### Running

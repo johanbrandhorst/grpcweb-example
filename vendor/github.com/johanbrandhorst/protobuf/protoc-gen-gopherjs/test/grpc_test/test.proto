@@ -3,6 +3,9 @@ syntax = "proto3";
 package my.test;  // dotted package name
 
 import "multi/multi1.proto";
+import "github.com/johanbrandhorst/protobuf/proto/gopherjs.proto";
+
+option (gopherjs.gopherjs_package) = "github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/test/grpc_test";
 
 // This enum represents days of the week.
 enum Days {

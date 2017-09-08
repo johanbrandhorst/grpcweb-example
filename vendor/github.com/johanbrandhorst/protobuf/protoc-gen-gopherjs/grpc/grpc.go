@@ -48,7 +48,7 @@ import (
 // It is incremented whenever an incompatibility between the generated code and
 // the grpcweb package is introduced; the generated code references
 // a constant, grpcweb.GrpcWebPackageIsVersionN (where N is generatedCodeVersion).
-const generatedCodeVersion = 1
+const generatedCodeVersion = 2
 
 // Paths for packages used by code generated in this file,
 // relative to the import_prefix of the generator.Generator.
@@ -200,24 +200,10 @@ func (g *grpc) generateService(file *generator.FileDescriptor, service *pb.Servi
 	g.P("}")
 	g.P()
 
-	var methodIndex, streamIndex int
 	serviceDescVar := "_" + servName + "_serviceDesc"
 	// Client method implementations.
 	for _, method := range service.Method {
-		var descExpr string
-		if method.GetClientStreaming() {
-			g.gen.Fail("Client streaming is not supported by gRPC-Web yet")
-		}
-		if !method.GetServerStreaming() && !method.GetClientStreaming() {
-			// Unary RPC method
-			descExpr = fmt.Sprintf("&%s.Methods[%d]", serviceDescVar, methodIndex)
-			methodIndex++
-		} else {
-			// Streaming RPC method
-			descExpr = fmt.Sprintf("&%s.Streams[%d]", serviceDescVar, streamIndex)
-			streamIndex++
-		}
-		g.generateClientMethod(servName, fullServName, serviceDescVar, method, descExpr)
+		g.generateClientMethod(servName, fullServName, serviceDescVar, method)
 	}
 }
 
@@ -239,18 +225,18 @@ func (g *grpc) generateClientSignature(servName string, method *pb.MethodDescrip
 	return fmt.Sprintf("%s(ctx %s.Context%s, opts ...%s.CallOption) (%s, error)", methName, contextPkg, reqArg, grpcPkg, respName)
 }
 
-func (g *grpc) generateClientMethod(servName, fullServName, serviceDescVar string, method *pb.MethodDescriptorProto, descExpr string) {
+func (g *grpc) generateClientMethod(servName, fullServName, serviceDescVar string, method *pb.MethodDescriptorProto) {
 	methName := generator.CamelCase(method.GetName())
 	outType := g.typeName(method.GetOutputType())
+	inType := g.typeName(method.GetInputType())
 	streamType := unexport(servName) + methName + "Client"
 
 	g.P("func (c *", unexport(servName), "Client) ", g.generateClientSignature(servName, method), "{")
 	g.In()
-	g.P("req := in.Marshal()")
-	g.P()
 	switch {
 	case !method.GetServerStreaming() && !method.GetClientStreaming():
-		g.P(`resp, err := c.client.RPCCall(ctx, "`, method.GetName(), `", req, opts...)`)
+		// Unary
+		g.P(`resp, err := c.client.RPCCall(ctx, "`, method.GetName(), `", in.Marshal(), opts...)`)
 		g.P("if err != nil {")
 		g.In()
 		g.P("return nil, err")
@@ -262,8 +248,9 @@ func (g *grpc) generateClientMethod(servName, fullServName, serviceDescVar strin
 		g.P("}")
 		g.P()
 		return
-	case method.GetServerStreaming():
-		g.P(`srv, err := c.client.Stream(ctx, "`, method.GetName(), `", req, opts...)`)
+	case method.GetServerStreaming() && !method.GetClientStreaming():
+		// Server-side stream
+		g.P(`srv, err := c.client.NewServerStream(ctx, "`, method.GetName(), `", in.Marshal(), opts...)`)
 		g.P("if err != nil {")
 		g.In()
 		g.P("return nil, err")
@@ -279,32 +266,64 @@ func (g *grpc) generateClientMethod(servName, fullServName, serviceDescVar strin
 		g.P("}")
 		g.P()
 	case method.GetClientStreaming():
-		g.gen.Fail("Client streaming is not yet supported by gRPC-Web")
+		// This case covers both client-side streaming and bidi streaming
+		g.P(`srv, err := c.client.NewClientStream(ctx, "`, method.GetName(), `")`)
+		g.P("if err != nil {")
+		g.In()
+		g.P("return nil, err")
+		g.Out()
+		g.P("}")
+		g.P()
+		g.P("return &", streamType, "{stream: srv}, nil")
+		g.Out()
+		g.P("}")
+		g.P()
 	}
-
-	genRecv := method.GetServerStreaming()
 
 	// Stream auxiliary types and methods.
 	g.P("type ", servName, "_", methName, "Client interface {")
-	if genRecv {
-		g.In()
-		g.P("Recv() (*", outType, ", error)")
-		g.Out()
+	g.In()
+	if method.GetClientStreaming() {
+		g.P("Send(*", inType, ") error")
 	}
+	if method.GetServerStreaming() {
+		g.P("Recv() (*", outType, ", error)")
+	}
+	if method.GetClientStreaming() && !method.GetServerStreaming() {
+		g.P("CloseAndRecv() (*", outType, ", error)")
+	} else if method.GetServerStreaming() && method.GetClientStreaming() {
+		g.P("CloseSend() error")
+	}
+	g.P("Context() context.Context")
+	g.Out()
 	g.P("}")
 	g.P()
 
 	g.P("type ", streamType, " struct {")
 	g.In()
-	g.P("stream *", grpcPkg, ".StreamClient")
+	if method.GetServerStreaming() && !method.GetClientStreaming() {
+		// Server-side streaming only
+		g.P("stream ", grpcPkg, ".ServerStream")
+	} else {
+		// Client side and bidi streams
+		g.P("stream ", grpcPkg, ".ClientStream")
+	}
 	g.Out()
 	g.P("}")
 	g.P()
 
-	if genRecv {
+	if method.GetClientStreaming() {
+		g.P("func (x *", streamType, ") Send(req *", inType, ") error {")
+		g.In()
+		g.P("return x.stream.SendMsg(req.Marshal())")
+		g.Out()
+		g.P("}")
+		g.P()
+	}
+	if method.GetServerStreaming() {
 		g.P("func (x *", streamType, ") Recv() (*", outType, ", error) {")
 		g.In()
-		g.P("resp, err := x.stream.Recv()")
+		g.P("resp, err := x.stream.RecvMsg()")
 		g.P("if err != nil {")
 		g.In()
 		g.P("return nil, err")
@@ -316,4 +335,32 @@ func (g *grpc) generateClientMethod(servName, fullServName, serviceDescVar strin
 		g.P("}")
 		g.P()
 	}
+	if method.GetClientStreaming() && !method.GetServerStreaming() {
+		g.P("func (x *", streamType, ") CloseAndRecv() (*", outType, ", error) {")
+		g.In()
+		g.P("resp, err := x.stream.CloseAndRecv()")
+		g.P("if err != nil {")
+		g.In()
+		g.P("return nil, err")
+		g.Out()
+		g.P("}")
+		g.P()
+		g.P("return new(", outType, ").Unmarshal(resp)")
+		g.Out()
+		g.P("}")
+		g.P()
+	} else if method.GetServerStreaming() && method.GetClientStreaming() {
+		g.P("func (x *", streamType, ") CloseSend() error {")
+		g.In()
+		g.P("return x.stream.CloseSend()")
+		g.Out()
+		g.P("}")
+		g.P()
+	}
+	g.P("func (x *", streamType, ") Context() context.Context {")
+	g.In()
+	g.P("return x.stream.Context()")
+	g.Out()
+	g.P("}")
+	g.P()
 }

@@ -54,6 +54,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
+	"github.com/johanbrandhorst/protobuf/proto"
 )
 
 // A Plugin provides functionality to add to the output during Go code generation,
@@ -230,7 +231,7 @@ func (d *FileDescriptor) VarName() string { return fmt.Sprintf("fileDescriptor%d
 // If there's a simple name, it returns ("", pkg, true).
 // If the option implies an import path, it returns (impPath, pkg, true).
 func (d *FileDescriptor) goPackageOption() (impPath, pkg string, ok bool) {
-	pkg = d.GetOptions().GetGoPackage()
+	pkg = gopherjs.GetGopherJSPackage(d.FileDescriptorProto)
 	if pkg == "" {
 		return
 	}
@@ -251,8 +252,8 @@ func (d *FileDescriptor) goPackageOption() (impPath, pkg string, ok bool) {
 }
 
 // goPackageName returns the Go package name to use in the
-// generated Go file.  The result explicit reports whether the name
-// came from an option go_package statement.  If explicit is false,
+// generated Go file. The result explicit reports whether the name
+// came from an option gopherjs_package statement.  If explicit is false,
 // the name was derived from the protocol buffer's package statement
 // or the input file name.
 func (d *FileDescriptor) goPackageName() (name string, explicit bool) {
@@ -878,9 +879,6 @@ func (g *Generator) GenerateAllFiles() {
 	}
 	for _, file := range g.allFiles {
 		g.Reset()
-		if !file.proto3 {
-			g.Fail("Only proto3 is supported by protoc-gen-gopherjs")
-		}
 		g.writeOutput = genFileMap[file]
 		g.generate(file)
 		if !g.writeOutput {
@@ -981,6 +979,7 @@ func (g *Generator) generateHeader() {
 	if g.file.index == 0 {
 		// Generate package docs for the first file in the package.
 		g.P("/*")
+		g.In()
 		g.P("Package ", name, " is a generated protocol buffer package.")
 		g.P()
 		if loc, ok := g.file.comments[strconv.Itoa(packagePath)]; ok {
@@ -996,8 +995,9 @@ func (g *Generator) generateHeader() {
 		}
 		var topMsgs []string
 		g.P("It is generated from these files:")
+		g.In()
 		for _, f := range g.genFiles {
-			g.P("\t", f.Name)
+			g.P(f.Name)
 			for _, msg := range f.desc {
 				if msg.parent != nil {
 					continue
@@ -1005,11 +1005,15 @@ func (g *Generator) generateHeader() {
 				topMsgs = append(topMsgs, CamelCaseSlice(msg.TypeName()))
 			}
 		}
+		g.Out()
 		g.P()
 		g.P("It has these top-level messages:")
+		g.In()
 		for _, msg := range topMsgs {
-			g.P("\t", msg)
+			g.P(msg)
 		}
+		g.Out()
+		g.Out()
 		g.P("*/")
 	}
 
@@ -1061,6 +1065,14 @@ func (g *Generator) generateImports() {
 		filename := fd.goFileName()
 		// By default, import path is the dirname of the Go filename.
 		importPath := path.Dir(filename)
+		fmt.Fprintln(os.Stderr, importPath)
+		// Skip blacklisted package from being added as import dependency
+		if importPath == "github.com/johanbrandhorst/protobuf/proto" {
+			// We don't want to add this package because it's only used
+			// for the gopherjs_package directive, and it has no use in generated
+			// packages.
+			continue
+		}
 		if substitution, ok := g.ImportMap[s]; ok {
 			importPath = substitution
 		}

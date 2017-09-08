@@ -2,7 +2,7 @@
 // source: grpc_test/test.proto
 
 /*
-	Package my_test is a generated protocol buffer package.
+	Package grpc_test is a generated protocol buffer package.
 
 	It is generated from these files:
 		grpc_test/test.proto
@@ -11,7 +11,7 @@
 		Simple
 		Complex
 */
-package my_test
+package grpc_test
 
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 import multitest2 "github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/test/multi"
@@ -604,7 +604,7 @@ var _ grpcweb.Client
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpcweb package it is being compiled against.
-const _ = grpcweb.GrpcWebPackageIsVersion1
+const _ = grpcweb.GrpcWebPackageIsVersion2
 
 // Client API for TestService service
 
@@ -626,9 +626,7 @@ func NewTestServiceClient(hostname string, opts ...grpcweb.DialOption) TestServi
 }
 
 func (c *testServiceClient) Unary(ctx context.Context, in *Simple, opts ...grpcweb.CallOption) (*Complex, error) {
-	req := in.Marshal()
-
-	resp, err := c.client.RPCCall(ctx, "Unary", req, opts...)
+	resp, err := c.client.RPCCall(ctx, "Unary", in.Marshal(), opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -637,9 +635,7 @@ func (c *testServiceClient) Unary(ctx context.Context, in *Simple, opts ...grpcw
 }
 
 func (c *testServiceClient) ServerStreaming(ctx context.Context, in *Simple, opts ...grpcweb.CallOption) (TestService_ServerStreamingClient, error) {
-	req := in.Marshal()
-
-	srv, err := c.client.Stream(ctx, "ServerStreaming", req, opts...)
+	srv, err := c.client.NewServerStream(ctx, "ServerStreaming", in.Marshal(), opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -651,17 +647,22 @@ func (c *testServiceClient) ServerStreaming(ctx context.Context, in *Simple, opt
 
 type TestService_ServerStreamingClient interface {
 	Recv() (*Complex, error)
+	Context() context.Context
 }
 
 type testServiceServerStreamingClient struct {
-	stream *grpcweb.StreamClient
+	stream grpcweb.ServerStream
 }
 
 func (x *testServiceServerStreamingClient) Recv() (*Complex, error) {
-	resp, err := x.stream.Recv()
+	resp, err := x.stream.RecvMsg()
 	if err != nil {
 		return nil, err
 	}
 
 	return new(Complex).Unmarshal(resp)
+}
+
+func (x *testServiceServerStreamingClient) Context() context.Context {
+	return x.stream.Context()
 }

@@ -15,6 +15,9 @@
 		Book
 		GetBookRequest
 		QueryBooksRequest
+		Collection
+		BookMessage
+		BookResponse
 */
 package library
 
@@ -465,13 +468,264 @@ func (m *QueryBooksRequest) Unmarshal(rawBytes []byte) (*QueryBooksRequest, erro
 	return m, nil
 }
 
+// Collection is a collection of books
+type Collection struct {
+	// Books is a list of books
+	Books []*Book
+}
+
+// GetBooks gets the Books of the Collection.
+func (m *Collection) GetBooks() (x []*Book) {
+	if m == nil {
+		return x
+	}
+	return m.Books
+}
+
+// MarshalToWriter marshals Collection to the provided writer.
+func (m *Collection) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	for _, msg := range m.Books {
+		writer.WriteMessage(1, func() {
+			msg.MarshalToWriter(writer)
+		})
+	}
+
+	return
+}
+
+// Marshal marshals Collection to a slice of bytes.
+func (m *Collection) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Collection from the provided reader.
+func (m *Collection) UnmarshalFromReader(reader jspb.Reader) *Collection {
+	for reader.Next() {
+		if m == nil {
+			m = &Collection{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			reader.ReadMessage(func() {
+				m.Books = append(m.Books, new(Book).UnmarshalFromReader(reader))
+			})
+		default:
+			reader.SkipField()
+		}
+	}
+
+	return m
+}
+
+// Unmarshal unmarshals a Collection from a slice of bytes.
+func (m *Collection) Unmarshal(rawBytes []byte) (*Collection, error) {
+	reader := jspb.NewReader(rawBytes)
+
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+
+// BookMessage is used to discuss books
+type BookMessage struct {
+	// Types that are valid to be assigned to Content:
+	//	*BookMessage_Name
+	//	*BookMessage_Message
+	Content isBookMessage_Content
+}
+
+// isBookMessage_Content is used to distinguish types assignable to Content
+type isBookMessage_Content interface {
+	isBookMessage_Content()
+}
+
+// BookMessage_Name is assignable to Content
+type BookMessage_Name struct {
+	// Name is the name of the person who is sending this message.
+	// It should be sent as the first message on the stream.
+	Name string
+}
+
+// BookMessage_Message is assignable to Content
+type BookMessage_Message struct {
+	// Message is any message the user wishes to send.
+	Message string
+}
+
+func (*BookMessage_Name) isBookMessage_Content()    {}
+func (*BookMessage_Message) isBookMessage_Content() {}
+
+// GetContent gets the Content of the BookMessage.
+func (m *BookMessage) GetContent() (x isBookMessage_Content) {
+	if m == nil {
+		return x
+	}
+	return m.Content
+}
+
+// GetName gets the Name of the BookMessage.
+func (m *BookMessage) GetName() (x string) {
+	if v, ok := m.GetContent().(*BookMessage_Name); ok {
+		return v.Name
+	}
+	return x
+}
+
+// GetMessage gets the Message of the BookMessage.
+func (m *BookMessage) GetMessage() (x string) {
+	if v, ok := m.GetContent().(*BookMessage_Message); ok {
+		return v.Message
+	}
+	return x
+}
+
+// MarshalToWriter marshals BookMessage to the provided writer.
+func (m *BookMessage) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	switch t := m.Content.(type) {
+	case *BookMessage_Name:
+		if len(t.Name) > 0 {
+			writer.WriteString(1, t.Name)
+		}
+	case *BookMessage_Message:
+		if len(t.Message) > 0 {
+			writer.WriteString(2, t.Message)
+		}
+	}
+
+	return
+}
+
+// Marshal marshals BookMessage to a slice of bytes.
+func (m *BookMessage) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a BookMessage from the provided reader.
+func (m *BookMessage) UnmarshalFromReader(reader jspb.Reader) *BookMessage {
+	for reader.Next() {
+		if m == nil {
+			m = &BookMessage{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.Content = &BookMessage_Name{
+				Name: reader.ReadString(),
+			}
+		case 2:
+			m.Content = &BookMessage_Message{
+				Message: reader.ReadString(),
+			}
+		default:
+			reader.SkipField()
+		}
+	}
+
+	return m
+}
+
+// Unmarshal unmarshals a BookMessage from a slice of bytes.
+func (m *BookMessage) Unmarshal(rawBytes []byte) (*BookMessage, error) {
+	reader := jspb.NewReader(rawBytes)
+
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+
+// BookResponse is used to discuss books
+type BookResponse struct {
+	// Message is a message from a user.
+	Message string
+}
+
+// GetMessage gets the Message of the BookResponse.
+func (m *BookResponse) GetMessage() (x string) {
+	if m == nil {
+		return x
+	}
+	return m.Message
+}
+
+// MarshalToWriter marshals BookResponse to the provided writer.
+func (m *BookResponse) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	if len(m.Message) > 0 {
+		writer.WriteString(2, m.Message)
+	}
+
+	return
+}
+
+// Marshal marshals BookResponse to a slice of bytes.
+func (m *BookResponse) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a BookResponse from the provided reader.
+func (m *BookResponse) UnmarshalFromReader(reader jspb.Reader) *BookResponse {
+	for reader.Next() {
+		if m == nil {
+			m = &BookResponse{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 2:
+			m.Message = reader.ReadString()
+		default:
+			reader.SkipField()
+		}
+	}
+
+	return m
+}
+
+// Unmarshal unmarshals a BookResponse from a slice of bytes.
+func (m *BookResponse) Unmarshal(rawBytes []byte) (*BookResponse, error) {
+	reader := jspb.NewReader(rawBytes)
+
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
 var _ grpcweb.Client
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpcweb package it is being compiled against.
-const _ = grpcweb.GrpcWebPackageIsVersion1
+const _ = grpcweb.GrpcWebPackageIsVersion2
 
 // Client API for BookService service
 
@@ -486,6 +740,10 @@ type BookServiceClient interface {
 	// matches the author prefix provided, as a stream
 	// of Books.
 	QueryBooks(ctx context.Context, in *QueryBooksRequest, opts ...grpcweb.CallOption) (BookService_QueryBooksClient, error)
+	// MakeCollection takes a stream of books and returns a Book collection.
+	MakeCollection(ctx context.Context, opts ...grpcweb.CallOption) (BookService_MakeCollectionClient, error)
+	// BookChat allows discussion about books
+	BookChat(ctx context.Context, opts ...grpcweb.CallOption) (BookService_BookChatClient, error)
 }
 
 type bookServiceClient struct {
@@ -500,9 +758,7 @@ func NewBookServiceClient(hostname string, opts ...grpcweb.DialOption) BookServi
 }
 
 func (c *bookServiceClient) GetBook(ctx context.Context, in *GetBookRequest, opts ...grpcweb.CallOption) (*Book, error) {
-	req := in.Marshal()
-
-	resp, err := c.client.RPCCall(ctx, "GetBook", req, opts...)
+	resp, err := c.client.RPCCall(ctx, "GetBook", in.Marshal(), opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -511,9 +767,7 @@ func (c *bookServiceClient) GetBook(ctx context.Context, in *GetBookRequest, opt
 }
 
 func (c *bookServiceClient) QueryBooks(ctx context.Context, in *QueryBooksRequest, opts ...grpcweb.CallOption) (BookService_QueryBooksClient, error) {
-	req := in.Marshal()
-
-	srv, err := c.client.Stream(ctx, "QueryBooks", req, opts...)
+	srv, err := c.client.NewServerStream(ctx, "QueryBooks", in.Marshal(), opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -525,17 +779,99 @@ func (c *bookServiceClient) QueryBooks(ctx context.Context, in *QueryBooksReques
 
 type BookService_QueryBooksClient interface {
 	Recv() (*Book, error)
+	Context() context.Context
 }
 
 type bookServiceQueryBooksClient struct {
-	stream *grpcweb.StreamClient
+	stream grpcweb.ServerStream
 }
 
 func (x *bookServiceQueryBooksClient) Recv() (*Book, error) {
-	resp, err := x.stream.Recv()
+	resp, err := x.stream.RecvMsg()
 	if err != nil {
 		return nil, err
 	}
 
 	return new(Book).Unmarshal(resp)
+}
+
+func (x *bookServiceQueryBooksClient) Context() context.Context {
+	return x.stream.Context()
+}
+
+func (c *bookServiceClient) MakeCollection(ctx context.Context, opts ...grpcweb.CallOption) (BookService_MakeCollectionClient, error) {
+	srv, err := c.client.NewClientStream(ctx, "MakeCollection")
+	if err != nil {
+		return nil, err
+	}
+
+	return &bookServiceMakeCollectionClient{stream: srv}, nil
+}
+
+type BookService_MakeCollectionClient interface {
+	Send(*Book) error
+	CloseAndRecv() (*Collection, error)
+	Context() context.Context
+}
+
+type bookServiceMakeCollectionClient struct {
+	stream grpcweb.ClientStream
+}
+
+func (x *bookServiceMakeCollectionClient) Send(req *Book) error {
+	return x.stream.SendMsg(req.Marshal())
+}
+
+func (x *bookServiceMakeCollectionClient) CloseAndRecv() (*Collection, error) {
+	resp, err := x.stream.CloseAndRecv()
+	if err != nil {
+		return nil, err
+	}
+
+	return new(Collection).Unmarshal(resp)
+}
+
+func (x *bookServiceMakeCollectionClient) Context() context.Context {
+	return x.stream.Context()
+}
+
+func (c *bookServiceClient) BookChat(ctx context.Context, opts ...grpcweb.CallOption) (BookService_BookChatClient, error) {
+	srv, err := c.client.NewClientStream(ctx, "BookChat")
+	if err != nil {
+		return nil, err
+	}
+
+	return &bookServiceBookChatClient{stream: srv}, nil
+}
+
+type BookService_BookChatClient interface {
+	Send(*BookMessage) error
+	Recv() (*BookResponse, error)
+	CloseSend() error
+	Context() context.Context
+}
+
+type bookServiceBookChatClient struct {
+	stream grpcweb.ClientStream
+}
+
+func (x *bookServiceBookChatClient) Send(req *BookMessage) error {
+	return x.stream.SendMsg(req.Marshal())
+}
+
+func (x *bookServiceBookChatClient) Recv() (*BookResponse, error) {
+	resp, err := x.stream.RecvMsg()
+	if err != nil {
+		return nil, err
+	}
+
+	return new(BookResponse).Unmarshal(resp)
+}
+
+func (x *bookServiceBookChatClient) CloseSend() error {
+	return x.stream.CloseSend()
+}
+
+func (x *bookServiceBookChatClient) Context() context.Context {
+	return x.stream.Context()
 }

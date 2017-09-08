@@ -2,7 +2,7 @@
 // source: multi/multi1.proto
 
 /*
-	Package multitest is a generated protocol buffer package.
+	Package multi is a generated protocol buffer package.
 
 	It is generated from these files:
 		multi/multi1.proto
@@ -14,7 +14,7 @@
 		Multi2
 		Multi3
 */
-package multitest
+package multi
 
 import jspb "github.com/johanbrandhorst/protobuf/jspb"
 

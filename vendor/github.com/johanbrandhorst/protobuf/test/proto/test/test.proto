@@ -3,6 +3,11 @@ syntax = "proto3";
 package test;
 
 import "google/protobuf/empty.proto";
+import "github.com/johanbrandhorst/protobuf/proto/gopherjs.proto";
+
+option go_package = "github.com/johanbrandhorst/protobuf/test/server/proto/test";
+option (gopherjs.gopherjs_package) = "github.com/johanbrandhorst/protobuf/test/client/proto/test";
+
 
 message ExtraStuff {
   map<int32, string> addresses = 1;
@@ -43,4 +48,12 @@ service TestService {
   rpc PingError(PingRequest) returns (google.protobuf.Empty) {}
 
   rpc PingList(PingRequest) returns (stream PingResponse) {}
+
+  rpc PingClientStream(stream PingRequest) returns (PingResponse) {}
+
+  rpc PingClientStreamError(stream PingRequest) returns (PingResponse) {}
+
+  rpc PingBidiStream(stream PingRequest) returns (stream PingResponse) {}
+
+  rpc PingBidiStreamError(stream PingRequest) returns (stream PingResponse) {}
 }

@@ -5,21 +5,25 @@ package main
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"flag"
 	"net/http"
 	"strings"
 	"time"
 
 	assetfs "github.com/elazarl/go-bindata-assetfs"
+	"github.com/gorilla/websocket"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/acme/autocert"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/grpclog"
 
 	"github.com/johanbrandhorst/grpcweb-example/client/compiled"
 	"github.com/johanbrandhorst/grpcweb-example/server"
 	"github.com/johanbrandhorst/grpcweb-example/server/proto/library"
+	"github.com/johanbrandhorst/protobuf/wsproxy"
 )
 
 var logger *logrus.Logger
@@ -27,11 +31,11 @@ var host = flag.String("host", "", "host to get LetsEncrypt certificate for")
 
 func init() {
 	logger = logrus.StandardLogger()
-	logrus.SetLevel(logrus.InfoLevel)
+	logrus.SetLevel(logrus.DebugLevel)
 	logrus.SetFormatter(&logrus.TextFormatter{
 		ForceColors:     true,
 		FullTimestamp:   true,
-		TimestampFormat: time.Kitchen,
+		TimestampFormat: time.RFC3339Nano,
 		DisableSorting:  true,
 	})
 	// Should only be done from init functions
@@ -45,10 +49,31 @@ func main() {
 	library.RegisterBookServiceServer(gs, &server.BookService{})
 	wrappedServer := grpcweb.WrapServer(gs)
 
+	var clientCreds credentials.TransportCredentials
+	if *host == "" {
+		var err error
+		clientCreds, err = credentials.NewClientTLSFromFile("./insecure/localhost.crt", "localhost:10000")
+		if err != nil {
+			logger.Fatalln("Failed to get local server client credentials:", err)
+		}
+	} else {
+		cp, err := x509.SystemCertPool()
+		if err != nil {
+			logger.Fatalln("Failed to get local system certpool:", err)
+		}
+		clientCreds = credentials.NewTLS(&tls.Config{RootCAs: cp})
+	}
+
+	wsproxy := wsproxy.WrapServer(
+		http.HandlerFunc(wrappedServer.ServeHTTP),
+		wsproxy.WithLogger(logger),
+		wsproxy.WithTransportCredentials(clientCreds))
+
 	handler := func(resp http.ResponseWriter, req *http.Request) {
 		// Redirect gRPC and gRPC-Web requests to the gRPC Server
-		if req.ProtoMajor == 2 && strings.Contains(req.Header.Get("Content-Type"), "application/grpc") {
-			wrappedServer.ServeHTTP(resp, req)
+		if req.ProtoMajor == 2 && strings.Contains(req.Header.Get("Content-Type"), "application/grpc") ||
+			websocket.IsWebSocketUpgrade(req) {
+			wsproxy.ServeHTTP(resp, req)
 		} else {
 			// Serve the GopherJS client
 			http.FileServer(&assetfs.AssetFS{
@@ -60,10 +85,12 @@ func main() {
 	}
 
 	httpsSrv := &http.Server{
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		IdleTimeout:  120 * time.Second,
-		Addr:         ":https",
+		// These interfere with websocket streams, disable for now
+		// ReadTimeout: 5 * time.Second,
+		// WriteTimeout: 10 * time.Second,
+		ReadHeaderTimeout: 5 * time.Second,
+		IdleTimeout:       120 * time.Second,
+		Addr:              ":https",
 		TLSConfig: &tls.Config{
 			PreferServerCipherSuites: true,
 			CurvePreferences: []tls.CurveID{
@@ -83,9 +110,9 @@ func main() {
 
 	// Create server for redirecting HTTP to HTTPS
 	httpSrv := &http.Server{
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 5 * time.Second,
-		IdleTimeout:  120 * time.Second,
+		ReadTimeout:  httpsSrv.ReadTimeout,
+		WriteTimeout: httpsSrv.WriteTimeout,
+		IdleTimeout:  httpsSrv.IdleTimeout,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			w.Header().Set("Connection", "close")
 			url := "https://" + req.Host + req.URL.String()

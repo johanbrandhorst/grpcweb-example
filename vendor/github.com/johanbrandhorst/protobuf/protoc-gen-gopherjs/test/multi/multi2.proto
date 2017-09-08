@@ -33,6 +33,10 @@ syntax = "proto3";
 
 package multitest;
 
+import "github.com/johanbrandhorst/protobuf/proto/gopherjs.proto";
+
+option (gopherjs.gopherjs_package) = "github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs/test/multi";
+
 message Multi2 {
   int32 required_value = 1;
 

@@ -31,10 +31,12 @@
 syntax = "proto3";
 
 package google.protobuf;
+import "github.com/johanbrandhorst/protobuf/proto/gopherjs.proto";
 
 option csharp_namespace = "Google.Protobuf.WellKnownTypes";
 option cc_enable_arenas = true;
-option go_package = "github.com/johanbrandhorst/protobuf/ptypes/struct;structpb";
+option go_package = "github.com/golang/protobuf/ptypes/struct;structpb";
+option (gopherjs.gopherjs_package) = "github.com/johanbrandhorst/protobuf/ptypes/struct;structpb";
 option java_package = "com.google.protobuf";
 option java_outer_classname = "StructProto";
 option java_multiple_files = true;

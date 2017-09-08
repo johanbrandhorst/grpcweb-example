@@ -2,11 +2,13 @@ regenerate:
 	cd ptypes && make regenerate
 	cd protoc-gen-gopherjs && make regenerate
 	cd test && make regenerate
+	cd proto && make regenerate
 
 install:
 	cd protoc-gen-gopherjs && go install ./
 
-tests:
+.PHONY: test
+test:
 	cd protoc-gen-gopherjs && make tests
 
 build:
@@ -14,9 +16,8 @@ build:
 
 integration:
 	bash -c "\
-		set -x \
 		trap '\
-			docker-compose logs selenium && \
+		#	docker-compose logs selenium && \
 			docker-compose logs chromedriver && \
 			docker-compose down' EXIT; \
 		docker-compose up -d && \
