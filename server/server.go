@@ -6,7 +6,10 @@ package server
 import (
 	"io"
 	"strings"
+	"sync"
 	"time"
+
+	"google.golang.org/grpc/status"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"golang.org/x/net/context"
@@ -16,7 +19,9 @@ import (
 	"github.com/johanbrandhorst/grpcweb-example/server/proto/library"
 )
 
-type BookService struct{}
+type BookService struct {
+	b broadcaster
+}
 
 var books = []*library.Book{
 	&library.Book{
@@ -124,22 +129,126 @@ func (s *BookService) MakeCollection(srv library.BookService_MakeCollectionServe
 	}
 }
 
+type broadcaster struct {
+	listenerMu sync.RWMutex
+	listeners  map[string]chan<- string
+}
+
+func (b *broadcaster) Add(name string, listener chan<- string) error {
+	b.listenerMu.Lock()
+	defer b.listenerMu.Unlock()
+	if b.listeners == nil {
+		b.listeners = map[string]chan<- string{}
+	}
+	if _, ok := b.listeners[name]; ok {
+		return status.Errorf(codes.AlreadyExists, "The name %q is already in use by someone", name)
+	}
+	b.listeners[name] = listener
+	return nil
+}
+
+func (b *broadcaster) Remove(name string) {
+	b.listenerMu.Lock()
+	defer b.listenerMu.Unlock()
+	if c, ok := b.listeners[name]; ok {
+		close(c)
+		delete(b.listeners, name)
+	}
+}
+
+func (b *broadcaster) Broadcast(ctx context.Context, msg string) {
+	b.listenerMu.RLock()
+	defer b.listenerMu.RUnlock()
+	for _, listener := range b.listeners {
+		select {
+		case listener <- msg:
+		case <-ctx.Done():
+			return
+		}
+	}
+}
+
 func (s *BookService) BookChat(srv library.BookService_BookChatServer) error {
-	for {
-		nt, err := srv.Recv()
-		if err == io.EOF {
-			// Done
+	// Listen for initial message with name
+	msg, err := srv.Recv()
+	if err == io.EOF {
+		// Uhh... if you insist!
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	nameMsg, ok := msg.GetContent().(*library.BookMessage_Name)
+	if !ok {
+		return status.Error(codes.FailedPrecondition, "first message should be the name of the user")
+	}
+
+	// Send join message before user joins
+	s.b.Broadcast(srv.Context(), nameMsg.Name+" has joined the chat")
+
+	listener := make(chan string)
+	err = s.b.Add(nameMsg.Name, listener)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		s.b.Remove(nameMsg.Name)
+		s.b.Broadcast(context.Background(), nameMsg.Name+" has left the chat")
+	}()
+
+	sendErrChan := make(chan error)
+	go func() {
+		for {
+			select {
+			case msg, ok := <-listener:
+				if !ok {
+					// Listener is closed in broadcaster.Remove,
+					// so this must mean the function has exited.
+					return
+				}
+				err = srv.Send(&library.BookResponse{Message: msg})
+				if err != nil {
+					sendErrChan <- err
+					return
+				}
+			case <-srv.Context().Done():
+				return
+			}
+		}
+	}()
+
+	recvErrChan := make(chan error)
+	go func() {
+		for {
+			msg, err := srv.Recv()
+			if err == io.EOF {
+				// Done
+				close(recvErrChan)
+				return
+			}
+			if err != nil {
+				recvErrChan <- err
+				return
+			}
+			msgMsg, ok := msg.GetContent().(*library.BookMessage_Message)
+			if !ok {
+				recvErrChan <- status.Error(codes.FailedPrecondition, "subsequent messages should not be names")
+				return
+			}
+			s.b.Broadcast(srv.Context(), nameMsg.Name+": "+msgMsg.Message)
+		}
+	}()
+
+	select {
+	case err, ok := <-recvErrChan:
+		if !ok {
+			// Success!
 			return nil
 		}
-		if err != nil {
-			return err
-		}
-
-		nt.Note = "You said: " + nt.Note
-
-		err = srv.Send(nt)
-		if err != nil {
-			return err
-		}
+		return err
+	case err := <-sendErrChan:
+		return err
+	case <-srv.Context().Done():
+		return srv.Context().Err()
 	}
 }
