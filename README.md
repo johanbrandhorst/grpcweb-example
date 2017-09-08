@@ -1,7 +1,8 @@
 # GopherJS over Improbable gRPC-Web to Go gRPC backend
 An example implementation of a
 [GopherJS React](https://myitcv.io/react)
-client talking to a Go gRPC server using the Improbable gRPC-Web implementation
+client talking to a Go gRPC server using the Improbable gRPC-Web implementation and
+the [wsproxy](https://github.com/johanbrandhorst/protobuf/tree/master/wsproxy)
 through the
 [protoc-gen-gopherjs](https://github.com/johanbrandhorst/protobuf/tree/master/protoc-gen-gopherjs)
 bindings generator.
