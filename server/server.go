@@ -177,22 +177,22 @@ func (s *BookService) BookChat(srv library.BookService_BookChatServer) error {
 	if err != nil {
 		return err
 	}
-	nameMsg, ok := msg.GetContent().(*library.BookMessage_Name)
-	if !ok {
+	name := msg.GetName()
+	if name == "" {
 		return status.Error(codes.FailedPrecondition, "first message should be the name of the user")
 	}
 
 	// Send join message before user joins
-	s.b.Broadcast(srv.Context(), nameMsg.Name+" has joined the chat")
+	s.b.Broadcast(srv.Context(), name+" has joined the chat")
 
 	listener := make(chan string)
-	err = s.b.Add(nameMsg.Name, listener)
+	err = s.b.Add(name, listener)
 	if err != nil {
 		return err
 	}
 	defer func() {
-		s.b.Remove(nameMsg.Name)
-		s.b.Broadcast(context.Background(), nameMsg.Name+" has left the chat")
+		s.b.Remove(name)
+		s.b.Broadcast(context.Background(), name+" has left the chat")
 	}()
 
 	sendErrChan := make(chan error)
@@ -229,12 +229,7 @@ func (s *BookService) BookChat(srv library.BookService_BookChatServer) error {
 				recvErrChan <- err
 				return
 			}
-			msgMsg, ok := msg.GetContent().(*library.BookMessage_Message)
-			if !ok {
-				recvErrChan <- status.Error(codes.FailedPrecondition, "subsequent messages should not be names")
-				return
-			}
-			s.b.Broadcast(srv.Context(), nameMsg.Name+": "+msgMsg.Message)
+			s.b.Broadcast(srv.Context(), name+": "+msg.GetMessage())
 		}
 	}()
 
