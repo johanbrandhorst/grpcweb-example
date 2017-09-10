@@ -2,6 +2,7 @@ package grpcweb
 
 import (
 	"context"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
@@ -247,12 +248,22 @@ func (c *conn) RecvMsg() ([]byte, error) {
 
 		switch m := event.(type) {
 		case *messageEvent:
+			var message []byte
 			// Check if it's an array buffer. If so, convert it to a Go byte slice.
 			if constructor := m.Data.Get("constructor"); constructor == js.Global.Get("ArrayBuffer") {
-				uint8Array := js.Global.Get("Uint8Array").New(m.Data)
-				return uint8Array.Interface().([]byte), nil
+				message = js.Global.Get("Uint8Array").New(m.Data).Interface().([]byte)
+			} else {
+				message = []byte(m.Data.String())
 			}
-			return []byte(m.Data.String()), nil
+			if len(message) < 4 {
+				return nil, errors.New("invalid message received: message too small")
+			}
+			header, payload := message[0:5], message[5:]
+			payloadSize := int(binary.BigEndian.Uint32(header[1:]))
+			if len(payload) != payloadSize {
+				return nil, errors.New("invalid message received: payload header size mismatch")
+			}
+			return payload, nil
 		case *closeEvent:
 			close(c.ch)
 			st := mapWebsocketError(m)
@@ -273,18 +284,20 @@ func (c *conn) RecvMsg() ([]byte, error) {
 
 // SendMsg sends a message on the stream.
 func (c *conn) SendMsg(msg []byte) error {
-	err := c.Send(msg)
-	if err != nil {
-		return err
-	}
-	return nil
+	// Append header
+	payload := append(make([]byte, 5), msg...)
+	// Skip first byte to indicate no compression
+	// TODO: Add compression?
+	// Encode size of payload to byte 1-4
+	binary.BigEndian.PutUint32(payload[1:5], uint32(len(msg)))
+	return c.Send(payload)
 }
 
 // CloseSend closes the stream.
 func (c *conn) CloseSend() error {
 	// CloseSend does not itself read the close event,
 	// it will be done by the next Recv
-	return c.SendMsg(internal.FormatCloseMessage())
+	return c.Send(internal.FormatCloseMessage())
 }
 
 // CloseAndRecv closes the stream and returns the last message.

@@ -33,10 +33,13 @@ client stream will be opened to the underlying gRPC server.
 ## The "protocol"
 After the connection has been established, the following message format is expected:
 
-1. Each incoming message is a proto encoded binary blob.
+1. Each incoming message is a proto encoded binary blob with a gRPC style 5 byte
+header prefix indicating the compression status and the size of the message.
 This message is passed directly to the gRPC stream.
 A message consisting of the ASCII string "clos" indicates a wish
-to close the stream.
-1. Replies are sent as encoded proto binary blobs.
+to close the stream. This tells the stream the last message has been seen.
+1. Replies are sent as encoded proto binary blobs with previously described gRPC
+style header prefixed.
 1. Errors are sent with a websocket Close control message.
 gRPC error codes are mapped by adding 4000 to the error code.
+1. Trailers and Headers are currently unsupported.
