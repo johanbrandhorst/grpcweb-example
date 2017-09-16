@@ -187,7 +187,9 @@ func (t toggleconnect) OnClick(se *r.SyntheticMouseEvent) {
 			newSt.connTimeout = 0
 			err := newSt.client.CloseSend()
 			newSt.client = nil
-			newSt.err = err.Error()
+			if err != nil {
+				newSt.err = err.Error()
+			}
 			return
 		}
 
