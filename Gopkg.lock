@@ -10,7 +10,7 @@
 [[projects]]
   branch = "master"
   name = "github.com/golang/protobuf"
-  packages = ["proto","protoc-gen-go/descriptor","ptypes/any","ptypes/timestamp"]
+  packages = ["proto","protoc-gen-go/descriptor","ptypes","ptypes/any","ptypes/duration","ptypes/timestamp"]
   revision = "1909bc2f63dc92bb931deace8b8312c4db72d12f"
 
 [[projects]]
@@ -38,10 +38,10 @@
   revision = "d77bb3348c50d37edc7f076adbd5003b34e5c78f"
 
 [[projects]]
-  branch = "master"
   name = "github.com/johanbrandhorst/protobuf"
   packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/metadata","grpcweb/status","internal","jspb","proto","ptypes/timestamp","wsproxy"]
-  revision = "a67525b0a8de9f675f016f8f823f1f0aa8e54f4b"
+  revision = "31da8ce827cbb5d269def799a4a38a476ae7223e"
+  version = "v0.4.2"
 
 [[projects]]
   name = "github.com/rs/cors"
@@ -87,9 +87,9 @@
 
 [[projects]]
   name = "google.golang.org/grpc"
-  packages = [".","codes","credentials","grpclb/grpc_lb_v1","grpclog","internal","keepalive","metadata","naming","peer","stats","status","tap","transport"]
-  revision = "b8669c35455183da6d5c474ea6e72fbf55183274"
-  version = "v1.5.1"
+  packages = [".","balancer","codes","connectivity","credentials","grpclb/grpc_lb_v1/messages","grpclog","internal","keepalive","metadata","naming","peer","resolver","stats","status","tap","transport"]
+  revision = "f7bf885db0b7479a537ec317c6e48ce53145f3db"
+  version = "v1.7.0"
 
 [[projects]]
   branch = "master"

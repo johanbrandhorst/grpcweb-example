@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"google.golang.org/grpc/codes"
@@ -17,6 +18,8 @@ import (
 
 	"github.com/johanbrandhorst/protobuf/internal"
 )
+
+const headerSize = 5
 
 // Logger is the interface used by the proxy to log events
 type Logger interface {
@@ -115,11 +118,14 @@ func (p *proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	host := withPort(r.Host)
 	p.logger.Debugln("Creating new transport with addr:", host)
-	t, err := transport.NewClientTransport(ctx,
+	t, err := transport.NewClientTransport(
+		ctx,
 		transport.TargetInfo{Addr: host},
 		transport.ConnectOptions{
 			TransportCredentials: p.creds,
-		})
+		},
+		time.Second*20,
+	)
 	if err != nil {
 		closeMsg := formatCloseMessage(websocket.CloseInternalServerErr, err.Error())
 		_ = conn.WriteMessage(websocket.CloseMessage, closeMsg)
@@ -182,14 +188,14 @@ func (p *proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 			p.logger.Debugln("[READ] Read payload:", payload)
 			if internal.IsCloseMessage(payload) {
-				err = t.Write(s, nil, &transport.Options{Last: true})
+				err = t.Write(s, nil, nil, &transport.Options{Last: true})
 				if err == io.EOF || err == nil {
 					// Do not want to cancel context here, want
 					// Writer to read io.EOF then exit.
 					return
 				}
 			} else {
-				err = t.Write(s, payload, &transport.Options{Last: false})
+				err = t.Write(s, payload[:headerSize], payload[headerSize:], &transport.Options{Last: false})
 			}
 
 			if err != nil {
@@ -204,7 +210,7 @@ func (p *proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Write loop -- take messages from stream and write to websocket
-	var header [5]byte
+	var header [headerSize]byte
 	var msg []byte
 	for {
 		// Read header

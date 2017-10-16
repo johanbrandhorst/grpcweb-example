@@ -1,5 +1,5 @@
 # GopherJS Bindings for ProtobufJS and gRPC-Web
-[![CircleCI](https://circleci.com/gh/johanbrandhorst/protobuf/tree/master.svg?style=svg)](https://circleci.com/gh/johanbrandhorst/protobuf/tree/master)
+[![CircleCI](https://circleci.com/gh/johanbrandhorst/protobuf/tree/master.svg?style=svg)](https://circleci.com/gh/johanbrandhorst/protobuf/tree/master) [![Go Report Card](https://goreportcard.com/badge/github.com/johanbrandhorst/protobuf)](https://goreportcard.com/report/github.com/johanbrandhorst/protobuf)
 
 ### [GopherJS Protobuf Generator](./protoc-gen-gopherjs/README.md)
 This is a GopherJS client code generator for the Google Protobuf format.
