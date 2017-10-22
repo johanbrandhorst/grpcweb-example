@@ -1,5 +1,8 @@
 # GopherJS over Improbable gRPC-Web to Go gRPC backend
 [![CircleCI](https://circleci.com/gh/johanbrandhorst/grpcweb-example.svg?style=svg)](https://circleci.com/gh/johanbrandhorst/grpcweb-example)
+<a href="https://cloud.docker.com/swarm/jfbrandhorst/repository/docker/jfbrandhorst/grpcweb-example/general" alt="Docker cloud repo">
+<img src="https://www.docker.com/sites/default/files/mono_horizontal_large.png" height="18"/>
+</a>
 
 An example implementation of a
 [GopherJS React](https://myitcv.io/react)
@@ -28,7 +31,12 @@ $ go get -u github.com/gopherjs/gopherjs
 Then you'll need to also install some vendored generators:
 
 ```
-$ go install ./vendor/myitcv.io/react/cmd/reactGen ./vendor/myitcv.io/immutable/cmd/immutableGen
+$ go install \
+    ./vendor/github.com/golang/protobuf/protoc-gen-go \
+    ./vendor/github.com/jteeuwen/go-bindata/go-bindata \
+    ./vendor/github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs \
+    ./vendor/myitcv.io/react/cmd/reactGen \
+    ./vendor/myitcv.io/immutable/cmd/immutableGen
 ```
 
 After that, any changes you make to the proto file in `./proto/` or the JS client code
