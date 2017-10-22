@@ -1,0 +1,59 @@
+version: 2
+jobs:
+  generate:
+    docker:
+      - image: 'golang:latest'
+    working_directory: /go/src/github.com/johanbrandhorst/grpcweb-example
+    steps:
+      - checkout
+      - run:
+          name: Install protoc
+          command: >
+            apt-get update
+
+            apt-get install -y unzip git wget python3
+
+            rm -rf /var/lib/apt/lists/*
+
+            wget
+            https://github.com/google/protobuf/releases/download/v3.3.0/protoc-3.3.0-linux-x86_64.zip
+
+            unzip protoc-3.3.0-linux-x86_64.zip -d /usr/local
+
+            rm protoc-3.3.0-linux-x86_64.zip
+
+            apt-get remove -y wget unzip
+
+            apt-get autoremove -y
+      - run:
+          name: Install go dependencies
+          command: >
+            go install ./vendor/github.com/golang/protobuf/protoc-gen-go
+            ./vendor/github.com/jteeuwen/go-bindata/go-bindata
+            ./vendor/github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs
+            ./vendor/myitcv.io/react/cmd/reactGen
+            ./vendor/myitcv.io/immutable/cmd/immutableGen
+
+            # GopherJS cannot be vendored so must be fetched
+
+            go get -u -v github.com/gopherjs/gopherjs
+      - run:
+          name: Regenerate
+          command: |
+            make regenerate
+            git diff --exit-code
+  build:
+    docker:
+      - image: 'golang:latest'
+    working_directory: /go/src/github.com/johanbrandhorst/grpcweb-example
+    steps:
+      - checkout
+      - run: CGO_ENABLED=0 go build main.go
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - generate
+      - build:
+          requires:
+            - generate
