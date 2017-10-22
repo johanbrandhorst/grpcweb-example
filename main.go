@@ -77,9 +77,8 @@ func main() {
 		} else {
 			// Serve the GopherJS client
 			http.FileServer(&assetfs.AssetFS{
-				Asset:     compiled.Asset,
-				AssetDir:  compiled.AssetDir,
-				AssetInfo: compiled.AssetInfo,
+				Asset:    compiled.Asset,
+				AssetDir: compiled.AssetDir,
 			}).ServeHTTP(resp, req)
 		}
 	}
