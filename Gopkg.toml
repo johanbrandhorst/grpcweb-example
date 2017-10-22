@@ -21,6 +21,13 @@
 #  version = "2.4.0"
 
 ignored = ["github.com/gopherjs/gopherjs/js"]
+required = [
+  "github.com/golang/protobuf/protoc-gen-go",
+  "github.com/jteeuwen/go-bindata/go-bindata",
+  "github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs",
+  "myitcv.io/react/cmd/reactGen",
+  "myitcv.io/immutable/cmd/immutableGen",
+]
 
 [[constraint]]
   name = "github.com/sirupsen/logrus"
@@ -33,10 +40,6 @@ ignored = ["github.com/gopherjs/gopherjs/js"]
 [[constraint]]
   branch = "master"
   name = "github.com/golang/protobuf"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/gopherjs/gopherjs"
 
 [[constraint]]
   branch = "master"

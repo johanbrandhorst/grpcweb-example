@@ -1,0 +1,41 @@
+version: '2'
+networks:
+    internal:
+        driver: bridge
+services:
+    chromedriver:
+        environment:
+            CHROMEDRIVER_WHITELISTED_IPS: ""
+        expose:
+            - "4444"
+        image: robcherry/docker-chromedriver:latest
+        networks:
+            - internal
+        privileged: true
+    #selenium:
+    #    expose:
+    #        - "4444"
+    #    image: selenium/standalone-firefox:latest
+    #    networks:
+    #        - internal
+    testrunner:
+        # This just sleeps, we execute the test command using docker-compose exec.
+        container_name: testrunner
+        command: sleep infinity
+        depends_on:
+            - chromedriver
+    #       - selenium
+        environment:
+            CHROMEDRIVER_ADDR: chromedriver:4444
+            #SELENIUM_ADDR: selenium:4444
+            GOPHERJS_SERVER_ADDR: testrunner:8080
+        expose:
+            - "8080"
+            - "9090"
+            - "9095"
+            - "9100"
+            - "9105"
+        image: golang:latest
+        networks:
+            - internal
+

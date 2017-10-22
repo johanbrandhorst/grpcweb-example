@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  revision = "346938d642f2ec3594ed81d874461961cd0faa76"
+  version = "v1.1.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/elazarl/go-bindata-assetfs"
   packages = ["."]
@@ -9,8 +15,14 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/golang/glog"
+  packages = ["."]
+  revision = "23def4e6c14b4da8ac2ed8007337bc5eb5007998"
+
+[[projects]]
+  branch = "master"
   name = "github.com/golang/protobuf"
-  packages = ["proto","protoc-gen-go/descriptor","ptypes","ptypes/any","ptypes/duration","ptypes/timestamp"]
+  packages = ["proto","proto/proto3_proto","proto/testdata","protoc-gen-go","protoc-gen-go/descriptor","protoc-gen-go/generator","protoc-gen-go/grpc","protoc-gen-go/plugin","ptypes","ptypes/any","ptypes/duration","ptypes/empty","ptypes/timestamp"]
   revision = "1909bc2f63dc92bb931deace8b8312c4db72d12f"
 
 [[projects]]
@@ -34,14 +46,44 @@
 [[projects]]
   branch = "master"
   name = "github.com/improbable-eng/grpc-web"
-  packages = ["go/grpcweb"]
+  packages = ["go/grpcweb","test/go/_proto/improbable/grpcweb/test"]
   revision = "d77bb3348c50d37edc7f076adbd5003b34e5c78f"
 
 [[projects]]
   name = "github.com/johanbrandhorst/protobuf"
-  packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/metadata","grpcweb/status","internal","jspb","proto","ptypes/timestamp","wsproxy"]
+  packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/metadata","grpcweb/status","internal","jspb","proto","protoc-gen-gopherjs","protoc-gen-gopherjs/generator","protoc-gen-gopherjs/grpc","ptypes/timestamp","wsproxy"]
   revision = "31da8ce827cbb5d269def799a4a38a476ae7223e"
   version = "v0.4.2"
+
+[[projects]]
+  name = "github.com/jteeuwen/go-bindata"
+  packages = [".","go-bindata"]
+  revision = "bbd0c6e271208dce66d8fda4bc536453cd27fc4a"
+  version = "v3.0.7"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/mwitkow/go-conntrack"
+  packages = ["connhelpers"]
+  revision = "cc309e4a22231782e8893f3c35ced0967807a33e"
+
+[[projects]]
+  name = "github.com/onsi/ginkgo"
+  packages = [".","config","internal/codelocation","internal/containernode","internal/failer","internal/leafnodes","internal/remote","internal/spec","internal/spec_iterator","internal/specrunner","internal/suite","internal/testingtproxy","internal/writer","reporters","reporters/stenographer","reporters/stenographer/support/go-colorable","reporters/stenographer/support/go-isatty","types"]
+  revision = "9eda700730cba42af70d53180f9dcce9266bc2bc"
+  version = "v1.4.0"
+
+[[projects]]
+  name = "github.com/onsi/gomega"
+  packages = [".","format","internal/assertion","internal/asyncassertion","internal/oraclematcher","internal/testingtsupport","matchers","matchers/support/goraph/bipartitegraph","matchers/support/goraph/edge","matchers/support/goraph/node","matchers/support/goraph/util","types"]
+  revision = "c893efa28eb45626cdaa76c9f653b62488858837"
+  version = "v1.2.0"
+
+[[projects]]
+  name = "github.com/pmezard/go-difflib"
+  packages = ["difflib"]
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
 
 [[projects]]
   name = "github.com/rs/cors"
@@ -56,6 +98,12 @@
   version = "1.0.2"
 
 [[projects]]
+  name = "github.com/stretchr/testify"
+  packages = ["assert","require","suite"]
+  revision = "69483b4bd14f5845b5a1e55bca19e954e827f1d0"
+  version = "v1.1.4"
+
+[[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["acme","acme/autocert"]
@@ -64,8 +112,14 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = ["context","http2","http2/hpack","idna","internal/timeseries","lex/httplex","trace"]
+  packages = ["context","html","html/atom","html/charset","http2","http2/hpack","idna","internal/timeseries","lex/httplex","trace"]
   revision = "1c05540f6879653db88113bc4a2b70aec4bd491f"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sync"
+  packages = ["errgroup"]
+  revision = "8e0aa688b654ef28caa72506fa5ec8dba9fc7690"
 
 [[projects]]
   branch = "master"
@@ -76,20 +130,32 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/text"
-  packages = ["internal/gen","internal/triegen","internal/ucd","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
+  packages = ["encoding","encoding/charmap","encoding/htmlindex","encoding/internal","encoding/internal/identifier","encoding/japanese","encoding/korean","encoding/simplifiedchinese","encoding/traditionalchinese","encoding/unicode","internal/gen","internal/tag","internal/testtext","internal/triegen","internal/ucd","internal/utf8internal","language","runes","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
   revision = "e56139fd9c5bc7244c76116c68e500765bb6db6b"
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/tools"
+  packages = ["go/types/typeutil"]
+  revision = "9bd2f442688b66c5289262d70f537c2ecf81d7de"
+
+[[projects]]
+  branch = "master"
   name = "google.golang.org/genproto"
-  packages = ["googleapis/rpc/status"]
+  packages = ["googleapis/rpc/code","googleapis/rpc/errdetails","googleapis/rpc/status"]
   revision = "09f6ed296fc66555a25fe4ce95173148778dfa85"
 
 [[projects]]
   name = "google.golang.org/grpc"
-  packages = [".","balancer","codes","connectivity","credentials","grpclb/grpc_lb_v1/messages","grpclog","internal","keepalive","metadata","naming","peer","resolver","stats","status","tap","transport"]
+  packages = [".","balancer","codes","connectivity","credentials","grpclb/grpc_lb_v1/messages","grpclb/grpc_lb_v1/service","grpclog","grpclog/glogger","internal","keepalive","metadata","naming","peer","resolver","resolver/manual","stats","stats/grpc_testing","status","tap","test/codec_perf","test/grpc_testing","test/leakcheck","testdata","transport"]
   revision = "f7bf885db0b7479a537ec317c6e48ce53145f3db"
   version = "v1.7.0"
+
+[[projects]]
+  branch = "v2"
+  name = "gopkg.in/yaml.v2"
+  packages = ["."]
+  revision = "eb3733d160e74a9c7e442f435eb3bea458e1d19f"
 
 [[projects]]
   branch = "master"
@@ -111,6 +177,12 @@
 
 [[projects]]
   branch = "master"
+  name = "myitcv.io/gogenerate"
+  packages = ["."]
+  revision = "bd69a94c96953d20e106734856b69d71c8fa122b"
+
+[[projects]]
+  branch = "master"
   name = "myitcv.io/highlightjs"
   packages = ["."]
   revision = "e0ea663591fbdbce10ca2658c680ba7be2391ff8"
@@ -118,18 +190,18 @@
 [[projects]]
   branch = "master"
   name = "myitcv.io/immutable"
-  packages = ["."]
+  packages = [".","cmd/immutableGen","util"]
   revision = "eefcc7e9b328f3ce6a8acd40ff2e8152a1a5d839"
 
 [[projects]]
   branch = "master"
   name = "myitcv.io/react"
-  packages = [".","internal/bundle","internal/dev","internal/preact","internal/prod"]
+  packages = [".","cmd/reactGen","internal/bundle","internal/dev","internal/preact","internal/prod"]
   revision = "f912ff47af223a412e52253b2e7908612a573c3c"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4cef3038c7dc9b6f9b472a41a05f655503ad558d61351ee24c8bc16317e54960"
+  inputs-digest = "82e722692eff00513124e67d9fa78da40cfbba0bad2ab9f1202dbe1ef112164e"
   solver-name = "gps-cdcl"
   solver-version = 1
