@@ -1,4 +1,6 @@
 # GopherJS over Improbable gRPC-Web to Go gRPC backend
+[![CircleCI](https://circleci.com/gh/johanbrandhorst/grpcweb-example.svg?style=svg)](https://circleci.com/gh/johanbrandhorst/grpcweb-example)
+
 An example implementation of a
 [GopherJS React](https://myitcv.io/react)
 client talking to a Go gRPC server using the Improbable gRPC-Web implementation and
