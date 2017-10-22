@@ -25,7 +25,7 @@ func buildBookChat(cd react.ComponentDef) react.Component {
 
 func buildBookChatElem(props BookChatProps, children ...react.Element) *BookChatElem {
 	return &BookChatElem{
-		Element: react.CreateElement(buildBookChat, props),
+		Element: react.CreateElement(buildBookChat, props, children...),
 	}
 }
 

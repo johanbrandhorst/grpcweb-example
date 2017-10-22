@@ -25,7 +25,7 @@ func buildGetBook(cd react.ComponentDef) react.Component {
 
 func buildGetBookElem(props GetBookProps, children ...react.Element) *GetBookElem {
 	return &GetBookElem{
-		Element: react.CreateElement(buildGetBook, props),
+		Element: react.CreateElement(buildGetBook, props, children...),
 	}
 }
 

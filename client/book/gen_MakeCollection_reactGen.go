@@ -25,7 +25,7 @@ func buildMakeCollection(cd react.ComponentDef) react.Component {
 
 func buildMakeCollectionElem(props MakeCollectionProps, children ...react.Element) *MakeCollectionElem {
 	return &MakeCollectionElem{
-		Element: react.CreateElement(buildMakeCollection, props),
+		Element: react.CreateElement(buildMakeCollection, props, children...),
 	}
 }
 

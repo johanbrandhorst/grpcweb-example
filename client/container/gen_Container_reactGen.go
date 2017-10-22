@@ -22,7 +22,7 @@ func buildContainer(cd react.ComponentDef) react.Component {
 
 func buildContainerElem(children ...react.Element) *ContainerElem {
 	return &ContainerElem{
-		Element: react.CreateElement(buildContainer, nil),
+		Element: react.CreateElement(buildContainer, nil, children...),
 	}
 }
 

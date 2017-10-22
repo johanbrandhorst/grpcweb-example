@@ -25,7 +25,7 @@ func buildQueryBooks(cd react.ComponentDef) react.Component {
 
 func buildQueryBooksElem(props QueryBooksProps, children ...react.Element) *QueryBooksElem {
 	return &QueryBooksElem{
-		Element: react.CreateElement(buildQueryBooks, props),
+		Element: react.CreateElement(buildQueryBooks, props, children...),
 	}
 }
 
