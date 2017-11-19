@@ -40,7 +40,6 @@ jobs:
           name: Regenerate
           command: |
             make regenerate
-            git diff --exit-code
   build:
     docker:
       - image: 'golang:latest'
