@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/gorilla/websocket"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/sirupsen/logrus"
@@ -76,10 +75,7 @@ func main() {
 			wsproxy.ServeHTTP(resp, req)
 		} else {
 			// Serve the GopherJS client
-			http.FileServer(&assetfs.AssetFS{
-				Asset:    compiled.Asset,
-				AssetDir: compiled.AssetDir,
-			}).ServeHTTP(resp, req)
+			http.FileServer(compiled.Assets).ServeHTTP(resp, req)
 		}
 	}
 
