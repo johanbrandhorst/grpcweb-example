@@ -115,7 +115,6 @@ func (t triggerQuery) OnClick(se *r.SyntheticMouseEvent) {
 		}()
 		newSt.err = ""
 
-		// 10 second timeout
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 
@@ -147,6 +146,8 @@ func (t triggerQuery) OnClick(se *r.SyntheticMouseEvent) {
 			}
 
 			newSt.books = newSt.books.Append(bk)
+			// Set state to immediately show book to user
+			t.q.SetState(newSt)
 		}
 	}()
 
