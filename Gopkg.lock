@@ -32,16 +32,10 @@
   revision = "0ab7201b53447db59d63ff3a95173e565baae10a"
 
 [[projects]]
+  branch = "master"
   name = "github.com/johanbrandhorst/protobuf"
   packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/metadata","grpcweb/status","internal","jspb","proto","protoc-gen-gopherjs","protoc-gen-gopherjs/generator","protoc-gen-gopherjs/grpc","ptypes/timestamp","wsproxy"]
-  revision = "15c792319acce62cdfde1b7770965fdd167f891b"
-  version = "v0.5.1"
-
-[[projects]]
-  name = "github.com/jteeuwen/go-bindata"
-  packages = [".","go-bindata"]
-  revision = "bbd0c6e271208dce66d8fda4bc536453cd27fc4a"
-  version = "v3.0.7"
+  revision = "60d0fc7c5ab54ad205aeb09193eae96dfdc2066f"
 
 [[projects]]
   name = "github.com/rs/cors"
@@ -154,6 +148,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f2f6536c109c4d54ffe88dbe0717a6c718fcfbbf8183f2678d907485aebf3d0a"
+  inputs-digest = "c17555773e5ce1894d9c4e058e8ca0202d5a176ddad23b2980ca74accf9e404e"
   solver-name = "gps-cdcl"
   solver-version = 1

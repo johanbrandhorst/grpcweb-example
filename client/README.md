@@ -18,7 +18,7 @@ themselves interface with the `protoc-gen-go` generated interface in the `proto`
 
 ### Compiled
 
-The `compiled` package is a `go-bindata` generated package, created from the contents of
+The `compiled` package is a `vfsgen` generated package, created from the contents of
 the `html` folder. It serves as the interface that the `main.go` server uses to serve
 the GopherJS frontend without the need for a `static` directory. The generation is done
 via `go:generate` in `app.go`.
@@ -33,7 +33,7 @@ the examples, fetching the source code and rendering the components for each.
 
 The `html` folder contains the static sources used, and during generation it also contains
 the GopherJS generated javascript. They are removed after generation is complete as they're
-just an intermediary to the final, compiled, `go-bindata` go package. The favicon included
+just an intermediary to the final, compiled, `vfsgen` go package. The favicon included
 is borrowed from the [grpc.github.io](https://github.com/grpc/grpc.github.io/) repo, and
 subject to the LICENSE therein.
 

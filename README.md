@@ -33,7 +33,6 @@ Then you'll need to also install some vendored generators:
 ```
 $ go install \
     ./vendor/github.com/golang/protobuf/protoc-gen-go \
-    ./vendor/github.com/jteeuwen/go-bindata/go-bindata \
     ./vendor/github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs \
     ./vendor/myitcv.io/react/cmd/reactGen \
     ./vendor/myitcv.io/immutable/cmd/immutableGen
