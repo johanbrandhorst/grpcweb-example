@@ -1,5 +1,7 @@
 # Websocket to bi-directional gRPC stream proxy
 
+[![GoDoc](https://godoc.org/github.com/johanbrandhorst/protobuf/wsproxy?status.svg)](https://godoc.org/github.com/johanbrandhorst/protobuf/wsproxy)
+
 This package implements a Websocket to gRPC streaming proxy.
 It supports both client side streaming and bi-directional streams.
 

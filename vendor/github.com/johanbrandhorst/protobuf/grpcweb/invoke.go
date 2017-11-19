@@ -12,8 +12,18 @@ import (
 )
 
 // Invoke populates the necessary JS structures and performs the gRPC-web call.
-// It attempts to catch any JS errors thrown.
-func invoke(ctx context.Context, host, service, method string, req []byte, onMsg onMessageFunc, onEnd onEndFunc, opts ...CallOption) (err error) {
+// It attempts to catch any JS errors thrown. It returns a function that can
+// be used to cancel the request.
+func invoke(
+	ctx context.Context,
+	host,
+	service,
+	method string,
+	req []byte,
+	onMsg onMessageFunc,
+	onEnd onEndFunc,
+	opts ...CallOption,
+) (cancel context.CancelFunc, err error) {
 	methodDesc := newMethodDescriptor(newService(service), method, newResponseType())
 
 	c := &callInfo{}
@@ -56,11 +66,16 @@ func invoke(ctx context.Context, host, service, method string, req []byte, onMsg
 	// Perform CallOptions required before call
 	for _, o := range opts {
 		if err := o.before(c); err != nil {
-			return status.FromError(err)
+			return nil, status.FromError(err)
 		}
 	}
 
-	js.Global.Get("grpc").Call("invoke", methodDesc, props)
+	request := js.Global.Get("grpc").Call("invoke", methodDesc, props)
 
-	return nil
+	cancelFunc := func() {
+		// https://github.com/improbable-eng/grpc-web/blob/0ab7201b53447db59d63ff3a95173e565baae10a/ts/src/grpc.ts#L310
+		request.Call("abort")
+	}
+
+	return cancelFunc, nil
 }

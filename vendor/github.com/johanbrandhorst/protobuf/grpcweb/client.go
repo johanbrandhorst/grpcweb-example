@@ -66,10 +66,11 @@ func (c Client) RPCCall(ctx context.Context, method string, req []byte, opts ...
 			errChan <- io.EOF // Success!
 		}
 	}
-	err := invoke(ctx, c.host, c.service, method, req, onMsg, onEnd, opts...)
+	cancel, err := invoke(ctx, c.host, c.service, method, req, onMsg, onEnd, opts...)
 	if err != nil {
 		return nil, err
 	}
+	defer cancel()
 
 	select {
 	case err := <-errChan:

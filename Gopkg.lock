@@ -3,12 +3,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/elazarl/go-bindata-assetfs"
-  packages = ["."]
-  revision = "30f82fa23fd844bd5bb1e5f216db87fd77b5eb43"
-
-[[projects]]
-  branch = "master"
   name = "github.com/golang/protobuf"
   packages = ["proto","protoc-gen-go","protoc-gen-go/descriptor","protoc-gen-go/generator","protoc-gen-go/grpc","protoc-gen-go/plugin","ptypes","ptypes/any","ptypes/duration","ptypes/timestamp"]
   revision = "1643683e1b54a9e88ad26d98f81400c8c9d9f4f9"
@@ -40,8 +34,8 @@
 [[projects]]
   name = "github.com/johanbrandhorst/protobuf"
   packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/metadata","grpcweb/status","internal","jspb","proto","protoc-gen-gopherjs","protoc-gen-gopherjs/generator","protoc-gen-gopherjs/grpc","ptypes/timestamp","wsproxy"]
-  revision = "31da8ce827cbb5d269def799a4a38a476ae7223e"
-  version = "v0.4.2"
+  revision = "15c792319acce62cdfde1b7770965fdd167f891b"
+  version = "v0.5.1"
 
 [[projects]]
   name = "github.com/jteeuwen/go-bindata"
@@ -54,6 +48,18 @@
   packages = ["."]
   revision = "7af7a1e09ba336d2ea14b1ce73bf693c6837dbf6"
   version = "v1.2"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/shurcooL/httpfs"
+  packages = ["vfsutil"]
+  revision = "bc35257962c2dea93e81c976b72c7c6eac45fd8a"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/shurcooL/vfsgen"
+  packages = ["."]
+  revision = "7dfd1165447c0a044ec31767147b33233ce8450b"
 
 [[projects]]
   name = "github.com/sirupsen/logrus"
@@ -88,7 +94,7 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/tools"
-  packages = ["go/types/typeutil"]
+  packages = ["go/types/typeutil","godoc/vfs"]
   revision = "9bd2f442688b66c5289262d70f537c2ecf81d7de"
 
 [[projects]]
@@ -148,6 +154,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1ae4ad78e79c90add9d65fc7a3b4353e84ca6949540246b3570bd0075a9ce1ba"
+  inputs-digest = "f2f6536c109c4d54ffe88dbe0717a6c718fcfbbf8183f2678d907485aebf3d0a"
   solver-name = "gps-cdcl"
   solver-version = 1

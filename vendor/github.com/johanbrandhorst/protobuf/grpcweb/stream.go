@@ -33,6 +33,7 @@ import (
 // reader of messages received on the stream.
 type streamClient struct {
 	ctx      context.Context
+	cancel   context.CancelFunc
 	messages chan []byte
 	errors   chan error
 }
@@ -61,10 +62,12 @@ func (c Client) NewServerStream(ctx context.Context, method string, req []byte, 
 			srv.errors <- io.EOF
 		}
 	}
-	err := invoke(ctx, c.host, c.service, method, req, onMsg, onEnd, opts...)
+	cancel, err := invoke(ctx, c.host, c.service, method, req, onMsg, onEnd, opts...)
 	if err != nil {
 		return nil, err
 	}
+
+	srv.cancel = cancel
 
 	return srv, nil
 }
@@ -77,6 +80,7 @@ func (s streamClient) RecvMsg() ([]byte, error) {
 	case err := <-s.errors:
 		return nil, err
 	case <-s.ctx.Done():
+		s.cancel()
 		return nil, s.ctx.Err()
 	}
 }
