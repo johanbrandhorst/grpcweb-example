@@ -93,11 +93,10 @@ var books = []*library.Book{
 	},
 }
 
-func (s *BookService) GetBook(ctx context.Context, bookQuery *library.GetBookRequest) (book *library.Book, err error) {
+func (s *BookService) GetBook(ctx context.Context, bookQuery *library.GetBookRequest) (*library.Book, error) {
 	for _, bk := range books {
 		if bk.Isbn == bookQuery.Isbn {
-			book = bk
-			return
+			return bk, nil
 		}
 	}
 
@@ -106,8 +105,17 @@ func (s *BookService) GetBook(ctx context.Context, bookQuery *library.GetBookReq
 
 func (s *BookService) QueryBooks(bookQuery *library.QueryBooksRequest, stream library.BookService_QueryBooksServer) error {
 	for _, book := range books {
+		select {
+		case <-stream.Context().Done():
+			return nil
+		default:
+		}
+
 		if strings.HasPrefix(book.Author, bookQuery.AuthorPrefix) {
-			stream.Send(book)
+			err := stream.Send(book)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
