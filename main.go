@@ -103,27 +103,25 @@ func main() {
 		logger.Fatal(httpsSrv.ListenAndServeTLS("./insecure/localhost.crt", "./insecure/localhost.key"))
 	}
 
-	// Create server for redirecting HTTP to HTTPS
-	httpSrv := &http.Server{
-		ReadTimeout:  httpsSrv.ReadTimeout,
-		WriteTimeout: httpsSrv.WriteTimeout,
-		IdleTimeout:  httpsSrv.IdleTimeout,
-		Handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			w.Header().Set("Connection", "close")
-			url := "https://" + req.Host + req.URL.String()
-			http.Redirect(w, req, url, http.StatusMovedPermanently)
-		}),
-	}
-	go func() {
-		logger.Fatal(httpSrv.ListenAndServe())
-	}()
-
 	// Create auto-certificate https server
 	m := autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
 		HostPolicy: autocert.HostWhitelist(*host),
 		Cache:      autocert.DirCache("/certs"),
 	}
+
+	// Create server for redirecting HTTP to HTTPS
+	httpSrv := &http.Server{
+		Addr:         ":http",
+		ReadTimeout:  httpsSrv.ReadTimeout,
+		WriteTimeout: httpsSrv.WriteTimeout,
+		IdleTimeout:  httpsSrv.IdleTimeout,
+		Handler:      m.HTTPHandler(nil),
+	}
+	go func() {
+		logger.Fatal(httpSrv.ListenAndServe())
+	}()
+
 	httpsSrv.TLSConfig.GetCertificate = m.GetCertificate
 	logger.Info("Serving on https://0.0.0.0:443, authenticating for https://", *host)
 	logger.Fatal(httpsSrv.ListenAndServeTLS("", ""))
