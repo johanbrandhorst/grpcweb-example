@@ -4,7 +4,18 @@
 [[projects]]
   branch = "master"
   name = "github.com/golang/protobuf"
-  packages = ["proto","protoc-gen-go","protoc-gen-go/descriptor","protoc-gen-go/generator","protoc-gen-go/grpc","protoc-gen-go/plugin","ptypes","ptypes/any","ptypes/duration","ptypes/timestamp"]
+  packages = [
+    "proto",
+    "protoc-gen-go",
+    "protoc-gen-go/descriptor",
+    "protoc-gen-go/generator",
+    "protoc-gen-go/grpc",
+    "protoc-gen-go/plugin",
+    "ptypes",
+    "ptypes/any",
+    "ptypes/duration",
+    "ptypes/timestamp"
+  ]
   revision = "1643683e1b54a9e88ad26d98f81400c8c9d9f4f9"
 
 [[projects]]
@@ -34,7 +45,20 @@
 [[projects]]
   branch = "master"
   name = "github.com/johanbrandhorst/protobuf"
-  packages = ["grpcweb","grpcweb/grpcwebjs","grpcweb/metadata","grpcweb/status","internal","jspb","proto","protoc-gen-gopherjs","protoc-gen-gopherjs/generator","protoc-gen-gopherjs/grpc","ptypes/timestamp","wsproxy"]
+  packages = [
+    "grpcweb",
+    "grpcweb/grpcwebjs",
+    "grpcweb/metadata",
+    "grpcweb/status",
+    "internal",
+    "jspb",
+    "proto",
+    "protoc-gen-gopherjs",
+    "protoc-gen-gopherjs/generator",
+    "protoc-gen-gopherjs/grpc",
+    "ptypes/timestamp",
+    "wsproxy"
+  ]
   revision = "60d0fc7c5ab54ad205aeb09193eae96dfdc2066f"
 
 [[projects]]
@@ -64,31 +88,64 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["acme","acme/autocert","ssh/terminal"]
-  revision = "edd5e9b0879d13ee6970a50153d85b8fec9f7686"
+  packages = [
+    "acme",
+    "acme/autocert",
+    "ssh/terminal"
+  ]
+  revision = "3d37316aaa6bd9929127ac9a527abf408178ea7b"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = ["context","http2","http2/hpack","idna","internal/timeseries","lex/httplex","trace"]
+  packages = [
+    "context",
+    "http2",
+    "http2/hpack",
+    "idna",
+    "internal/timeseries",
+    "lex/httplex",
+    "trace"
+  ]
   revision = "cd69bc3fc700721b709c3a59e16e24c67b58f6ff"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix","windows"]
+  packages = [
+    "unix",
+    "windows"
+  ]
   revision = "8dbc5d05d6edcc104950cc299a1ce6641235bc86"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/text"
-  packages = ["collate","collate/build","internal/colltab","internal/gen","internal/tag","internal/triegen","internal/ucd","language","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
+  packages = [
+    "collate",
+    "collate/build",
+    "internal/colltab",
+    "internal/gen",
+    "internal/tag",
+    "internal/triegen",
+    "internal/ucd",
+    "language",
+    "secure/bidirule",
+    "transform",
+    "unicode/bidi",
+    "unicode/cldr",
+    "unicode/norm",
+    "unicode/rangetable"
+  ]
   revision = "c01e4764d870b77f8abe5096ee19ad20d80e8075"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/tools"
-  packages = ["go/types/typeutil","godoc/vfs"]
+  packages = [
+    "go/types/typeutil",
+    "godoc/vfs"
+  ]
   revision = "9bd2f442688b66c5289262d70f537c2ecf81d7de"
 
 [[projects]]
@@ -99,7 +156,25 @@
 
 [[projects]]
   name = "google.golang.org/grpc"
-  packages = [".","balancer","codes","connectivity","credentials","grpclb/grpc_lb_v1/messages","grpclog","internal","keepalive","metadata","naming","peer","resolver","stats","status","tap","transport"]
+  packages = [
+    ".",
+    "balancer",
+    "codes",
+    "connectivity",
+    "credentials",
+    "grpclb/grpc_lb_v1/messages",
+    "grpclog",
+    "internal",
+    "keepalive",
+    "metadata",
+    "naming",
+    "peer",
+    "resolver",
+    "stats",
+    "status",
+    "tap",
+    "transport"
+  ]
   revision = "f7bf885db0b7479a537ec317c6e48ce53145f3db"
   version = "v1.7.0"
 
@@ -136,13 +211,25 @@
 [[projects]]
   branch = "master"
   name = "myitcv.io/immutable"
-  packages = [".","cmd/immutableGen","util"]
+  packages = [
+    ".",
+    "cmd/immutableGen",
+    "util"
+  ]
   revision = "5cbb9cbfb67fb13c107f10bc8364065cf29e2fdf"
 
 [[projects]]
   branch = "master"
   name = "myitcv.io/react"
-  packages = [".","cmd/reactGen","internal/bundle","internal/core","internal/dev","internal/preact","internal/prod"]
+  packages = [
+    ".",
+    "cmd/reactGen",
+    "internal/bundle",
+    "internal/core",
+    "internal/dev",
+    "internal/preact",
+    "internal/prod"
+  ]
   revision = "bca7c66b77ed8a5b86fb77cff70914c4a7cc3ce5"
 
 [solve-meta]
