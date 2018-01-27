@@ -8,11 +8,13 @@ import (
 	"crypto/x509"
 	"flag"
 	"net/http"
+	"path"
 	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
+	"github.com/lpar/gzipped"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/acme/autocert"
 	"google.golang.org/grpc"
@@ -68,17 +70,6 @@ func main() {
 		wsproxy.WithLogger(logger),
 		wsproxy.WithTransportCredentials(clientCreds))
 
-	handler := func(resp http.ResponseWriter, req *http.Request) {
-		// Redirect gRPC and gRPC-Web requests to the gRPC Server
-		if req.ProtoMajor == 2 && strings.Contains(req.Header.Get("Content-Type"), "application/grpc") ||
-			websocket.IsWebSocketUpgrade(req) {
-			wsproxy.ServeHTTP(resp, req)
-		} else {
-			// Serve the GopherJS client
-			http.FileServer(compiled.Assets).ServeHTTP(resp, req)
-		}
-	}
-
 	httpsSrv := &http.Server{
 		// These interfere with websocket streams, disable for now
 		// ReadTimeout: 5 * time.Second,
@@ -93,7 +84,14 @@ func main() {
 				tls.X25519,
 			},
 		},
-		Handler: hstsHandler(handler),
+		Handler: hstsHandler(
+			grpcTrafficSplitter(
+				folderReader(
+					gzipped.FileServer(compiled.Assets).ServeHTTP,
+				),
+				wsproxy,
+			),
+		),
 	}
 
 	// Serve on localhost with localhost certs if no host provided
@@ -132,5 +130,27 @@ func hstsHandler(fn http.HandlerFunc) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload")
 		fn(w, r)
+	})
+}
+
+func folderReader(fn http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/") {
+			// Use contents of index.html for directory, if present.
+			r.URL.Path = path.Join(r.URL.Path, "index.html")
+		}
+		fn(w, r)
+	})
+}
+
+func grpcTrafficSplitter(fallback http.HandlerFunc, grpcHandler http.Handler) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Redirect gRPC and gRPC-Web requests to the gRPC Server
+		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") ||
+			websocket.IsWebSocketUpgrade(r) {
+			grpcHandler.ServeHTTP(w, r)
+		} else {
+			fallback(w, r)
+		}
 	})
 }
