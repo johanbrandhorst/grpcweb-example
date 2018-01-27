@@ -1,8 +1,10 @@
-# GopherJS over Improbable gRPC-Web to Go gRPC backend
+# Go gRPC-Web Example
 [![CircleCI](https://circleci.com/gh/johanbrandhorst/grpcweb-example.svg?style=svg)](https://circleci.com/gh/johanbrandhorst/grpcweb-example)
 <a href="https://cloud.docker.com/swarm/jfbrandhorst/repository/docker/jfbrandhorst/grpcweb-example/general" alt="Docker cloud repo">
 <img src="https://www.docker.com/sites/default/files/mono_horizontal_large.png" height="18"/>
 </a>
+
+![gRPC-Web Gopher by Egon Elbre (@egonelbre)](./logo.svg)
 
 An example implementation of a
 [GopherJS React](https://myitcv.io/react)
