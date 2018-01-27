@@ -3,6 +3,21 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/foobaz/go-zopfli"
+  packages = [
+    ".",
+    "zopfli"
+  ]
+  revision = "7432051485e2617ac160eba6129ab7efedecd427"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/golang/gddo"
+  packages = ["httputil/header"]
+  revision = "bc1419aa93d33c909e9c141b49ef46bdcbfa10b0"
+
+[[projects]]
+  branch = "master"
   name = "github.com/golang/protobuf"
   packages = [
     "proto",
@@ -43,7 +58,6 @@
   revision = "0ab7201b53447db59d63ff3a95173e565baae10a"
 
 [[projects]]
-  branch = "master"
   name = "github.com/johanbrandhorst/protobuf"
   packages = [
     "grpcweb",
@@ -59,7 +73,14 @@
     "ptypes/timestamp",
     "wsproxy"
   ]
-  revision = "60d0fc7c5ab54ad205aeb09193eae96dfdc2066f"
+  revision = "b90b6be08aa47c5a5e4f50e8e409cf2e625f7cad"
+  version = "v0.5.2"
+
+[[projects]]
+  name = "github.com/lpar/gzipped"
+  packages = ["."]
+  revision = "8e9a0db009a7e2ca48d46825a0b32e8b2465c810"
+  version = "v1.0.0"
 
 [[projects]]
   name = "github.com/rs/cors"
@@ -159,9 +180,12 @@
   packages = [
     ".",
     "balancer",
+    "balancer/base",
+    "balancer/roundrobin",
     "codes",
     "connectivity",
     "credentials",
+    "encoding",
     "grpclb/grpc_lb_v1/messages",
     "grpclog",
     "internal",
@@ -170,13 +194,15 @@
     "naming",
     "peer",
     "resolver",
+    "resolver/dns",
+    "resolver/passthrough",
     "stats",
     "status",
     "tap",
     "transport"
   ]
-  revision = "f7bf885db0b7479a537ec317c6e48ce53145f3db"
-  version = "v1.7.0"
+  revision = "6b51017f791ae1cfbec89c52efdf444b13b550ef"
+  version = "v1.9.2"
 
 [[projects]]
   branch = "master"
@@ -235,6 +261,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c17555773e5ce1894d9c4e058e8ca0202d5a176ddad23b2980ca74accf9e404e"
+  inputs-digest = "d1d6ce0322032807a321a7487aff8e90dcba4c43062f3c9194ada490fc216d80"
   solver-name = "gps-cdcl"
   solver-version = 1

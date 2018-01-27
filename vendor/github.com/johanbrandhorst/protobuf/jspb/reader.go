@@ -2,7 +2,7 @@ package jspb
 
 import "github.com/gopherjs/gopherjs/js"
 
-// Reader encapsulates the jspb.BinaryReader
+// Reader encapsulates the jspb.BinaryReader.
 type Reader interface {
 	Next() bool
 	Err() error
