@@ -62,7 +62,10 @@ func main() {
 		if err != nil {
 			logger.Fatalln("Failed to get local system certpool:", err)
 		}
-		clientCreds = credentials.NewTLS(&tls.Config{RootCAs: cp})
+		clientCreds = credentials.NewTLS(&tls.Config{
+			RootCAs:    cp,
+			ServerName: *host,
+		})
 	}
 
 	wsproxy := wsproxy.WrapServer(
