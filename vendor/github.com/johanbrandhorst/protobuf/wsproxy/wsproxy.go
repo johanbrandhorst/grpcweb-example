@@ -2,6 +2,7 @@ package wsproxy
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/binary"
 	"errors"
 	"io"
@@ -45,6 +46,7 @@ func WrapServer(h http.Handler, opts ...Option) http.Handler {
 	p := &proxy{
 		h:      h,
 		logger: noopLogger{},
+		creds:  credentials.NewTLS(&tls.Config{InsecureSkipVerify: true}),
 	}
 
 	for _, opt := range opts {
@@ -101,6 +103,14 @@ func (p *proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		p.logger.Warnln("Failed to upgrade Websocket:", err)
+		return
+	}
+
+	// Override TLS config ServerName in case
+	// it hasn't been set explicitly already
+	err = p.creds.OverrideServerName(stripPort(r.Host))
+	if err != nil {
+		p.logger.Warnln("Failed to set TLS Server Name:", err)
 		return
 	}
 
@@ -295,4 +305,16 @@ func withPort(host string) string {
 		return net.JoinHostPort(host, "443")
 	}
 	return host
+}
+
+// stripPort removes a port, if any, from the input
+func stripPort(hostport string) string {
+	colon := strings.IndexByte(hostport, ':')
+	if colon == -1 {
+		return hostport
+	}
+	if i := strings.IndexByte(hostport, ']'); i != -1 {
+		return strings.TrimPrefix(hostport[:i], "[")
+	}
+	return hostport[:colon]
 }
