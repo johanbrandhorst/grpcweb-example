@@ -73,8 +73,8 @@ func invoke(
 	request := js.Global.Get("grpc").Call("invoke", methodDesc, props)
 
 	cancelFunc := func() {
-		// https://github.com/improbable-eng/grpc-web/blob/0ab7201b53447db59d63ff3a95173e565baae10a/ts/src/grpc.ts#L310
-		request.Call("abort")
+		// https://github.com/improbable-eng/grpc-web/blob/eb398c2f9233171176ceebb2353148224a0e58a0/ts/src/invoke.ts#L50
+		request.Call("close")
 	}
 
 	return cancelFunc, nil

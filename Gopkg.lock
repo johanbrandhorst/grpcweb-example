@@ -73,8 +73,8 @@
     "ptypes/timestamp",
     "wsproxy"
   ]
-  revision = "fe0e4a909bd3520a8f1787a0790fa53a652b5590"
-  version = "v0.5.3"
+  revision = "16ac2b41dc72a3179b1f7196da31f6f2c19f87db"
+  version = "v0.5.4"
 
 [[projects]]
   name = "github.com/lpar/gzipped"

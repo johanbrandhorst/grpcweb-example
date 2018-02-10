@@ -31,14 +31,14 @@ import (
 // Metadata encasulates the Improbable Metadata.
 type Metadata struct {
 	*js.Object
-	MD metadata.MD `js:"keyValueMap"`
+	MD metadata.MD `js:"headersMap"`
 }
 
 // New initializes and populates a new Metadata.
 func New(md metadata.MD) *Metadata {
-	b := &Metadata{
-		Object: js.Global.Get("Metadata").New(),
+	m := &Metadata{
+		Object: js.Global.Get("grpc").Get("Metadata").New(),
 	}
-	b.MD = md
-	return b
+	m.MD = md
+	return m
 }
