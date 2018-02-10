@@ -53,7 +53,7 @@ func main() {
 	var clientCreds credentials.TransportCredentials
 	if *host == "" {
 		var err error
-		clientCreds, err = credentials.NewClientTLSFromFile("./insecure/localhost.crt", "localhost:10000")
+		clientCreds, err = credentials.NewClientTLSFromFile("./insecure/cert.pem", "")
 		if err != nil {
 			logger.Fatalln("Failed to get local server client credentials:", err)
 		}
@@ -101,7 +101,7 @@ func main() {
 	if *host == "" {
 		httpsSrv.Addr = "localhost:10000"
 		logger.Info("Serving on https://localhost:10000")
-		logger.Fatal(httpsSrv.ListenAndServeTLS("./insecure/localhost.crt", "./insecure/localhost.key"))
+		logger.Fatal(httpsSrv.ListenAndServeTLS("./insecure/cert.pem", "./insecure/key.pem"))
 	}
 
 	// Create auto-certificate https server
