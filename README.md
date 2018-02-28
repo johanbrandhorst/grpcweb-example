@@ -1,8 +1,7 @@
 # Go gRPC-Web Example
-[![CircleCI](https://circleci.com/gh/johanbrandhorst/grpcweb-example.svg?style=svg)](https://circleci.com/gh/johanbrandhorst/grpcweb-example)
-<a href="https://cloud.docker.com/swarm/jfbrandhorst/repository/docker/jfbrandhorst/grpcweb-example/general" alt="Docker cloud repo">
-<img src="https://www.docker.com/sites/default/files/mono_horizontal_large.png" height="18"/>
-</a>
+[![Circle CI](https://circleci.com/gh/johanbrandhorst/grpcweb-example.svg?style=shield)](https://circleci.com/gh/johanbrandhorst/grpcweb-example)
+[![Go Report Card](https://goreportcard.com/badge/github.com/johanbrandhorst/grpcweb-example)](https://goreportcard.com/report/github.com/johanbrandhorst/grpcweb-example)
+[![GoDoc](https://godoc.org/github.com/johanbrandhorst/grpcweb-example?status.svg)](https://godoc.org/github.com/johanbrandhorst/grpcweb-example)
 
 ![gRPC-Web Gopher by Egon Elbre (@egonelbre)](./logo.svg)
 
