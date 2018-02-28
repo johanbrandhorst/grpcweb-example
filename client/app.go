@@ -10,7 +10,7 @@ import (
 //go:generate gopherjs build app.go -m -o html/client.js
 //go:generate find ./html/ -name *.gz -prune -o -type f -exec go-zopfli {} +
 //go:generate bash -c "cd compiled/ && go run assets_generate.go"
-//go:generate bash -c "rm html/*.js* html/*.gz"
+//go:generate bash -c "rm html/*.js* && rm html/*.gz"
 
 func main() {
 	domTarget := dom.GetWindow().Document().GetElementByID("app")
