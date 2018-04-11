@@ -5,7 +5,6 @@ package main
 
 import (
 	"crypto/tls"
-	"crypto/x509"
 	"flag"
 	"net/http"
 	"path"
@@ -18,13 +17,11 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/acme/autocert"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/grpclog"
 
 	"github.com/johanbrandhorst/grpcweb-example/client/compiled"
 	"github.com/johanbrandhorst/grpcweb-example/server"
 	"github.com/johanbrandhorst/grpcweb-example/server/proto/library"
-	"github.com/johanbrandhorst/protobuf/wsproxy"
 )
 
 var logger *logrus.Logger
@@ -48,30 +45,7 @@ func main() {
 
 	gs := grpc.NewServer()
 	library.RegisterBookServiceServer(gs, &server.BookService{})
-	wrappedServer := grpcweb.WrapServer(gs)
-
-	var clientCreds credentials.TransportCredentials
-	if *host == "" {
-		var err error
-		clientCreds, err = credentials.NewClientTLSFromFile("./insecure/cert.pem", "")
-		if err != nil {
-			logger.Fatalln("Failed to get local server client credentials:", err)
-		}
-	} else {
-		cp, err := x509.SystemCertPool()
-		if err != nil {
-			logger.Fatalln("Failed to get local system certpool:", err)
-		}
-		clientCreds = credentials.NewTLS(&tls.Config{
-			RootCAs:    cp,
-			ServerName: *host,
-		})
-	}
-
-	wsproxy := wsproxy.WrapServer(
-		http.HandlerFunc(wrappedServer.ServeHTTP),
-		wsproxy.WithLogger(logger),
-		wsproxy.WithTransportCredentials(clientCreds))
+	wrappedServer := grpcweb.WrapServer(gs, grpcweb.WithWebsockets(true))
 
 	httpsSrv := &http.Server{
 		// These interfere with websocket streams, disable for now
@@ -92,7 +66,7 @@ func main() {
 				folderReader(
 					gzipped.FileServer(compiled.Assets).ServeHTTP,
 				),
-				wsproxy,
+				wrappedServer,
 			),
 		),
 	}

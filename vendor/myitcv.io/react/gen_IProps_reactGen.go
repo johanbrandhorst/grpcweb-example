@@ -6,12 +6,14 @@ package react
 type IProps struct {
 	ClassName               string
 	DangerouslySetInnerHTML *DangerousInnerHTML
-	ID                      string
-	Key                     string
+	DataSet
+	ID  string
+	Key string
 
 	OnChange
 	OnClick
 
+	Ref
 	Role  string
 	Src   string
 	Style *CSS
@@ -22,6 +24,12 @@ func (i *IProps) assign(v *_IProps) {
 	v.ClassName = i.ClassName
 
 	v.DangerouslySetInnerHTML = i.DangerouslySetInnerHTML
+
+	if i.DataSet != nil {
+		for dk, dv := range i.DataSet {
+			v.o.Set("data-"+dk, dv)
+		}
+	}
 
 	if i.ID != "" {
 		v.ID = i.ID
@@ -37,6 +45,10 @@ func (i *IProps) assign(v *_IProps) {
 
 	if i.OnClick != nil {
 		v.o.Set("onClick", i.OnClick.OnClick)
+	}
+
+	if i.Ref != nil {
+		v.o.Set("ref", i.Ref.Ref)
 	}
 
 	v.Role = i.Role

@@ -6,12 +6,14 @@ package react
 type IFrameProps struct {
 	ClassName               string
 	DangerouslySetInnerHTML *DangerousInnerHTML
-	ID                      string
-	Key                     string
+	DataSet
+	ID  string
+	Key string
 
 	OnChange
 	OnClick
 
+	Ref
 	Role   string
 	Src    string
 	SrcDoc string
@@ -23,6 +25,12 @@ func (i *IFrameProps) assign(v *_IFrameProps) {
 	v.ClassName = i.ClassName
 
 	v.DangerouslySetInnerHTML = i.DangerouslySetInnerHTML
+
+	if i.DataSet != nil {
+		for dk, dv := range i.DataSet {
+			v.o.Set("data-"+dk, dv)
+		}
+	}
 
 	if i.ID != "" {
 		v.ID = i.ID
@@ -38,6 +46,10 @@ func (i *IFrameProps) assign(v *_IFrameProps) {
 
 	if i.OnClick != nil {
 		v.o.Set("onClick", i.OnClick.OnClick)
+	}
+
+	if i.Ref != nil {
+		v.o.Set("ref", i.Ref.Ref)
 	}
 
 	v.Role = i.Role

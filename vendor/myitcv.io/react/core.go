@@ -22,6 +22,8 @@ func newBasicElement() *BasicElement {
 	}
 }
 
+type DataSet map[string]string
+
 type BasicHTMLElement struct {
 	*BasicElement
 
@@ -31,8 +33,12 @@ type BasicHTMLElement struct {
 	Role      string `js:"role"`
 	Style     *CSS   `js:"style"`
 
+	DataSet
+
 	OnChange `js:"onChange"`
 	OnClick  `js:"onClick"`
+
+	Ref `js:"ref"`
 
 	DangerouslySetInnerHTML *DangerousInnerHTML `js:"dangerouslySetInnerHTML"`
 }

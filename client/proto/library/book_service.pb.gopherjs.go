@@ -149,9 +149,7 @@ type Book struct {
 }
 
 // isBook_PublishingMethod is used to distinguish types assignable to PublishingMethod
-type isBook_PublishingMethod interface {
-	isBook_PublishingMethod()
-}
+type isBook_PublishingMethod interface{ isBook_PublishingMethod() }
 
 // Book_SelfPublished is assignable to PublishingMethod
 type Book_SelfPublished struct {
@@ -546,9 +544,7 @@ type BookMessage struct {
 }
 
 // isBookMessage_Content is used to distinguish types assignable to Content
-type isBookMessage_Content interface {
-	isBookMessage_Content()
-}
+type isBookMessage_Content interface{ isBookMessage_Content() }
 
 // BookMessage_Name is assignable to Content
 type BookMessage_Name struct {
@@ -725,7 +721,7 @@ var _ grpcweb.Client
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpcweb package it is being compiled against.
-const _ = grpcweb.GrpcWebPackageIsVersion2
+const _ = grpcweb.GrpcWebPackageIsVersion3
 
 // Client API for BookService service
 
@@ -767,27 +763,30 @@ func (c *bookServiceClient) GetBook(ctx context.Context, in *GetBookRequest, opt
 }
 
 func (c *bookServiceClient) QueryBooks(ctx context.Context, in *QueryBooksRequest, opts ...grpcweb.CallOption) (BookService_QueryBooksClient, error) {
-	srv, err := c.client.NewServerStream(ctx, "QueryBooks", in.Marshal(), opts...)
+	srv, err := c.client.NewClientStream(ctx, false, true, "QueryBooks", opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	return &bookServiceQueryBooksClient{
-		stream: srv,
-	}, nil
+	err = srv.SendMsg(in.Marshal())
+	if err != nil {
+		return nil, err
+	}
+
+	return &bookServiceQueryBooksClient{srv}, nil
 }
 
 type BookService_QueryBooksClient interface {
 	Recv() (*Book, error)
-	Context() context.Context
+	grpcweb.ClientStream
 }
 
 type bookServiceQueryBooksClient struct {
-	stream grpcweb.ServerStream
+	grpcweb.ClientStream
 }
 
 func (x *bookServiceQueryBooksClient) Recv() (*Book, error) {
-	resp, err := x.stream.RecvMsg()
+	resp, err := x.RecvMsg()
 	if err != nil {
 		return nil, err
 	}
@@ -795,35 +794,36 @@ func (x *bookServiceQueryBooksClient) Recv() (*Book, error) {
 	return new(Book).Unmarshal(resp)
 }
 
-func (x *bookServiceQueryBooksClient) Context() context.Context {
-	return x.stream.Context()
-}
-
 func (c *bookServiceClient) MakeCollection(ctx context.Context, opts ...grpcweb.CallOption) (BookService_MakeCollectionClient, error) {
-	srv, err := c.client.NewClientStream(ctx, "MakeCollection")
+	srv, err := c.client.NewClientStream(ctx, true, false, "MakeCollection", opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	return &bookServiceMakeCollectionClient{stream: srv}, nil
+	return &bookServiceMakeCollectionClient{srv}, nil
 }
 
 type BookService_MakeCollectionClient interface {
 	Send(*Book) error
 	CloseAndRecv() (*Collection, error)
-	Context() context.Context
+	grpcweb.ClientStream
 }
 
 type bookServiceMakeCollectionClient struct {
-	stream grpcweb.ClientStream
+	grpcweb.ClientStream
 }
 
 func (x *bookServiceMakeCollectionClient) Send(req *Book) error {
-	return x.stream.SendMsg(req.Marshal())
+	return x.SendMsg(req.Marshal())
 }
 
 func (x *bookServiceMakeCollectionClient) CloseAndRecv() (*Collection, error) {
-	resp, err := x.stream.CloseAndRecv()
+	err := x.CloseSend()
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := x.RecvMsg()
 	if err != nil {
 		return nil, err
 	}
@@ -831,47 +831,34 @@ func (x *bookServiceMakeCollectionClient) CloseAndRecv() (*Collection, error) {
 	return new(Collection).Unmarshal(resp)
 }
 
-func (x *bookServiceMakeCollectionClient) Context() context.Context {
-	return x.stream.Context()
-}
-
 func (c *bookServiceClient) BookChat(ctx context.Context, opts ...grpcweb.CallOption) (BookService_BookChatClient, error) {
-	srv, err := c.client.NewClientStream(ctx, "BookChat")
+	srv, err := c.client.NewClientStream(ctx, true, true, "BookChat", opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	return &bookServiceBookChatClient{stream: srv}, nil
+	return &bookServiceBookChatClient{srv}, nil
 }
 
 type BookService_BookChatClient interface {
 	Send(*BookMessage) error
 	Recv() (*BookResponse, error)
-	CloseSend() error
-	Context() context.Context
+	grpcweb.ClientStream
 }
 
 type bookServiceBookChatClient struct {
-	stream grpcweb.ClientStream
+	grpcweb.ClientStream
 }
 
 func (x *bookServiceBookChatClient) Send(req *BookMessage) error {
-	return x.stream.SendMsg(req.Marshal())
+	return x.SendMsg(req.Marshal())
 }
 
 func (x *bookServiceBookChatClient) Recv() (*BookResponse, error) {
-	resp, err := x.stream.RecvMsg()
+	resp, err := x.RecvMsg()
 	if err != nil {
 		return nil, err
 	}
 
 	return new(BookResponse).Unmarshal(resp)
-}
-
-func (x *bookServiceBookChatClient) CloseSend() error {
-	return x.stream.CloseSend()
-}
-
-func (x *bookServiceBookChatClient) Context() context.Context {
-	return x.stream.Context()
 }

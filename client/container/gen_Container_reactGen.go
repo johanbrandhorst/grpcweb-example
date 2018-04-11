@@ -8,14 +8,6 @@ type ContainerElem struct {
 	react.Element
 }
 
-func (c ContainerDef) ShouldComponentUpdateIntf(nextProps react.Props, prevState, nextState react.State) bool {
-	res := false
-
-	v := prevState.(ContainerState)
-	res = !v.EqualsIntf(nextState) || res
-	return res
-}
-
 func buildContainer(cd react.ComponentDef) react.Component {
 	return ContainerDef{ComponentDef: cd}
 }
@@ -24,6 +16,10 @@ func buildContainerElem(children ...react.Element) *ContainerElem {
 	return &ContainerElem{
 		Element: react.CreateElement(buildContainer, nil, children...),
 	}
+}
+
+func (c ContainerDef) RendersElement() react.Element {
+	return c.Render()
 }
 
 // SetState is an auto-generated proxy proxy to update the state for the

@@ -32,12 +32,12 @@ required = [
     non-go = false
 
 [[constraint]]
-  name = "github.com/sirupsen/logrus"
-  version = "1.0.2"
+  name = "github.com/johanbrandhorst/protobuf"
+  version = "0.6.0"
 
 [[constraint]]
-  name = "github.com/johanbrandhorst/protobuf"
-  version = "0.5.2"
+  branch = "master"
+  name = "github.com/improbable-eng/grpc-web"
 
 [[constraint]]
   branch = "master"
@@ -58,7 +58,3 @@ required = [
 [[constraint]]
   branch = "master"
   name = "myitcv.io/react"
-
-[[constraint]]
-  name = "github.com/lpar/gzipped"
-  version = "1.0.0"

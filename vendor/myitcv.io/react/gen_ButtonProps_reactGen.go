@@ -6,12 +6,14 @@ package react
 type ButtonProps struct {
 	ClassName               string
 	DangerouslySetInnerHTML *DangerousInnerHTML
-	ID                      string
-	Key                     string
+	DataSet
+	ID  string
+	Key string
 
 	OnChange
 	OnClick
 
+	Ref
 	Role  string
 	Style *CSS
 	Type  string
@@ -22,6 +24,12 @@ func (b *ButtonProps) assign(v *_ButtonProps) {
 	v.ClassName = b.ClassName
 
 	v.DangerouslySetInnerHTML = b.DangerouslySetInnerHTML
+
+	if b.DataSet != nil {
+		for dk, dv := range b.DataSet {
+			v.o.Set("data-"+dk, dv)
+		}
+	}
 
 	if b.ID != "" {
 		v.ID = b.ID
@@ -37,6 +45,10 @@ func (b *ButtonProps) assign(v *_ButtonProps) {
 
 	if b.OnClick != nil {
 		v.o.Set("onClick", b.OnClick.OnClick)
+	}
+
+	if b.Ref != nil {
+		v.o.Set("ref", b.Ref.Ref)
 	}
 
 	v.Role = b.Role

@@ -8,17 +8,6 @@ type GetBookElem struct {
 	react.Element
 }
 
-func (g GetBookDef) ShouldComponentUpdateIntf(nextProps react.Props, prevState, nextState react.State) bool {
-	res := false
-
-	{
-		res = g.Props() != nextProps.(GetBookProps) || res
-	}
-	v := prevState.(GetBookState)
-	res = !v.EqualsIntf(nextState) || res
-	return res
-}
-
 func buildGetBook(cd react.ComponentDef) react.Component {
 	return GetBookDef{ComponentDef: cd}
 }
@@ -27,6 +16,10 @@ func buildGetBookElem(props GetBookProps, children ...react.Element) *GetBookEle
 	return &GetBookElem{
 		Element: react.CreateElement(buildGetBook, props, children...),
 	}
+}
+
+func (g GetBookDef) RendersElement() react.Element {
+	return g.Render()
 }
 
 // SetState is an auto-generated proxy proxy to update the state for the
