@@ -18,6 +18,10 @@
 // might live in a separate package. This might require special care
 // to avoid circular dependencies.
 //
+// The documentation for some of the identifiers is based on the
+// MDN Web Docs by Mozilla Contributors (https://developer.mozilla.org/en-US/docs/Web/API),
+// licensed under CC-BY-SA 2.5 (https://creativecommons.org/licenses/by-sa/2.5/).
+//
 //
 // Getting started
 //
@@ -109,6 +113,7 @@
 package dom // import "honnef.co/go/js/dom"
 
 import (
+	"image"
 	"image/color"
 	"strings"
 	"time"
@@ -1847,21 +1852,18 @@ func (e *HTMLAreaElement) Rel() *TokenList {
 type HTMLAudioElement struct{ *HTMLMediaElement }
 
 type HTMLBRElement struct{ *BasicHTMLElement }
-type HTMLBaseElement struct{ *BasicHTMLElement }
-type HTMLBodyElement struct{ *BasicHTMLElement }
 
-type ValidityState struct {
-	*js.Object
-	CustomError     bool `js:"customError"`
-	PatternMismatch bool `js:"patternMismatch"`
-	RangeOverflow   bool `js:"rangeOverflow"`
-	RangeUnderflow  bool `js:"rangeUnderflow"`
-	StepMismatch    bool `js:"stepMismatch"`
-	TooLong         bool `js:"tooLong"`
-	TypeMismatch    bool `js:"typeMismatch"`
-	Valid           bool `js:"valid"`
-	ValueMissing    bool `js:"valueMissing"`
+type HTMLBaseElement struct{ *BasicHTMLElement }
+
+func (e *HTMLBaseElement) Href() string {
+	return e.Get("href").String()
 }
+
+func (e *HTMLBaseElement) Target() string {
+	return e.Get("target").String()
+}
+
+type HTMLBodyElement struct{ *BasicHTMLElement }
 
 type HTMLButtonElement struct {
 	*BasicHTMLElement
@@ -1946,22 +1948,80 @@ type ImageData struct {
 	Data   *js.Object `js:"data"`
 }
 
-func (imd *ImageData) At(x, y int) *color.RGBA {
-	var index = 4 * (x + y*imd.Width)
-	return &color.RGBA{
-		R: uint8(imd.Data.Index(index).Int()),
-		G: uint8(imd.Data.Index(index + 1).Int()),
-		B: uint8(imd.Data.Index(index + 2).Int()),
-		A: uint8(imd.Data.Index(index + 3).Int()),
+func (m *ImageData) ColorModel() color.Model { return color.NRGBAModel }
+
+func (m *ImageData) Bounds() image.Rectangle {
+	return image.Rect(0, 0, m.Width, m.Height)
+}
+
+func (m *ImageData) At(x, y int) color.Color {
+	return m.NRGBAAt(x, y)
+}
+
+func (m *ImageData) NRGBAAt(x, y int) color.NRGBA {
+	if x < 0 || x >= m.Width ||
+		y < 0 || y >= m.Height {
+		return color.NRGBA{}
+	}
+	i := (y*m.Width + x) * 4
+	return color.NRGBA{
+		R: uint8(m.Data.Index(i + 0).Int()),
+		G: uint8(m.Data.Index(i + 1).Int()),
+		B: uint8(m.Data.Index(i + 2).Int()),
+		A: uint8(m.Data.Index(i + 3).Int()),
 	}
 }
 
-func (imd *ImageData) Set(x, y int, c color.RGBA) {
-	var index = 4 * (x + y*imd.Width)
-	imd.Data.SetIndex(index, c.R)
-	imd.Data.SetIndex(index+1, c.G)
-	imd.Data.SetIndex(index+2, c.B)
-	imd.Data.SetIndex(index+3, c.A)
+func (m *ImageData) Set(x, y int, c color.Color) {
+	if x < 0 || x >= m.Width ||
+		y < 0 || y >= m.Height {
+		return
+	}
+	c1 := color.NRGBAModel.Convert(c).(color.NRGBA)
+	i := (y*m.Width + x) * 4
+	m.Data.SetIndex(i+0, c1.R)
+	m.Data.SetIndex(i+1, c1.G)
+	m.Data.SetIndex(i+2, c1.B)
+	m.Data.SetIndex(i+3, c1.A)
+}
+
+func (m *ImageData) SetNRGBA(x, y int, c color.NRGBA) {
+	if x < 0 || x >= m.Width ||
+		y < 0 || y >= m.Height {
+		return
+	}
+	i := (y*m.Width + x) * 4
+	m.Data.SetIndex(i+0, c.R)
+	m.Data.SetIndex(i+1, c.G)
+	m.Data.SetIndex(i+2, c.B)
+	m.Data.SetIndex(i+3, c.A)
+}
+
+// CanvasGradient represents an opaque object describing a gradient.
+// It is returned by the methods CanvasRenderingContext2D.CreateLinearGradient
+// or CanvasRenderingContext2D.CreateRadialGradient.
+//
+// Reference: https://developer.mozilla.org/en-US/docs/Web/API/CanvasGradient.
+type CanvasGradient struct {
+	*js.Object
+}
+
+// AddColorStop adds a new stop, defined by an offset and a color, to the gradient.
+// It panics with *js.Error if the offset is not between 0 and 1, or if the color
+// can't be parsed as a CSS <color>.
+//
+// Reference: https://developer.mozilla.org/en-US/docs/Web/API/CanvasGradient/addColorStop.
+func (cg *CanvasGradient) AddColorStop(offset float64, color string) {
+	cg.Call("addColorStop", offset, color)
+}
+
+// CanvasPattern represents an opaque object describing a pattern.
+// It is based on an image, a canvas or a video, created by the
+// CanvasRenderingContext2D.CreatePattern method.
+//
+// Reference: https://developer.mozilla.org/en-US/docs/Web/API/CanvasPattern.
+type CanvasPattern struct {
+	*js.Object
 }
 
 type TextMetrics struct {
@@ -2052,16 +2112,28 @@ func (ctx *CanvasRenderingContext2D) SetLineDash(dashes []float64) {
 
 // Gradients and patterns
 
-func (ctx *CanvasRenderingContext2D) CreateLinearGradient(x0, y0, x1, y1 float64) {
-	ctx.Call("createLinearGradient", x0, y0, x1, y1)
+// CreateLinearGradient creates a linear gradient along the line given
+// by the coordinates represented by the parameters.
+//
+// Reference: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/createLinearGradient.
+func (ctx *CanvasRenderingContext2D) CreateLinearGradient(x0, y0, x1, y1 float64) *CanvasGradient {
+	return &CanvasGradient{Object: ctx.Call("createLinearGradient", x0, y0, x1, y1)}
 }
 
-func (ctx *CanvasRenderingContext2D) CreateRadialGradient(x0, y0, r0, x1, y1, r1 float64) {
-	ctx.Call("createRadialGradient", x0, y0, r0, x1, y1, r1)
+// CreateRadialGradient creates a radial gradient given by the coordinates of the two circles
+// represented by the parameters.
+//
+// Reference: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/createRadialGradient.
+func (ctx *CanvasRenderingContext2D) CreateRadialGradient(x0, y0, r0, x1, y1, r1 float64) *CanvasGradient {
+	return &CanvasGradient{Object: ctx.Call("createRadialGradient", x0, y0, r0, x1, y1, r1)}
 }
 
-func (ctx *CanvasRenderingContext2D) CreatePattern(image *Element, repetition string) {
-	ctx.Call("createPattern", image, repetition)
+// CreatePattern creates a pattern using the specified image (a CanvasImageSource).
+// It repeats the source in the directions specified by the repetition argument.
+//
+// Reference: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/createPattern.
+func (ctx *CanvasRenderingContext2D) CreatePattern(image Element, repetition string) *CanvasPattern {
+	return &CanvasPattern{Object: ctx.Call("createPattern", image, repetition)}
 }
 
 // Paths
@@ -2164,15 +2236,15 @@ func (ctx *CanvasRenderingContext2D) ResetTransform() {
 
 // Drawing images
 
-func (ctx *CanvasRenderingContext2D) DrawImage(image *Element, dx, dy float64) {
+func (ctx *CanvasRenderingContext2D) DrawImage(image Element, dx, dy float64) {
 	ctx.Call("drawImage", image, dx, dy)
 }
 
-func (ctx *CanvasRenderingContext2D) DrawImageWithDst(image *Element, dx, dy, dWidth, dHeight float64) {
+func (ctx *CanvasRenderingContext2D) DrawImageWithDst(image Element, dx, dy, dWidth, dHeight float64) {
 	ctx.Call("drawImage", image, dx, dy, dWidth, dHeight)
 }
 
-func (ctx *CanvasRenderingContext2D) DrawImageWithSrcAndDst(image *Element, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight float64) {
+func (ctx *CanvasRenderingContext2D) DrawImageWithSrcAndDst(image Element, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight float64) {
 	ctx.Call("drawImage", image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
 }
 
@@ -2954,12 +3026,17 @@ type HTMLUnknownElement struct{ *BasicHTMLElement }
 
 type HTMLVideoElement struct{ *HTMLMediaElement }
 
-func (e *HTMLBaseElement) Href() string {
-	return e.Get("href").String()
-}
-
-func (e *HTMLBaseElement) Target() string {
-	return e.Get("target").String()
+type ValidityState struct {
+	*js.Object
+	CustomError     bool `js:"customError"`
+	PatternMismatch bool `js:"patternMismatch"`
+	RangeOverflow   bool `js:"rangeOverflow"`
+	RangeUnderflow  bool `js:"rangeUnderflow"`
+	StepMismatch    bool `js:"stepMismatch"`
+	TooLong         bool `js:"tooLong"`
+	TypeMismatch    bool `js:"typeMismatch"`
+	Valid           bool `js:"valid"`
+	ValueMissing    bool `js:"valueMissing"`
 }
 
 type CSSStyleDeclaration struct{ *js.Object }

@@ -6,12 +6,14 @@ package react
 type HrProps struct {
 	ClassName               string
 	DangerouslySetInnerHTML *DangerousInnerHTML
-	ID                      string
-	Key                     string
+	DataSet
+	ID  string
+	Key string
 
 	OnChange
 	OnClick
 
+	Ref
 	Role  string
 	Style *CSS
 }
@@ -21,6 +23,12 @@ func (h *HrProps) assign(v *_HrProps) {
 	v.ClassName = h.ClassName
 
 	v.DangerouslySetInnerHTML = h.DangerouslySetInnerHTML
+
+	if h.DataSet != nil {
+		for dk, dv := range h.DataSet {
+			v.o.Set("data-"+dk, dv)
+		}
+	}
 
 	if h.ID != "" {
 		v.ID = h.ID
@@ -36,6 +44,10 @@ func (h *HrProps) assign(v *_HrProps) {
 
 	if h.OnClick != nil {
 		v.o.Set("onClick", h.OnClick.OnClick)
+	}
+
+	if h.Ref != nil {
+		v.o.Set("ref", h.Ref.Ref)
 	}
 
 	v.Role = h.Role

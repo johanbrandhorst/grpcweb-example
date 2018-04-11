@@ -8,17 +8,6 @@ type BookChatElem struct {
 	react.Element
 }
 
-func (b BookChatDef) ShouldComponentUpdateIntf(nextProps react.Props, prevState, nextState react.State) bool {
-	res := false
-
-	{
-		res = b.Props() != nextProps.(BookChatProps) || res
-	}
-	v := prevState.(BookChatState)
-	res = !v.EqualsIntf(nextState) || res
-	return res
-}
-
 func buildBookChat(cd react.ComponentDef) react.Component {
 	return BookChatDef{ComponentDef: cd}
 }
@@ -27,6 +16,10 @@ func buildBookChatElem(props BookChatProps, children ...react.Element) *BookChat
 	return &BookChatElem{
 		Element: react.CreateElement(buildBookChat, props, children...),
 	}
+}
+
+func (b BookChatDef) RendersElement() react.Element {
+	return b.Render()
 }
 
 // SetState is an auto-generated proxy proxy to update the state for the

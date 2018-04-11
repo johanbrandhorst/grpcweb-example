@@ -6,12 +6,14 @@ package react
 type SelectProps struct {
 	ClassName               string
 	DangerouslySetInnerHTML *DangerousInnerHTML
-	ID                      string
-	Key                     string
+	DataSet
+	ID  string
+	Key string
 
 	OnChange
 	OnClick
 
+	Ref
 	Role  string
 	Style *CSS
 	Value string
@@ -22,6 +24,12 @@ func (s *SelectProps) assign(v *_SelectProps) {
 	v.ClassName = s.ClassName
 
 	v.DangerouslySetInnerHTML = s.DangerouslySetInnerHTML
+
+	if s.DataSet != nil {
+		for dk, dv := range s.DataSet {
+			v.o.Set("data-"+dk, dv)
+		}
+	}
 
 	if s.ID != "" {
 		v.ID = s.ID
@@ -37,6 +45,10 @@ func (s *SelectProps) assign(v *_SelectProps) {
 
 	if s.OnClick != nil {
 		v.o.Set("onClick", s.OnClick.OnClick)
+	}
+
+	if s.Ref != nil {
+		v.o.Set("ref", s.Ref.Ref)
 	}
 
 	v.Role = s.Role

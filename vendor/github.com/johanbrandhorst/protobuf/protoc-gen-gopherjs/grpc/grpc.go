@@ -48,7 +48,7 @@ import (
 // It is incremented whenever an incompatibility between the generated code and
 // the grpcweb package is introduced; the generated code references
 // a constant, grpcweb.GrpcWebPackageIsVersionN (where N is generatedCodeVersion).
-const generatedCodeVersion = 2
+const generatedCodeVersion = 3
 
 // Paths for packages used by code generated in this file,
 // relative to the import_prefix of the generator.Generator.
@@ -147,7 +147,7 @@ func (g *grpc) GenerateImports(file *generator.FileDescriptor) {
 
 // reservedClientName records whether a client name is reserved on the client side.
 var reservedClientName = map[string]bool{
-// TODO: do we need any in gRPC?
+	// TODO: do we need any in gRPC?
 }
 
 func unexport(s string) string { return strings.ToLower(s[:1]) + s[1:] }
@@ -250,35 +250,31 @@ func (g *grpc) generateClientMethod(servName, fullServName, serviceDescVar strin
 		return
 	case method.GetServerStreaming() && !method.GetClientStreaming():
 		// Server-side stream
-		g.P(`srv, err := c.client.NewServerStream(ctx, "`, method.GetName(), `", in.Marshal(), opts...)`)
+		g.P(`srv, err := c.client.NewClientStream(ctx, false, true, "`, method.GetName(), `", opts...)`)
 		g.P("if err != nil {")
 		g.In()
 		g.P("return nil, err")
 		g.Out()
 		g.P("}")
 		g.P()
-		g.P("return &", streamType, "{")
-		g.In()
-		g.P("stream: srv,")
-		g.Out()
-		g.P("}, nil")
-		g.Out()
-		g.P("}")
-		g.P()
-	case method.GetClientStreaming():
+		g.P("err = srv.SendMsg(in.Marshal())")
+	case method.GetClientStreaming() && !method.GetServerStreaming():
 		// This case covers both client-side streaming and bidi streaming
-		g.P(`srv, err := c.client.NewClientStream(ctx, "`, method.GetName(), `")`)
-		g.P("if err != nil {")
-		g.In()
-		g.P("return nil, err")
-		g.Out()
-		g.P("}")
-		g.P()
-		g.P("return &", streamType, "{stream: srv}, nil")
-		g.Out()
-		g.P("}")
-		g.P()
+		g.P(`srv, err := c.client.NewClientStream(ctx, true, false, "`, method.GetName(), `", opts...)`)
+	case method.GetClientStreaming() && method.GetServerStreaming():
+		g.P(`srv, err := c.client.NewClientStream(ctx, true, true, "`, method.GetName(), `", opts...)`)
 	}
+
+	g.P("if err != nil {")
+	g.In()
+	g.P("return nil, err")
+	g.Out()
+	g.P("}")
+	g.P()
+	g.P("return &", streamType, "{srv}, nil")
+	g.Out()
+	g.P("}")
+	g.P()
 
 	// Stream auxiliary types and methods.
 	g.P("type ", servName, "_", methName, "Client interface {")
@@ -291,23 +287,15 @@ func (g *grpc) generateClientMethod(servName, fullServName, serviceDescVar strin
 	}
 	if method.GetClientStreaming() && !method.GetServerStreaming() {
 		g.P("CloseAndRecv() (*", outType, ", error)")
-	} else if method.GetServerStreaming() && method.GetClientStreaming() {
-		g.P("CloseSend() error")
 	}
-	g.P("Context() context.Context")
+	g.P("grpcweb.ClientStream")
 	g.Out()
 	g.P("}")
 	g.P()
 
 	g.P("type ", streamType, " struct {")
 	g.In()
-	if method.GetServerStreaming() && !method.GetClientStreaming() {
-		// Server-side streaming only
-		g.P("stream ", grpcPkg, ".ServerStream")
-	} else {
-		// Client side and bidi streams
-		g.P("stream ", grpcPkg, ".ClientStream")
-	}
+	g.P("grpcweb.ClientStream")
 	g.Out()
 	g.P("}")
 	g.P()
@@ -315,7 +303,7 @@ func (g *grpc) generateClientMethod(servName, fullServName, serviceDescVar strin
 	if method.GetClientStreaming() {
 		g.P("func (x *", streamType, ") Send(req *", inType, ") error {")
 		g.In()
-		g.P("return x.stream.SendMsg(req.Marshal())")
+		g.P("return x.SendMsg(req.Marshal())")
 		g.Out()
 		g.P("}")
 		g.P()
@@ -323,7 +311,7 @@ func (g *grpc) generateClientMethod(servName, fullServName, serviceDescVar strin
 	if method.GetServerStreaming() {
 		g.P("func (x *", streamType, ") Recv() (*", outType, ", error) {")
 		g.In()
-		g.P("resp, err := x.stream.RecvMsg()")
+		g.P("resp, err := x.RecvMsg()")
 		g.P("if err != nil {")
 		g.In()
 		g.P("return nil, err")
@@ -338,7 +326,14 @@ func (g *grpc) generateClientMethod(servName, fullServName, serviceDescVar strin
 	if method.GetClientStreaming() && !method.GetServerStreaming() {
 		g.P("func (x *", streamType, ") CloseAndRecv() (*", outType, ", error) {")
 		g.In()
-		g.P("resp, err := x.stream.CloseAndRecv()")
+		g.P("err := x.CloseSend()")
+		g.P("if err != nil {")
+		g.In()
+		g.P("return nil, err")
+		g.Out()
+		g.P("}")
+		g.P()
+		g.P("resp, err := x.RecvMsg()")
 		g.P("if err != nil {")
 		g.In()
 		g.P("return nil, err")
@@ -349,18 +344,5 @@ func (g *grpc) generateClientMethod(servName, fullServName, serviceDescVar strin
 		g.Out()
 		g.P("}")
 		g.P()
-	} else if method.GetServerStreaming() && method.GetClientStreaming() {
-		g.P("func (x *", streamType, ") CloseSend() error {")
-		g.In()
-		g.P("return x.stream.CloseSend()")
-		g.Out()
-		g.P("}")
-		g.P()
 	}
-	g.P("func (x *", streamType, ") Context() context.Context {")
-	g.In()
-	g.P("return x.stream.Context()")
-	g.Out()
-	g.P("}")
-	g.P()
 }

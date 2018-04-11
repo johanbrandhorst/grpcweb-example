@@ -8,17 +8,6 @@ type MakeCollectionElem struct {
 	react.Element
 }
 
-func (m MakeCollectionDef) ShouldComponentUpdateIntf(nextProps react.Props, prevState, nextState react.State) bool {
-	res := false
-
-	{
-		res = m.Props() != nextProps.(MakeCollectionProps) || res
-	}
-	v := prevState.(MakeCollectionState)
-	res = !v.EqualsIntf(nextState) || res
-	return res
-}
-
 func buildMakeCollection(cd react.ComponentDef) react.Component {
 	return MakeCollectionDef{ComponentDef: cd}
 }
@@ -27,6 +16,10 @@ func buildMakeCollectionElem(props MakeCollectionProps, children ...react.Elemen
 	return &MakeCollectionElem{
 		Element: react.CreateElement(buildMakeCollection, props, children...),
 	}
+}
+
+func (m MakeCollectionDef) RendersElement() react.Element {
+	return m.Render()
 }
 
 // SetState is an auto-generated proxy proxy to update the state for the

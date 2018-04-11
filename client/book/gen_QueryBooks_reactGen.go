@@ -8,17 +8,6 @@ type QueryBooksElem struct {
 	react.Element
 }
 
-func (q QueryBooksDef) ShouldComponentUpdateIntf(nextProps react.Props, prevState, nextState react.State) bool {
-	res := false
-
-	{
-		res = q.Props() != nextProps.(QueryBooksProps) || res
-	}
-	v := prevState.(QueryBooksState)
-	res = !v.EqualsIntf(nextState) || res
-	return res
-}
-
 func buildQueryBooks(cd react.ComponentDef) react.Component {
 	return QueryBooksDef{ComponentDef: cd}
 }
@@ -27,6 +16,10 @@ func buildQueryBooksElem(props QueryBooksProps, children ...react.Element) *Quer
 	return &QueryBooksElem{
 		Element: react.CreateElement(buildQueryBooks, props, children...),
 	}
+}
+
+func (q QueryBooksDef) RendersElement() react.Element {
+	return q.Render()
 }
 
 // SetState is an auto-generated proxy proxy to update the state for the

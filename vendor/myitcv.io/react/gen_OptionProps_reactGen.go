@@ -6,12 +6,14 @@ package react
 type OptionProps struct {
 	ClassName               string
 	DangerouslySetInnerHTML *DangerousInnerHTML
-	ID                      string
-	Key                     string
+	DataSet
+	ID  string
+	Key string
 
 	OnChange
 	OnClick
 
+	Ref
 	Role  string
 	Style *CSS
 	Value string
@@ -22,6 +24,12 @@ func (o *OptionProps) assign(v *_OptionProps) {
 	v.ClassName = o.ClassName
 
 	v.DangerouslySetInnerHTML = o.DangerouslySetInnerHTML
+
+	if o.DataSet != nil {
+		for dk, dv := range o.DataSet {
+			v.o.Set("data-"+dk, dv)
+		}
+	}
 
 	if o.ID != "" {
 		v.ID = o.ID
@@ -37,6 +45,10 @@ func (o *OptionProps) assign(v *_OptionProps) {
 
 	if o.OnClick != nil {
 		v.o.Set("onClick", o.OnClick.OnClick)
+	}
+
+	if o.Ref != nil {
+		v.o.Set("ref", o.Ref.Ref)
 	}
 
 	v.Role = o.Role

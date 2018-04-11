@@ -7,8 +7,6 @@ import (
 	pathpkg "path"
 	"path/filepath"
 	"sort"
-
-	"golang.org/x/tools/godoc/vfs"
 )
 
 // Walk walks the filesystem rooted at root, calling walkFn for each file or
@@ -93,7 +91,7 @@ func WalkFiles(fs http.FileSystem, root string, walkFn WalkFilesFunc) error {
 
 // walkFiles recursively descends path, calling walkFn.
 // It closes the input file after it's done with it, so the caller shouldn't.
-func walkFiles(fs http.FileSystem, path string, info os.FileInfo, file vfs.ReadSeekCloser, walkFn WalkFilesFunc) error {
+func walkFiles(fs http.FileSystem, path string, info os.FileInfo, file http.File, walkFn WalkFilesFunc) error {
 	err := walkFn(path, info, file, nil)
 	file.Close()
 	if err != nil {
