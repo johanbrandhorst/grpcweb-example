@@ -46,10 +46,10 @@
   version = "v1.2.0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/improbable-eng/grpc-web"
   packages = ["go/grpcweb"]
-  revision = "6fb683f067bd56862c3a510bc5590b955ce46d2a"
+  revision = "58d1f6c3d97b6d81d7eebd7d26d5942a1d40cb46"
+  version = "0.6.0"
 
 [[projects]]
   name = "github.com/johanbrandhorst/protobuf"
@@ -64,8 +64,8 @@
     "protoc-gen-gopherjs/grpc",
     "ptypes/timestamp"
   ]
-  revision = "13864234c1633f98c43de4faf32083209cc511d7"
-  version = "v0.6.0"
+  revision = "03cf8d1fcba5d373ba975bae76317adacb264184"
+  version = "v0.6.1"
 
 [[projects]]
   name = "github.com/lpar/gzipped"
@@ -250,6 +250,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "dd63305ca62af9da6a39972f3a3f0eed4b9f8ad23b39787ba2f51c3f958251c2"
+  inputs-digest = "d50d9e12d6ea03e219c3a1f90d2f0aa5539b352619eb382517b5417b637d204e"
   solver-name = "gps-cdcl"
   solver-version = 1
