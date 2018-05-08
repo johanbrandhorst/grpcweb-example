@@ -10,10 +10,8 @@ install:
 		./vendor/github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs \
 		./vendor/myitcv.io/react/cmd/reactGen \
 		./vendor/myitcv.io/immutable/cmd/immutableGen \
-		./vendor/github.com/foobaz/go-zopfli
-
-	# GopherJS cannot be vendored so must be fetched
-	go get -u github.com/gopherjs/gopherjs
+		./vendor/github.com/foobaz/go-zopfli \
+		./vendor/github.com/gopherjs/gopherjs
 
 generate_cert:
 	cd insecure && go run "$$(go env GOROOT)/src/crypto/tls/generate_cert.go" \
