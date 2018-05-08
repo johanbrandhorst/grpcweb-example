@@ -11,13 +11,18 @@
   revision = "7432051485e2617ac160eba6129ab7efedecd427"
 
 [[projects]]
+  name = "github.com/fsnotify/fsnotify"
+  packages = ["."]
+  revision = "c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9"
+  version = "v1.4.7"
+
+[[projects]]
   branch = "master"
   name = "github.com/golang/gddo"
   packages = ["httputil/header"]
   revision = "416d5fc8c9c85e9ec9252a70d01e069f4b287ff0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/golang/protobuf"
   packages = [
     "proto",
@@ -31,7 +36,27 @@
     "ptypes/duration",
     "ptypes/timestamp"
   ]
-  revision = "e09c5db296004fbe3f74490e84dcd62c3c5ddb1b"
+  revision = "925541529c1fa6821df4e44ce2723319eb2be768"
+  version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/gopherjs/gopherjs"
+  packages = [
+    ".",
+    "build",
+    "compiler",
+    "compiler/analysis",
+    "compiler/astutil",
+    "compiler/filter",
+    "compiler/gopherjspkg",
+    "compiler/natives",
+    "compiler/prelude",
+    "compiler/typesutil",
+    "internal/sysutil",
+    "js"
+  ]
+  revision = "8dffc02ea1cb8398bb73f30424697c60fcf8d4c5"
 
 [[projects]]
   branch = "master"
@@ -52,6 +77,12 @@
   version = "0.6.0"
 
 [[projects]]
+  name = "github.com/inconshreveable/mousetrap"
+  packages = ["."]
+  revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
+  version = "v1.0"
+
+[[projects]]
   name = "github.com/johanbrandhorst/protobuf"
   packages = [
     "grpcweb",
@@ -64,14 +95,35 @@
     "protoc-gen-gopherjs/grpc",
     "ptypes/timestamp"
   ]
-  revision = "03cf8d1fcba5d373ba975bae76317adacb264184"
-  version = "v0.6.1"
+  revision = "5b744c2eb93cacc822132017f8a2e63ecf0740f5"
+  version = "v0.6.2"
+
+[[projects]]
+  name = "github.com/kisielk/gotool"
+  packages = [
+    ".",
+    "internal/load"
+  ]
+  revision = "80517062f582ea3340cd4baf70e86d539ae7d84d"
+  version = "v1.0.0"
 
 [[projects]]
   name = "github.com/lpar/gzipped"
   packages = ["."]
   revision = "8e9a0db009a7e2ca48d46825a0b32e8b2465c810"
   version = "v1.0.1"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/neelance/astrewrite"
+  packages = ["."]
+  revision = "99348263ae862cc230986ce88deaddbf7edcc034"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/neelance/sourcemap"
+  packages = ["."]
+  revision = "8c68805598ab8d5637b1a72b5f7d381ea0f39c31"
 
 [[projects]]
   name = "github.com/rs/cors"
@@ -82,7 +134,10 @@
 [[projects]]
   branch = "master"
   name = "github.com/shurcooL/httpfs"
-  packages = ["vfsutil"]
+  packages = [
+    "filter",
+    "vfsutil"
+  ]
   revision = "809beceb23714880abc4a382a00c05f89d13b1cc"
 
 [[projects]]
@@ -96,6 +151,18 @@
   packages = ["."]
   revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
   version = "v1.0.5"
+
+[[projects]]
+  name = "github.com/spf13/cobra"
+  packages = ["."]
+  revision = "a1f051bc3eba734da4772d60e2d677f47cf93ef4"
+  version = "v0.0.2"
+
+[[projects]]
+  name = "github.com/spf13/pflag"
+  packages = ["."]
+  revision = "583c0c0531f06d5278b7d917446061adc344b5cd"
+  version = "v1.0.1"
 
 [[projects]]
   branch = "master"
@@ -154,7 +221,12 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/tools"
-  packages = ["go/types/typeutil"]
+  packages = [
+    "go/buildutil",
+    "go/gcexportdata",
+    "go/internal/gcimporter",
+    "go/types/typeutil"
+  ]
   revision = "faed997d2c50aac9885d111f84817ba5a3a71455"
 
 [[projects]]
@@ -250,6 +322,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d50d9e12d6ea03e219c3a1f90d2f0aa5539b352619eb382517b5417b637d204e"
+  inputs-digest = "17426edb5aecd4d35a6b9866f789197c7f4b10281d7625868555dcbd09ffce17"
   solver-name = "gps-cdcl"
   solver-version = 1

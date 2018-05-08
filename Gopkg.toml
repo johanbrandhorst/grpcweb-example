@@ -1,13 +1,10 @@
-ignored = [
-  "github.com/gopherjs/gopherjs/js",
-]
-
 required = [
   "github.com/golang/protobuf/protoc-gen-go",
   "github.com/johanbrandhorst/protobuf/protoc-gen-gopherjs",
   "myitcv.io/react/cmd/reactGen",
   "myitcv.io/immutable/cmd/immutableGen",
   "github.com/foobaz/go-zopfli",
+  "github.com/gopherjs/gopherjs",
 ]
 
 [prune]
