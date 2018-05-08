@@ -116,9 +116,7 @@ func (m *Book) String() string            { return proto.CompactTextString(m) }
 func (*Book) ProtoMessage()               {}
 func (*Book) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
 
-type isBook_PublishingMethod interface {
-	isBook_PublishingMethod()
-}
+type isBook_PublishingMethod interface{ isBook_PublishingMethod() }
 
 type Book_SelfPublished struct {
 	SelfPublished bool `protobuf:"varint,5,opt,name=self_published,json=selfPublished,oneof"`
@@ -328,9 +326,7 @@ func (m *BookMessage) String() string            { return proto.CompactTextStrin
 func (*BookMessage) ProtoMessage()               {}
 func (*BookMessage) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
 
-type isBookMessage_Content interface {
-	isBookMessage_Content()
-}
+type isBookMessage_Content interface{ isBookMessage_Content() }
 
 type BookMessage_Name struct {
 	Name string `protobuf:"bytes,1,opt,name=name,oneof"`
