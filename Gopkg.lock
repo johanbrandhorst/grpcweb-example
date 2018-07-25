@@ -95,8 +95,8 @@
     "protoc-gen-gopherjs/grpc",
     "ptypes/timestamp"
   ]
-  revision = "5b744c2eb93cacc822132017f8a2e63ecf0740f5"
-  version = "v0.6.2"
+  revision = "aab3fa13717bbd659f55960024d6ecbe1bc33064"
+  version = "v0.7.0"
 
 [[projects]]
   name = "github.com/kisielk/gotool"
@@ -285,43 +285,26 @@
 
 [[projects]]
   branch = "master"
-  name = "myitcv.io/gogenerate"
-  packages = ["."]
-  revision = "bd69a94c96953d20e106734856b69d71c8fa122b"
-
-[[projects]]
-  branch = "master"
-  name = "myitcv.io/highlightjs"
-  packages = ["."]
-  revision = "e0ea663591fbdbce10ca2658c680ba7be2391ff8"
-
-[[projects]]
-  branch = "master"
-  name = "myitcv.io/immutable"
+  name = "myitcv.io"
   packages = [
-    ".",
-    "cmd/immutableGen",
-    "util"
+    "gogenerate",
+    "highlightjs",
+    "immutable",
+    "immutable/cmd/immutableGen",
+    "immutable/util",
+    "react",
+    "react/cmd/reactGen",
+    "react/internal/bundle",
+    "react/internal/core",
+    "react/internal/dev",
+    "react/internal/preact",
+    "react/internal/prod"
   ]
-  revision = "14699aec0b605e3fe63944cf91b39d2cebda03dd"
-
-[[projects]]
-  branch = "master"
-  name = "myitcv.io/react"
-  packages = [
-    ".",
-    "cmd/reactGen",
-    "internal/bundle",
-    "internal/core",
-    "internal/dev",
-    "internal/preact",
-    "internal/prod"
-  ]
-  revision = "515c91366e894665f597e7ad99e783ef0eee214d"
+  revision = "b4a531c8dfd04701732a257c0b6ce37a712bc04f"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "17426edb5aecd4d35a6b9866f789197c7f4b10281d7625868555dcbd09ffce17"
+  inputs-digest = "41cbc657a4b64c1587f0b8dc705adb7e5133ca6798f3deb8be21d13165e75e5a"
   solver-name = "gps-cdcl"
   solver-version = 1

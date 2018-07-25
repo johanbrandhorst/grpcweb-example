@@ -1,6 +1,8 @@
 // Copyright (c) 2016 Paul Jolly <paul@myitcv.org.uk>, all rights reserved.
 // Use of this document is governed by a license found in the LICENSE document.
 
+// immutableGen is a go generate generator that creates immutable struct, map
+// and slice type declarations from template type declarations.
 package main // import "myitcv.io/immutable/cmd/immutableGen"
 
 import (
@@ -52,12 +54,12 @@ func main() {
 		fatalf("could not determine if we are the first file: %v", err)
 	}
 
-	if len(dirFiles) == 0 {
+	if dirFiles == nil {
 		fatalf("cannot find any files containing the %v directive", immutableGenCmd)
 	}
 
-	if envFile != dirFiles[0] {
-		return
+	if dirFiles[envFile] != 1 {
+		fatalf("expected a single occurrence of %v directive in %v. Got: %v", immutableGenCmd, envFile, dirFiles)
 	}
 
 	licenseHeader, err := gogenerate.CommentLicenseHeader(fLicenseFile)

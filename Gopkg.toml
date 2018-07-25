@@ -17,11 +17,7 @@ required = [
     non-go = false
 
   [[prune.project]]
-    name = "myitcv.io/highlightjs"
-    non-go = false
-
-  [[prune.project]]
-    name = "myitcv.io/react"
+    name = "myitcv.io"
     non-go = false
 
   [[prune.project]]
@@ -30,7 +26,7 @@ required = [
 
 [[constraint]]
   name = "github.com/johanbrandhorst/protobuf"
-  version = "0.6.1"
+  version = "0.7.0"
 
 [[constraint]]
   name = "github.com/improbable-eng/grpc-web"
@@ -46,12 +42,4 @@ required = [
 
 [[constraint]]
   branch = "master"
-  name = "myitcv.io/highlightjs"
-
-[[constraint]]
-  branch = "master"
-  name = "myitcv.io/immutable"
-
-[[constraint]]
-  branch = "master"
-  name = "myitcv.io/react"
+  name = "myitcv.io"

@@ -1,6 +1,17 @@
-## `myitcv.io/react/cmd/reactGen`
+<!-- __JSON: go list -json .
+## `{{ filepathBase .ImportPath}}`
 
-`reactGen` is a `go generate` generator that helps to automate the process of
-writing GopherJS React web applications.
+{{.Doc}}
 
-For more information see https://github.com/myitcv/react/wiki
+```
+go get -u {{.ImportPath}}
+```
+-->
+## `reactGen`
+
+reactGen is a go generate generator that helps to automate the process of writing GopherJS React web applications.
+
+```
+go get -u myitcv.io/react/cmd/reactGen
+```
+<!-- END -->

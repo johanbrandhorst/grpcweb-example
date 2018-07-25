@@ -22,3 +22,11 @@ package grpcweb
 
 // DialOption is a stub for any dial options that may be implemented
 type DialOption func(*Client)
+
+// WithDefaultCallOptions sets the options to be used as default
+// CallOptions for all the calls on this client.
+func WithDefaultCallOptions(opts ...CallOption) DialOption {
+	return func(c *Client) {
+		c.defaultCallOptions = append(c.defaultCallOptions, opts...)
+	}
+}

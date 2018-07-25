@@ -23,7 +23,16 @@ func (c Client) RPCCall(ctx context.Context, method string, req []byte, opts ...
 		false,
 		false,
 	)
-	props := newProperties(c.host, false)
+
+	// Perform CallOptions required before call
+	for _, o := range append(c.defaultCallOptions, opts...) {
+		if err := o.before(ci); err != nil {
+			return nil, status.FromError(err)
+		}
+	}
+
+	// Enable WebSocket transport if requested by user.
+	props := newProperties(c.host, ci.forceWebsockets)
 	client, err := newClient(methodDesc, props)
 	if err != nil {
 		return nil, status.FromError(err)
@@ -39,7 +48,7 @@ func (c Client) RPCCall(ctx context.Context, method string, req []byte, opts ...
 		ci.trailers = s.Trailers
 
 		// Perform CallOptions required after call
-		for _, o := range opts {
+		for _, o := range append(c.defaultCallOptions, opts...) {
 			o.after(ci)
 		}
 
@@ -47,13 +56,6 @@ func (c Client) RPCCall(ctx context.Context, method string, req []byte, opts ...
 			errChan <- s
 		} else {
 			errChan <- io.EOF // Success!
-		}
-	}
-
-	// Perform CallOptions required before call
-	for _, o := range opts {
-		if err := o.before(ci); err != nil {
-			return nil, status.FromError(err)
 		}
 	}
 

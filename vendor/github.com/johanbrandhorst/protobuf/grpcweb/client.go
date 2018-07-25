@@ -23,8 +23,9 @@ package grpcweb
 // Client encapsulates all gRPC calls to a
 // host-service combination.
 type Client struct {
-	host    string
-	service string
+	host               string
+	service            string
+	defaultCallOptions []CallOption
 }
 
 // NewClient creates a new Client.

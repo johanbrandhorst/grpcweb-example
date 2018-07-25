@@ -1,13 +1,20 @@
-## `myitcv.io/react`
+<!-- __JSON: go list -json .
+## `{{ filepathBase .ImportPath}}`
+
+{{.Doc}}
+
+```
+go get -u {{.ImportPath}}
+```
+-->
+## `react`
+
+Package react is a set of GopherJS bindings for Facebook's React, a Javascript library for building user interfaces.
 
 ```
 go get -u myitcv.io/react
 ```
-
-[`myitcv.io/react`](https://godoc.org/myitcv.io/react) is a set of [GopherJS](https://github.com/gopherjs/gopherjs)
-bindings/tools for [React](https://facebook.github.io/react/), a Javascript library for building user interfaces.
-
-See [the wiki](https://github.com/myitcv/react/wiki) for more details
+<!-- END -->
 
 ### Running the tests
 

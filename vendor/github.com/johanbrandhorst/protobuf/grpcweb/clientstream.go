@@ -50,7 +50,19 @@ func (c Client) NewClientStream(
 		isClientStreaming,
 		isServerStreaming,
 	)
-	props := newProperties(c.host, isClientStreaming)
+
+	ci := &callInfo{}
+	// Perform CallOptions required before call
+	for _, o := range append(c.defaultCallOptions, opts...) {
+		if err := o.before(ci); err != nil {
+			return nil, status.FromError(err)
+		}
+	}
+
+	// Enable WebSocket transport if method is ClientStreaming
+	// or Websocket transport has been requested by user.
+	useWebsockets := isClientStreaming || ci.forceWebsockets
+	props := newProperties(c.host, useWebsockets)
 	client, err := newClient(methodDesc, props)
 	if err != nil {
 		return nil, status.FromError(err)
@@ -63,7 +75,7 @@ func (c Client) NewClientStream(
 		errChan:           make(chan error, 1),
 		isClientStreaming: isClientStreaming,
 		isServerStreaming: isServerStreaming,
-		callInfo:          &callInfo{},
+		callInfo:          ci,
 		headers:           metadata.MD{},
 		trailers:          metadata.MD{},
 	}
@@ -84,7 +96,7 @@ func (c Client) NewClientStream(
 		cs.trailers = s.Trailers
 
 		// Perform CallOptions required after call
-		for _, o := range opts {
+		for _, o := range append(c.defaultCallOptions, opts...) {
 			o.after(cs.callInfo)
 		}
 
@@ -92,13 +104,6 @@ func (c Client) NewClientStream(
 			cs.errChan <- s
 		} else {
 			cs.errChan <- io.EOF // Success!
-		}
-	}
-
-	// Perform CallOptions required before call
-	for _, o := range opts {
-		if err := o.before(cs.callInfo); err != nil {
-			return nil, status.FromError(err)
 		}
 	}
 
