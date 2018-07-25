@@ -23,11 +23,12 @@ package grpcweb
 import "google.golang.org/grpc/metadata"
 
 type callInfo struct {
-	headers  metadata.MD
-	trailers metadata.MD
+	headers         metadata.MD
+	trailers        metadata.MD
+	forceWebsockets bool
 }
 
-// CallOption is a stub for any call options that may be implemented
+// CallOption is an interface for any Call Options
 type CallOption interface {
 	before(*callInfo) error
 	after(*callInfo)
@@ -56,5 +57,13 @@ func Header(headers *metadata.MD) CallOption {
 func Trailer(trailers *metadata.MD) CallOption {
 	return afterCall(func(c *callInfo) {
 		*trailers = c.trailers
+	})
+}
+
+// ForceWebsocketTransport forces this call to use the Websocket transport.
+func ForceWebsocketTransport() CallOption {
+	return beforeCall(func(c *callInfo) error {
+		c.forceWebsockets = true
+		return nil
 	})
 }
