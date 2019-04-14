@@ -49,7 +49,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:4adc4a8693ce2c676c059435f033f8f5bda78318fb9219ebdf5365fad5d6e13d"
+  digest = "1:fa57b15d4cc7cdaf888a297f974c6f3207cebef90a4754d4ed3941711b2aced7"
   name = "github.com/gopherjs/gopherjs"
   packages = [
     ".",
@@ -66,7 +66,7 @@
     "js",
   ]
   pruneopts = "NUT"
-  revision = "d547d1d9531ed93dbdebcbff7f83e7c876a1e0ee"
+  revision = "bd77b112433e999447bf4bc599e36214ba494a99"
 
 [[projects]]
   branch = "master"
