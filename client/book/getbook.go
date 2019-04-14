@@ -105,8 +105,8 @@ func (t triggerGet) OnClick(se *r.SyntheticMouseEvent) {
 			return
 		}
 
-		// 1 second timeout
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		// 5 second timeout
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
 		bk, err := t.g.Props().Client.GetBook(ctx, &library.GetBookRequest{

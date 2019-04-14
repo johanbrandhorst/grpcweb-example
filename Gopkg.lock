@@ -206,13 +206,9 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:76bb6c11b6da0f512129cc8f06420f97bdae10fa0b627383ba7cc0f5bd63b72f"
+  digest = "1:3f3a05ae0b95893d90b9b3b5afdb79a9b3d96e4e36e099d841ae602e4aca0da8"
   name = "golang.org/x/crypto"
-  packages = [
-    "acme",
-    "acme/autocert",
-    "ssh/terminal",
-  ]
+  packages = ["ssh/terminal"]
   pruneopts = "NUT"
   revision = "f70185d77e8278766928032ee1355e3da47e7181"
 
@@ -384,10 +380,10 @@
     "github.com/lpar/gzipped",
     "github.com/shurcooL/vfsgen",
     "github.com/sirupsen/logrus",
-    "golang.org/x/crypto/acme/autocert",
     "golang.org/x/net/context",
     "google.golang.org/grpc",
     "google.golang.org/grpc/codes",
+    "google.golang.org/grpc/credentials",
     "google.golang.org/grpc/grpclog",
     "google.golang.org/grpc/status",
     "honnef.co/go/js/dom",

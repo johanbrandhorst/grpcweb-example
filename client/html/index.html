@@ -1,67 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-      integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-      crossorigin="anonymous"
-    />
-    <title>GopherJS gRPC-web Examples</title>
-    <style>
-      body {
-        padding-top: 50px;
-      }
 
-      .panel.with-nav-tabs .panel-heading {
-        padding: 5px 5px 0 5px;
-      }
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+    integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous" />
+  <title>GopherJS gRPC-web Examples</title>
+  <style>
+    body {
+      padding-top: 50px;
+    }
 
-      .panel.with-nav-tabs .nav-tabs {
-        border-bottom: none;
-      }
+    .panel.with-nav-tabs .panel-heading {
+      padding: 5px 5px 0 5px;
+    }
 
-      .panel.with-nav-tabs .nav-justified {
-        margin-bottom: -1px;
-      }
-    </style>
-  </head>
+    .panel.with-nav-tabs .nav-tabs {
+      border-bottom: none;
+    }
 
-  <body>
-    <div id="progress-holder" style="width: 100%; padding: 25%;">
-      <div class="progress">
-        <div
-          id="progress-bar"
-          class="progress-bar"
-          role="progressbar"
-          style="width: 0%"
-          aria-valuenow="0"
-          aria-valuemin="0"
-          aria-valuemax="100"
-        ></div>
-      </div>
-    </div>
-    <div id="app"></div>
-    <script src="https://pkg.jsgo.io/github.com/johanbrandhorst/grpcweb-example/client.848042a17d2158ae377661a5dc91237563143785.js"></script>
-    <script>
-      window.jsgoProgress = function(count, total) {
-        var value = (count * 100.0) / (total * 1.0);
-        var bar = document.getElementById("progress-bar");
-        bar.style.width = value + "%";
-        bar.setAttribute("aria-valuenow", value);
-        if (count === total) {
-          document.getElementById("progress-holder").style.display = "none";
-        }
-      };
-    </script>
-  </body>
+    .panel.with-nav-tabs .nav-justified {
+      margin-bottom: -1px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script src="client.js"></script>
+</body>
+
 </html>

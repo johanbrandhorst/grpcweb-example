@@ -6,12 +6,7 @@ RUN cd /go/src/github.com/johanbrandhorst/grpcweb-example && go build -o /app
 
 # Production stage
 # Auto-LetsEncrypt requires ca-certificates
-FROM broady/cacerts
+FROM scratch
 COPY --from=build-env /app /
 
-# Cache LetsEncrypt certificates
-VOLUME /certs
-
-EXPOSE 443
-EXPOSE 80
 ENTRYPOINT ["/app"]

@@ -203,27 +203,29 @@ func (p ContainerDef) Render() r.Element {
 			),
 			book.QueryBooks(book.QueryBooksProps{Client: p.State().client}),
 		),
-		p.renderExample(
-			exampleMakeCollection,
-			r.Span(nil,
-				r.S("Streaming a collection of books from the client"),
+		/*
+			p.renderExample(
+				exampleMakeCollection,
+				r.Span(nil,
+					r.S("Streaming a collection of books from the client"),
+				),
+				r.P(nil,
+					r.S("Sends a stream of ISBNs to the gRPC backend to be collected into a list."),
+				),
+				book.MakeCollection(book.MakeCollectionProps{Client: p.State().client}),
 			),
-			r.P(nil,
-				r.S("Sends a stream of ISBNs to the gRPC backend to be collected into a list."),
+			p.renderExample(
+				exampleBookChat,
+				r.Span(nil,
+					r.S("Bi-directional streaming chat"),
+				),
+				r.P(nil,
+					r.S("Sends a stream of messages to the backend and receives messages on an independent stream. "),
+					r.S("Try connecting in another browser window and see the chat in action."),
+				),
+				book.BookChat(book.BookChatProps{Client: p.State().client}),
 			),
-			book.MakeCollection(book.MakeCollectionProps{Client: p.State().client}),
-		),
-		p.renderExample(
-			exampleBookChat,
-			r.Span(nil,
-				r.S("Bi-directional streaming chat"),
-			),
-			r.P(nil,
-				r.S("Sends a stream of messages to the backend and receives messages on an independent stream. "),
-				r.S("Try connecting in another browser window and see the chat in action."),
-			),
-			book.BookChat(book.BookChatProps{Client: p.State().client}),
-		),
+		*/
 	)
 
 	return r.Div(nil,

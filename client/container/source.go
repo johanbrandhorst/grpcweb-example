@@ -27,8 +27,8 @@ type _Imm_exampleSource map[exampleKey]*source
 var sources = newExampleSource(func(es *exampleSource) {
 	es.Set(exampleGetBook, new(source).setFile("book/getbook.go"))
 	es.Set(exampleQueryBooks, new(source).setFile("book/querybooks.go"))
-	es.Set(exampleMakeCollection, new(source).setFile("book/makecollection.go"))
-	es.Set(exampleBookChat, new(source).setFile("book/bookchat.go"))
+	//es.Set(exampleMakeCollection, new(source).setFile("book/makecollection.go"))
+	//es.Set(exampleBookChat, new(source).setFile("book/bookchat.go"))
 })
 
 // fetchStarted tracks whether the downloading of the source files has
