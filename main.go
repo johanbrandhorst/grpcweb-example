@@ -123,7 +123,7 @@ func folderReader(fn http.HandlerFunc) http.HandlerFunc {
 func grpcTrafficSplitter(fallback http.HandlerFunc, grpcHandler http.Handler) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Redirect gRPC and gRPC-Web requests to the gRPC Server
-		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") ||
+		if strings.Contains(r.Header.Get("Content-Type"), "application/grpc") ||
 			websocket.IsWebSocketUpgrade(r) {
 			grpcHandler.ServeHTTP(w, r)
 		} else {
