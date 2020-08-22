@@ -92,6 +92,7 @@ func main() {
 		WriteTimeout: httpsSrv.WriteTimeout,
 		IdleTimeout:  httpsSrv.IdleTimeout,
 		Handler:      m.HTTPHandler(nil),
+		TLSConfig:    m.TLSConfig(),
 	}
 	go func() {
 		logger.Fatal(httpSrv.ListenAndServe())
