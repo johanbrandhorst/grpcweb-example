@@ -6,7 +6,7 @@ RUN cd /go/src/github.com/johanbrandhorst/grpcweb-example && go build -o /app
 
 # Production stage
 # Auto-LetsEncrypt requires ca-certificates
-FROM broady/cacerts
+FROM gcr.io/distroless/static
 COPY --from=build-env /app /
 
 # Cache LetsEncrypt certificates
