@@ -92,13 +92,12 @@ func main() {
 		WriteTimeout: httpsSrv.WriteTimeout,
 		IdleTimeout:  httpsSrv.IdleTimeout,
 		Handler:      m.HTTPHandler(nil),
-		TLSConfig:    m.TLSConfig(),
 	}
 	go func() {
 		logger.Fatal(httpSrv.ListenAndServe())
 	}()
 
-	httpsSrv.TLSConfig.GetCertificate = m.GetCertificate
+	httpsSrv.TLSConfig = m.TLSConfig()
 	logger.Info("Serving on https://0.0.0.0:443, authenticating for https://", *host)
 	logger.Fatal(httpsSrv.ListenAndServeTLS("", ""))
 }
