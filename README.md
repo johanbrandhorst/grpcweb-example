@@ -11,9 +11,6 @@ client talking to a Go gRPC server using the Improbable gRPC-Web client implemen
 [protoc-gen-gopherjs](https://github.com/johanbrandhorst/protobuf/tree/master/protoc-gen-gopherjs)
 bindings generator.
 
-A live demo of this application can be found on
-[https://grpcweb.jbrandhorst.com](https://grpcweb.jbrandhorst.com).
-
 ## Developing
 To run the server on `https://localhost:10000`:
 
